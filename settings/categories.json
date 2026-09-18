@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "categories": [
+    "system",
+    "network",
+    "gui",
+    "tuner",
+    "channels",
+    "epg",
+    "recording",
+    "media",
+    "audio_video",
+    "security",
+    "packages",
+    "plugin_specific"
+  ]
+}

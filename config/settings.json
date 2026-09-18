@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "source": "/etc/enigma2/settings plus adapter/plugin namespaces",
+  "categories": [
+    {
+      "id": "system",
+      "items": [
+        "hostname",
+        "timezone",
+        "locale",
+        "language",
+        "ntp",
+        "standby",
+        "deep_standby",
+        "power_timers"
+      ]
+    },
+    {
+      "id": "network",
+      "items": [
+        "dhcp",
+        "ipv4",
+        "ipv6",
+        "gateway",
+        "dns",
+        "wifi",
+        "proxy",
+        "ssh",
+        "ftp",
+        "smb",
+        "nfs",
+        "vpn",
+        "firewall"
+      ]
+    },
+    {
+      "id": "gui",
+      "items": [
+        "resolution",
+        "refresh_rate",
+        "hdmi",
+        "hdr",
+        "skin",
+        "fonts",
+        "picons",
+        "osd",
+        "infobar",
+        "menus",
+        "lcd_vfd"
+      ]
+    },
+    {
+      "id": "tuner",
+      "items": [
+        "mode",
+        "satellite",
+        "diseqc",
+        "lnb",
+        "lof",
+        "tone",
+        "voltage",
+        "positioner",
+        "unicable",
+        "jess",
+        "fbc",
+        "cable",
+        "terrestrial"
+      ]
+    },
+    {
+      "id": "channels",
+      "items": [
+        "service_lists",
+        "bouquets",
+        "numbering",
+        "sorting",
+        "favorites",
+        "parental_control"
+      ]
+    },
+    {
+      "id": "epg",
+      "items": [
+        "source",
+        "refresh",
+        "xmltv",
+        "rytec",
+        "cache",
+        "retention",
+        "schedule"
+      ]
+    },
+    {
+      "id": "recording",
+      "items": [
+        "path",
+        "timeshift",
+        "instant_recording",
+        "margins",
+        "autotimers",
+        "conflicts",
+        "hdd",
+        "nas",
+        "nfs"
+      ]
+    },
+    {
+      "id": "media",
+      "items": [
+        "playback",
+        "subtitles",
+        "audio_language",
+        "aspect_ratio",
+        "transcoding"
+      ]
+    },
+    {
+      "id": "security",
+      "items": [
+        "ssh",
+        "ftp",
+        "telnet",
+        "web_auth",
+        "parental_control",
+        "service_lock"
+      ]
+    },
+    {
+      "id": "packages",
+      "items": [
+        "feeds",
+        "sources",
+        "update_policy",
+        "filters",
+        "priorities"
+      ]
+    }
+  ],
+  "rule": "raw keys are implementation details; public API uses stable setting IDs"
+}
