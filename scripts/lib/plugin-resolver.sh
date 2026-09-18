@@ -20,7 +20,9 @@ plugin_catalog_block() {
 
 plugin_catalog_field() {
   id="$1"; field="$2"
-  plugin_catalog_block "$id" | sed -n 's/.*"'$field'"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1
+  value="$(plugin_catalog_block "$id" | sed -n 's/.*"'$field'"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)"
+  [ -n "$value" ] && { printf '%s\n' "$value"; return 0; }
+  plugin_catalog_block "$id" | sed -n 's/.*"'$field'"[[:space:]]*:[[:space:]]*\(true\|false\).*/\1/p' | head -1
 }
 
 plugin_catalog_list() {
