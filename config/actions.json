@@ -9,265 +9,44 @@
     "audit_required": true
   },
   "actions": [
-    {
-      "id": "receiver.detect",
-      "domain": "receiver",
-      "name": "Detect receiver fingerprint",
-      "risk": "low",
-      "requires_confirmation": false
-    },
-    {
-      "id": "receiver.capabilities",
-      "domain": "receiver",
-      "name": "Resolve normalized capabilities",
-      "risk": "low",
-      "requires_confirmation": false
-    },
-    {
-      "id": "system.status",
-      "domain": "system",
-      "name": "Read normalized status",
-      "risk": "low",
-      "requires_confirmation": false
-    },
-    {
-      "id": "system.diagnose",
-      "domain": "diagnostics",
-      "name": "Run read-only diagnostics",
-      "risk": "low",
-      "requires_confirmation": false
-    },
-    {
-      "id": "system.package_update",
-      "domain": "package",
-      "name": "Update packages",
-      "risk": "medium",
-      "requires_confirmation": false
-    },
-    {
-      "id": "package.install",
-      "domain": "package",
-      "name": "Install package",
-      "risk": "medium",
-      "requires_confirmation": false
-    },
-    {
-      "id": "package.remove",
-      "domain": "package",
-      "name": "Remove package",
-      "risk": "high",
-      "requires_confirmation": true
-    },
-    {
-      "id": "package.state",
-      "domain": "package",
-      "name": "Read normalized package/source state",
-      "risk": "low",
-      "requires_confirmation": false
-    },
-    {
-      "id": "package.discover",
-      "domain": "package",
-      "name": "Discover packages from configured feeds",
-      "risk": "low",
-      "requires_confirmation": false
-    },
-    {
-      "id": "plugin.install",
-      "domain": "plugin",
-      "name": "Install compatible plugin",
-      "risk": "medium",
-      "requires_confirmation": false
-    },
-    {
-      "id": "plugin.update",
-      "domain": "plugin",
-      "name": "Update compatible plugin",
-      "risk": "medium",
-      "requires_confirmation": false
-    },
-    {
-      "id": "plugin.remove",
-      "domain": "plugin",
-      "name": "Remove plugin",
-      "risk": "high",
-      "requires_confirmation": true
-    },
-    {
-      "id": "channel.scan",
-      "domain": "channel",
-      "name": "Scan services",
-      "risk": "medium",
-      "requires_confirmation": false
-    },
-    {
-      "id": "channel.blind_scan",
-      "domain": "channel",
-      "name": "Blind scan",
-      "risk": "medium",
-      "requires_confirmation": false
-    },
-    {
-      "id": "channel.import",
-      "domain": "channel",
-      "name": "Import channel database",
-      "risk": "high",
-      "requires_confirmation": true
-    },
-    {
-      "id": "channel.export",
-      "domain": "channel",
-      "name": "Export channel database",
-      "risk": "low",
-      "requires_confirmation": false
-    },
-    {
-      "id": "channel.sync",
-      "domain": "channel",
-      "name": "Synchronize channel state",
-      "risk": "medium",
-      "requires_confirmation": false
-    },
-    {
-      "id": "bouquet.create",
-      "domain": "bouquet",
-      "name": "Create bouquet",
-      "risk": "low",
-      "requires_confirmation": false
-    },
-    {
-      "id": "bouquet.update",
-      "domain": "bouquet",
-      "name": "Update bouquet",
-      "risk": "medium",
-      "requires_confirmation": false
-    },
-    {
-      "id": "bouquet.delete",
-      "domain": "bouquet",
-      "name": "Delete bouquet",
-      "risk": "high",
-      "requires_confirmation": true
-    },
-    {
-      "id": "epg.import",
-      "domain": "epg",
-      "name": "Import EPG",
-      "risk": "low",
-      "requires_confirmation": false
-    },
-    {
-      "id": "epg.refresh",
-      "domain": "epg",
-      "name": "Refresh EPG",
-      "risk": "low",
-      "requires_confirmation": false
-    },
-    {
-      "id": "backup.create",
-      "domain": "backup",
-      "name": "Create backup",
-      "risk": "medium",
-      "requires_confirmation": false
-    },
-    {
-      "id": "backup.restore",
-      "domain": "restore",
-      "name": "Restore backup",
-      "risk": "critical",
-      "requires_confirmation": true
-    },
-    {
-      "id": "network.configure",
-      "domain": "network",
-      "name": "Change persistent network configuration",
-      "risk": "high",
-      "requires_confirmation": true
-    },
-    {
-      "id": "service.restart",
-      "domain": "service",
-      "name": "Restart registered service",
-      "risk": "medium",
-      "requires_confirmation": false
-    },
-    {
-      "id": "system.restart_enigma2",
-      "domain": "system",
-      "name": "Restart Enigma2",
-      "risk": "medium",
-      "requires_confirmation": false
-    },
-    {
-      "id": "system.restart_gui",
-      "domain": "system",
-      "name": "Restart GUI",
-      "risk": "medium",
-      "requires_confirmation": false
-    },
-    {
-      "id": "system.reboot",
-      "domain": "system",
-      "name": "Reboot receiver",
-      "risk": "high",
-      "requires_confirmation": true
-    },
-    {
-      "id": "system.shutdown",
-      "domain": "system",
-      "name": "Shutdown receiver",
-      "risk": "high",
-      "requires_confirmation": true
-    },
-    {
-      "id": "system.factory_reset",
-      "domain": "system",
-      "name": "Factory reset",
-      "risk": "critical",
-      "requires_confirmation": true
-    },
-    {
-      "id": "plugin.source_status",
-      "domain": "plugin",
-      "name": "Read plugin source status",
-      "risk": "low",
-      "requires_confirmation": false
-    },
-    {
-      "id": "plugin.source_refresh",
-      "domain": "plugin",
-      "name": "Refresh receiver plugin sources",
-      "risk": "medium",
-      "requires_confirmation": false
-    },
-    {
-      "id": "plugin.discover",
-      "domain": "plugin",
-      "name": "Discover packages from receiver feeds",
-      "risk": "low",
-      "requires_confirmation": false
-    },
-    {
-      "id": "plugin.info",
-      "domain": "plugin",
-      "name": "Read package metadata from receiver feeds",
-      "risk": "low",
-      "requires_confirmation": false
-    },
-    {
-      "id": "plugin.resolve",
-      "domain": "plugin",
-      "name": "Resolve normalized plugin ID to receiver package",
-      "risk": "low",
-      "requires_confirmation": false
-    },
-    {
-      "id": "plugin.install_id",
-      "domain": "plugin",
-      "name": "Resolve and install plugin by normalized ID",
-      "risk": "medium",
-      "requires_confirmation": false
-    }
+    {"id":"receiver.detect","domain":"receiver","name":"Detect receiver fingerprint","risk":"low","requires_confirmation":false},
+    {"id":"receiver.capabilities","domain":"receiver","name":"Resolve normalized capabilities","risk":"low","requires_confirmation":false},
+    {"id":"system.status","domain":"system","name":"Read normalized status","risk":"low","requires_confirmation":false},
+    {"id":"system.diagnose","domain":"diagnostics","name":"Run read-only diagnostics","risk":"low","requires_confirmation":false},
+    {"id":"system.package_update","domain":"package","name":"Update packages","risk":"medium","requires_confirmation":false},
+    {"id":"package.install","domain":"package","name":"Install package","risk":"medium","requires_confirmation":false},
+    {"id":"package.remove","domain":"package","name":"Remove package","risk":"high","requires_confirmation":true},
+    {"id":"package.state","domain":"package","name":"Read normalized package/source state","risk":"low","requires_confirmation":false},
+    {"id":"package.discover","domain":"package","name":"Discover packages from configured feeds","risk":"low","requires_confirmation":false},
+    {"id":"plugin.source_status","domain":"plugin","name":"Read plugin source status","risk":"low","requires_confirmation":false},
+    {"id":"plugin.source_refresh","domain":"plugin","name":"Refresh receiver plugin sources","risk":"medium","requires_confirmation":false},
+    {"id":"plugin.discover","domain":"plugin","name":"Discover packages from receiver feeds","risk":"low","requires_confirmation":false},
+    {"id":"plugin.info","domain":"plugin","name":"Read package metadata from receiver feeds","risk":"low","requires_confirmation":false},
+    {"id":"plugin.resolve","domain":"plugin","name":"Resolve normalized plugin ID to receiver package","risk":"low","requires_confirmation":false},
+    {"id":"plugin.preview","domain":"plugin","name":"Preflight plugin compatibility and dependencies","risk":"low","requires_confirmation":false},
+    {"id":"plugin.install","domain":"plugin","name":"Install compatible plugin package","risk":"medium","requires_confirmation":false},
+    {"id":"plugin.install_id","domain":"plugin","name":"Resolve, preflight and install plugin by normalized ID","risk":"medium","requires_confirmation":false},
+    {"id":"plugin.update","domain":"plugin","name":"Update compatible plugin","risk":"medium","requires_confirmation":false},
+    {"id":"plugin.remove","domain":"plugin","name":"Remove plugin","risk":"high","requires_confirmation":true},
+    {"id":"channel.scan","domain":"channel","name":"Scan services","risk":"medium","requires_confirmation":false},
+    {"id":"channel.blind_scan","domain":"channel","name":"Blind scan","risk":"medium","requires_confirmation":false},
+    {"id":"channel.import","domain":"channel","name":"Import channel database","risk":"high","requires_confirmation":true},
+    {"id":"channel.export","domain":"channel","name":"Export channel database","risk":"low","requires_confirmation":false},
+    {"id":"channel.sync","domain":"channel","name":"Synchronize channel state","risk":"medium","requires_confirmation":false},
+    {"id":"bouquet.create","domain":"bouquet","name":"Create bouquet","risk":"low","requires_confirmation":false},
+    {"id":"bouquet.update","domain":"bouquet","name":"Update bouquet","risk":"medium","requires_confirmation":false},
+    {"id":"bouquet.delete","domain":"bouquet","name":"Delete bouquet","risk":"high","requires_confirmation":true},
+    {"id":"epg.import","domain":"epg","name":"Import EPG","risk":"low","requires_confirmation":false},
+    {"id":"epg.refresh","domain":"epg","name":"Refresh EPG","risk":"low","requires_confirmation":false},
+    {"id":"backup.create","domain":"backup","name":"Create backup","risk":"medium","requires_confirmation":false},
+    {"id":"backup.restore","domain":"restore","name":"Restore backup","risk":"critical","requires_confirmation":true},
+    {"id":"network.configure","domain":"network","name":"Change persistent network configuration","risk":"high","requires_confirmation":true},
+    {"id":"service.restart","domain":"service","name":"Restart registered service","risk":"medium","requires_confirmation":false},
+    {"id":"system.restart_enigma2","domain":"system","name":"Restart Enigma2","risk":"medium","requires_confirmation":false},
+    {"id":"system.restart_gui","domain":"system","name":"Restart GUI","risk":"medium","requires_confirmation":false},
+    {"id":"system.reboot","domain":"system","name":"Reboot receiver","risk":"high","requires_confirmation":true},
+    {"id":"system.shutdown","domain":"system","name":"Shutdown receiver","risk":"high","requires_confirmation":true},
+    {"id":"system.factory_reset","domain":"system","name":"Factory reset","risk":"critical","requires_confirmation":true}
   ],
   "installation_policy": {
     "binaries_hosted_in_repo": false,
