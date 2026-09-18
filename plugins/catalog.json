@@ -1,5 +1,11 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
+  "binary_policy": {
+    "hosted_in_repository": false,
+    "mirrored_in_repository": false,
+    "installation": "receiver_configured_source",
+    "arbitrary_url_installation": false
+  },
   "generated": "2026-09-18",
   "plugins": [
     {

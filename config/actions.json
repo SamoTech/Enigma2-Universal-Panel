@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "action_model": {
     "registered_only": true,
     "arbitrary_shell": false,
@@ -211,6 +211,40 @@
       "name": "Factory reset",
       "risk": "critical",
       "requires_confirmation": true
+    },
+    {
+      "id": "plugin.source_status",
+      "domain": "plugin",
+      "name": "Read plugin source status",
+      "risk": "low",
+      "requires_confirmation": false
+    },
+    {
+      "id": "plugin.source_refresh",
+      "domain": "plugin",
+      "name": "Refresh receiver plugin sources",
+      "risk": "medium",
+      "requires_confirmation": false
+    },
+    {
+      "id": "plugin.discover",
+      "domain": "plugin",
+      "name": "Discover packages from receiver feeds",
+      "risk": "low",
+      "requires_confirmation": false
+    },
+    {
+      "id": "plugin.info",
+      "domain": "plugin",
+      "name": "Read package metadata from receiver feeds",
+      "risk": "low",
+      "requires_confirmation": false
     }
-  ]
+  ],
+  "installation_policy": {
+    "binaries_hosted_in_repo": false,
+    "source": "receiver_configured_feed",
+    "arbitrary_urls": false,
+    "arbitrary_shell": false
+  }
 }
