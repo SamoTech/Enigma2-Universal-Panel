@@ -253,6 +253,20 @@
       "name": "Read package metadata from receiver feeds",
       "risk": "low",
       "requires_confirmation": false
+    },
+    {
+      "id": "plugin.resolve",
+      "domain": "plugin",
+      "name": "Resolve normalized plugin ID to receiver package",
+      "risk": "low",
+      "requires_confirmation": false
+    },
+    {
+      "id": "plugin.install_id",
+      "domain": "plugin",
+      "name": "Resolve and install plugin by normalized ID",
+      "risk": "medium",
+      "requires_confirmation": false
     }
   ],
   "installation_policy": {
