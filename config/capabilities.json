@@ -107,6 +107,18 @@
         "package_manager"
       ],
       "read_only": true
+    },
+    "plugin.resolve": {
+      "requires": [
+        "package_manager"
+      ],
+      "read_only": true
+    },
+    "plugin.install_id": {
+      "requires": [
+        "package_manager"
+      ],
+      "source": "receiver_feed"
     }
   }
 }
