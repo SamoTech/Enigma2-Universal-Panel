@@ -1,5 +1,5 @@
 #!/bin/sh
-PANEL_VERSION="1.0.0"
+PANEL_VERSION="1.2.0"
 PANEL_ROOT="/usr/lib/enigma2-universal-panel"
 PANEL_ETC="/etc/enigma2-universal-panel"
 PANEL_LOG="/var/log/enigma2-universal-panel.log"

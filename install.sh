@@ -21,6 +21,7 @@ fetch scripts/lib/common.sh
 fetch scripts/lib/detect.sh
 fetch scripts/lib/compat.sh
 fetch scripts/lib/actions.sh
+fetch scripts/lib/plugins.sh
 fetch scripts/lib/status.sh
 fetch scripts/lib/diagnose.sh
 fetch config/capabilities.json
@@ -29,6 +30,7 @@ fetch config/settings.json
 fetch config/adapters.json
 fetch config/receivers.json
 fetch config/compatibility.json
+fetch config/plugin-sources.json
 fetch plugins/catalog.json
 fetch plugins/compatibility.json
 fetch plugins/sources.json
@@ -36,8 +38,9 @@ fetch channels/schema.json
 fetch channels/capabilities.json
 fetch settings/schema.json
 fetch settings/categories.json
+fetch docs/discovery/PLUGIN_INSTALLATION.md
 
 chmod 755 "$DEST/panel.sh" "$DEST/scripts/lib/"*.sh
 ln -sf "$DEST/panel.sh" "$BIN"
-echo "Enigma2 Universal Panel 1.1.0 installed."
+echo "Enigma2 Universal Panel 1.2.0 installed."
 "$BIN" status
