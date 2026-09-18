@@ -1,8 +1,194 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "receiver_families": [
-    {"id":"dreambox","match":["dreambox","dm9","dm920","one"],"images":["dreamos","enigma2"]},
-    {"id":"vuplus","match":["vu+","vuplus","uno4k","duo4k","zero4k"],"images":["openatv","openvix","openpli","enigma2"]},
-    {"id":"generic","match":[],"images":["enigma2"]}
+    {
+      "id": "dreambox",
+      "match": [
+        "dreambox",
+        "dm9",
+        "dm920",
+        "one"
+      ],
+      "images": [
+        "dreamos",
+        "enigma2"
+      ]
+    },
+    {
+      "id": "vuplus",
+      "match": [
+        "vu+",
+        "vuplus",
+        "uno4k",
+        "duo4k",
+        "zero4k"
+      ],
+      "images": [
+        "openatv",
+        "openvix",
+        "openpli",
+        "enigma2"
+      ]
+    },
+    {
+      "id": "gigablue",
+      "match": [
+        "gigablue"
+      ],
+      "images": [
+        "enigma2"
+      ]
+    },
+    {
+      "id": "octagon",
+      "match": [
+        "octagon"
+      ],
+      "images": [
+        "enigma2"
+      ]
+    },
+    {
+      "id": "zgemma",
+      "match": [
+        "zgemma"
+      ],
+      "images": [
+        "enigma2"
+      ]
+    },
+    {
+      "id": "mutant",
+      "match": [
+        "mutant"
+      ],
+      "images": [
+        "enigma2"
+      ]
+    },
+    {
+      "id": "edision",
+      "match": [
+        "edision"
+      ],
+      "images": [
+        "enigma2"
+      ]
+    },
+    {
+      "id": "formuler",
+      "match": [
+        "formuler"
+      ],
+      "images": [
+        "enigma2"
+      ]
+    },
+    {
+      "id": "qviart",
+      "match": [
+        "qviart"
+      ],
+      "images": [
+        "enigma2"
+      ]
+    },
+    {
+      "id": "venton",
+      "match": [
+        "venton"
+      ],
+      "images": [
+        "enigma2"
+      ]
+    },
+    {
+      "id": "xtrend",
+      "match": [
+        "xtrend"
+      ],
+      "images": [
+        "enigma2"
+      ]
+    },
+    {
+      "id": "golden-interstar",
+      "match": [
+        "golden interstar"
+      ],
+      "images": [
+        "enigma2"
+      ]
+    },
+    {
+      "id": "opticum",
+      "match": [
+        "opticum"
+      ],
+      "images": [
+        "enigma2"
+      ]
+    },
+    {
+      "id": "amiko",
+      "match": [
+        "amiko"
+      ],
+      "images": [
+        "enigma2"
+      ]
+    },
+    {
+      "id": "ustym",
+      "match": [
+        "ustym"
+      ],
+      "images": [
+        "enigma2"
+      ]
+    },
+    {
+      "id": "dinobot",
+      "match": [
+        "dinobot"
+      ],
+      "images": [
+        "enigma2"
+      ]
+    },
+    {
+      "id": "hitube",
+      "match": [
+        "hitube"
+      ],
+      "images": [
+        "enigma2"
+      ]
+    },
+    {
+      "id": "sogno",
+      "match": [
+        "sogno"
+      ],
+      "images": [
+        "enigma2"
+      ]
+    },
+    {
+      "id": "ax",
+      "match": [
+        "ax"
+      ],
+      "images": [
+        "enigma2"
+      ]
+    },
+    {
+      "id": "generic",
+      "match": [],
+      "images": [
+        "enigma2"
+      ]
+    }
   ]
 }

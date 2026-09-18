@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "rule": "compatibility is evaluated at image + architecture + receiver + dependency level",
+  "statuses": [
+    "supported",
+    "supported_with_conditions",
+    "partial",
+    "unknown",
+    "unsupported",
+    "deprecated"
+  ],
+  "confidence": [
+    "verified",
+    "high",
+    "medium",
+    "low",
+    "unknown"
+  ],
+  "checks": [
+    "image",
+    "architecture",
+    "package_manager",
+    "dependencies",
+    "required_binaries",
+    "required_services",
+    "hardware",
+    "python_runtime"
+  ],
+  "evidence_required": true
+}

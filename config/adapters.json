@@ -1,10 +1,87 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "adapters": [
-    {"id":"openatv","match":["openatv"],"fallback":false},
-    {"id":"openvix","match":["openvix"],"fallback":false},
-    {"id":"openpli","match":["openpli"],"fallback":false},
-    {"id":"dreamos","match":["dreamos","dreambox"],"fallback":false},
-    {"id":"generic-enigma2","match":["enigma2"],"fallback":true}
+    {
+      "id": "openatv",
+      "match": [
+        "openatv"
+      ],
+      "fallback": false,
+      "package_manager": "opkg",
+      "capability_policy": "evidence_required"
+    },
+    {
+      "id": "openvix",
+      "match": [
+        "openvix"
+      ],
+      "fallback": false,
+      "package_manager": "opkg",
+      "capability_policy": "evidence_required"
+    },
+    {
+      "id": "openpli",
+      "match": [
+        "openpli"
+      ],
+      "fallback": false,
+      "package_manager": "opkg",
+      "capability_policy": "evidence_required"
+    },
+    {
+      "id": "openhdf",
+      "match": [
+        "openhdf"
+      ],
+      "fallback": false,
+      "package_manager": "opkg",
+      "capability_policy": "evidence_required"
+    },
+    {
+      "id": "opendroid",
+      "match": [
+        "opendroid"
+      ],
+      "fallback": false,
+      "package_manager": "opkg",
+      "capability_policy": "evidence_required"
+    },
+    {
+      "id": "openeight",
+      "match": [
+        "openeight"
+      ],
+      "fallback": false,
+      "package_manager": "opkg",
+      "capability_policy": "evidence_required"
+    },
+    {
+      "id": "openld",
+      "match": [
+        "openld"
+      ],
+      "fallback": false,
+      "package_manager": "opkg",
+      "capability_policy": "evidence_required"
+    },
+    {
+      "id": "dreamos",
+      "match": [
+        "dreamos",
+        "dreambox"
+      ],
+      "fallback": false,
+      "package_manager": "image-dependent",
+      "capability_policy": "evidence_required"
+    },
+    {
+      "id": "generic-enigma2",
+      "match": [
+        "enigma2"
+      ],
+      "fallback": true,
+      "package_manager": "detect",
+      "capability_policy": "read_only_until_verified"
+    }
   ]
 }

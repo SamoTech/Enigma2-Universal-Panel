@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "entities": [
+    "service",
+    "transponder",
+    "satellite",
+    "provider",
+    "bouquet",
+    "bouquet_membership",
+    "service_reference",
+    "iptv_playlist",
+    "epg_mapping"
+  ],
+  "files": {
+    "service_db": [
+      "/etc/enigma2/lamedb",
+      "/etc/enigma2/lamedb5",
+      "/etc/enigma2/lamedb.txt"
+    ],
+    "bouquets": [
+      "/etc/enigma2/bouquets.tv",
+      "/etc/enigma2/bouquets.radio",
+      "/etc/enigma2/userbouquet.*"
+    ],
+    "settings": [
+      "/etc/enigma2/settings"
+    ],
+    "satellite_database": [
+      "/etc/tuxbox/satellites.xml"
+    ]
+  },
+  "protocols": [
+    "dvb-s",
+    "dvb-s2",
+    "dvb-s2x",
+    "dvb-c",
+    "dvb-t",
+    "dvb-t2",
+    "iptv",
+    "radio",
+    "data"
+  ],
+  "transaction": [
+    "backup",
+    "validate",
+    "stage",
+    "apply",
+    "verify",
+    "rollback"
+  ]
+}

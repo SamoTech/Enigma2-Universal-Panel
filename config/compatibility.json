@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "statuses": [
+    "supported",
+    "supported_with_conditions",
+    "partial",
+    "unknown",
+    "unsupported",
+    "deprecated"
+  ],
+  "confidence": [
+    "verified",
+    "high",
+    "medium",
+    "low",
+    "unknown"
+  ],
+  "evidence_required": true,
+  "matrix": [
+    {
+      "image": "openatv",
+      "source": "https://github.com/openatv/enigma2",
+      "confidence": "verified"
+    },
+    {
+      "image": "openvix",
+      "source": "https://github.com/OpenViX/enigma2",
+      "confidence": "verified"
+    },
+    {
+      "image": "openpli",
+      "source": "https://github.com/OpenPLi/enigma2",
+      "confidence": "verified"
+    },
+    {
+      "image": "openhdf",
+      "source": "https://github.com/openhdf/enigma2",
+      "confidence": "high"
+    },
+    {
+      "image": "opendroid",
+      "source": "https://github.com/opendroid-Team/enigma2",
+      "confidence": "high"
+    },
+    {
+      "image": "openeight",
+      "source": "https://github.com/Openeight/enigma2",
+      "confidence": "high"
+    },
+    {
+      "image": "openld",
+      "source": "https://github.com/OpenLD/enigma2",
+      "confidence": "high"
+    },
+    {
+      "image": "generic-enigma2",
+      "source": "multiple maintained Enigma2 source families",
+      "confidence": "verified"
+    }
+  ]
+}

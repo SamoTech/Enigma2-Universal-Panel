@@ -1,9 +1,522 @@
 {
-  "schema_version": 1,
-  "plugins": [],
+  "schema_version": 2,
+  "generated": "2026-09-18",
+  "plugins": [
+    {
+      "id": "openwebif",
+      "name": "OpenWebif",
+      "display_name": "OpenWebif",
+      "category": "remote_control",
+      "subcategory": "web_interface",
+      "author": "E2OpenPlugins / OpenWebif contributors",
+      "repository": "https://github.com/E2OpenPlugins/e2openplugin-OpenWebif",
+      "source_type": "official_ecosystem",
+      "package_name": "enigma2-plugin-extensions-openwebif",
+      "images": [
+        "openatv",
+        "openvix",
+        "openpli",
+        "openhdf",
+        "generic-enigma2"
+      ],
+      "architectures": [
+        "all"
+      ],
+      "dependencies": [],
+      "conflicts": [],
+      "required_binaries": [],
+      "required_services": [],
+      "configuration_files": [
+        "/etc/enigma2/key.pem",
+        "/etc/enigma2/cert.pem",
+        "plugin-specific settings"
+      ],
+      "data_directories": [
+        "/usr/lib/enigma2/python/Plugins/Extensions/OpenWebif"
+      ],
+      "system_services": [
+        "twisted/web server"
+      ],
+      "ports": [
+        "image/config dependent"
+      ],
+      "api": [
+        "HTTP"
+      ],
+      "installable": true,
+      "updatable": true,
+      "removable": true,
+      "backup_supported": true,
+      "rollback_supported": true,
+      "requires_reboot": false,
+      "requires_gui_restart": true,
+      "compatibility_confidence": "verified",
+      "status": "active",
+      "evidence": [
+        "https://github.com/E2OpenPlugins/e2openplugin-OpenWebif",
+        "https://openatv.github.io/enigma2-doku/en/netzwerk/openwebif/"
+      ]
+    },
+    {
+      "id": "autobouquetsmaker",
+      "name": "AutoBouquetsMaker",
+      "display_name": "AutoBouquetsMaker",
+      "category": "channels",
+      "subcategory": "bouquet_scanner",
+      "author": "OE-Alliance contributors",
+      "repository": "https://github.com/oe-alliance/AutoBouquetsMaker",
+      "source_type": "ecosystem",
+      "package_name": "enigma2-plugin-systemplugins-autobouquetsmaker",
+      "images": [
+        "oe-alliance-family"
+      ],
+      "architectures": [
+        "all"
+      ],
+      "dependencies": [],
+      "conflicts": [],
+      "required_binaries": [],
+      "required_services": [],
+      "configuration_files": [
+        "/etc/enigma2"
+      ],
+      "data_directories": [],
+      "system_services": [],
+      "ports": [],
+      "api": [],
+      "installable": true,
+      "updatable": true,
+      "removable": true,
+      "backup_supported": true,
+      "rollback_supported": true,
+      "requires_reboot": false,
+      "requires_gui_restart": true,
+      "compatibility_confidence": "verified",
+      "status": "active",
+      "evidence": [
+        "https://github.com/oe-alliance/AutoBouquetsMaker"
+      ]
+    },
+    {
+      "id": "epgimport",
+      "name": "EPGImport",
+      "display_name": "EPG Import",
+      "category": "epg",
+      "subcategory": "importer",
+      "author": "OpenPLi contributors",
+      "repository": "https://github.com/OpenPLi/enigma2-plugin-extensions-epgimport",
+      "source_type": "image_ecosystem",
+      "package_name": "enigma2-plugin-extensions-epgimport",
+      "images": [
+        "openpli",
+        "compatible-enigma2"
+      ],
+      "architectures": [
+        "all"
+      ],
+      "dependencies": [],
+      "conflicts": [],
+      "required_binaries": [],
+      "required_services": [],
+      "configuration_files": [
+        "plugin-specific settings",
+        "etc/epgimport"
+      ],
+      "data_directories": [
+        "plugin-specific EPG data"
+      ],
+      "system_services": [],
+      "ports": [],
+      "api": [],
+      "installable": true,
+      "updatable": true,
+      "removable": true,
+      "backup_supported": true,
+      "rollback_supported": true,
+      "requires_reboot": false,
+      "requires_gui_restart": false,
+      "compatibility_confidence": "verified",
+      "status": "active",
+      "evidence": [
+        "https://github.com/OpenPLi/enigma2-plugin-extensions-epgimport"
+      ]
+    },
+    {
+      "id": "crossepg",
+      "name": "CrossEPG",
+      "display_name": "CrossEPG",
+      "category": "epg",
+      "subcategory": "epg_provider",
+      "author": "E2 OpenPlugins contributors",
+      "repository": "https://github.com/E2OpenPlugins/e2openplugin-CrossEPG",
+      "source_type": "open_plugin_ecosystem",
+      "package_name": "enigma2-plugin-systemplugins-crossepg",
+      "images": [
+        "compatible-enigma2"
+      ],
+      "architectures": [
+        "all"
+      ],
+      "dependencies": [
+        "libxml2",
+        "zlib",
+        "python"
+      ],
+      "conflicts": [],
+      "required_binaries": [],
+      "required_services": [],
+      "configuration_files": [
+        "/usr/crossepg"
+      ],
+      "data_directories": [
+        "/usr/crossepg"
+      ],
+      "system_services": [],
+      "ports": [],
+      "api": [],
+      "installable": true,
+      "updatable": true,
+      "removable": true,
+      "backup_supported": true,
+      "rollback_supported": true,
+      "requires_reboot": false,
+      "requires_gui_restart": false,
+      "compatibility_confidence": "high",
+      "status": "maintenance",
+      "evidence": [
+        "https://github.com/E2OpenPlugins/e2openplugin-CrossEPG"
+      ]
+    },
+    {
+      "id": "openairplay",
+      "name": "OpenAirPlay",
+      "display_name": "OpenAirPlay",
+      "category": "media",
+      "subcategory": "airplay",
+      "author": "E2 OpenPlugins contributors",
+      "repository": "https://github.com/E2OpenPlugins/e2openplugin-OpenAirPlay",
+      "source_type": "open_plugin_ecosystem",
+      "package_name": "unknown",
+      "images": [
+        "compatible-enigma2"
+      ],
+      "architectures": [
+        "all"
+      ],
+      "dependencies": [],
+      "conflicts": [],
+      "required_binaries": [],
+      "required_services": [],
+      "configuration_files": [
+        "plugin-specific"
+      ],
+      "data_directories": [],
+      "system_services": [],
+      "ports": [],
+      "api": [
+        "AirPlay"
+      ],
+      "installable": true,
+      "updatable": true,
+      "removable": true,
+      "backup_supported": true,
+      "rollback_supported": true,
+      "requires_reboot": false,
+      "requires_gui_restart": true,
+      "compatibility_confidence": "high",
+      "status": "active",
+      "evidence": [
+        "https://github.com/E2OpenPlugins/e2openplugin-OpenAirPlay"
+      ]
+    },
+    {
+      "id": "bitrate",
+      "name": "Bitrate",
+      "display_name": "Bitrate",
+      "category": "monitoring",
+      "subcategory": "service_metrics",
+      "author": "E2 OpenPlugins contributors",
+      "repository": "https://github.com/E2OpenPlugins/e2openplugin-Bitrate",
+      "source_type": "open_plugin_ecosystem",
+      "package_name": "unknown",
+      "images": [
+        "compatible-enigma2"
+      ],
+      "architectures": [
+        "all"
+      ],
+      "dependencies": [],
+      "conflicts": [],
+      "required_binaries": [],
+      "required_services": [],
+      "configuration_files": [],
+      "data_directories": [],
+      "system_services": [],
+      "ports": [],
+      "api": [],
+      "installable": true,
+      "updatable": true,
+      "removable": true,
+      "backup_supported": false,
+      "rollback_supported": false,
+      "requires_reboot": false,
+      "requires_gui_restart": false,
+      "compatibility_confidence": "high",
+      "status": "active",
+      "evidence": [
+        "https://github.com/e2openplugins/e2openplugin-Bitrate"
+      ]
+    },
+    {
+      "id": "hdftoolbox",
+      "name": "HDF-Toolbox",
+      "display_name": "HDF-Toolbox",
+      "category": "system",
+      "subcategory": "image_tools",
+      "author": "HDFreaks",
+      "repository": "https://github.com/openhdf/hdftoolbox",
+      "source_type": "image_ecosystem",
+      "package_name": "unknown",
+      "images": [
+        "openhdf"
+      ],
+      "architectures": [
+        "image-dependent"
+      ],
+      "dependencies": [],
+      "conflicts": [],
+      "required_binaries": [],
+      "required_services": [],
+      "configuration_files": [
+        "plugin-specific"
+      ],
+      "data_directories": [],
+      "system_services": [],
+      "ports": [],
+      "api": [],
+      "installable": true,
+      "updatable": true,
+      "removable": true,
+      "backup_supported": true,
+      "rollback_supported": true,
+      "requires_reboot": false,
+      "requires_gui_restart": true,
+      "compatibility_confidence": "high",
+      "status": "maintenance",
+      "evidence": [
+        "https://github.com/openhdf/hdftoolbox"
+      ]
+    },
+    {
+      "id": "networkbrowser",
+      "name": "NetworkBrowser",
+      "display_name": "Network Browser",
+      "category": "network",
+      "subcategory": "network_storage",
+      "author": "OpenPLi contributors",
+      "repository": "https://github.com/OpenPLi/enigma2-binary-plugins",
+      "source_type": "binary_plugin_source",
+      "package_name": "unknown",
+      "images": [
+        "openpli",
+        "compatible-enigma2"
+      ],
+      "architectures": [
+        "image-dependent"
+      ],
+      "dependencies": [],
+      "conflicts": [],
+      "required_binaries": [],
+      "required_services": [],
+      "configuration_files": [
+        "plugin-specific"
+      ],
+      "data_directories": [],
+      "system_services": [],
+      "ports": [],
+      "api": [],
+      "installable": true,
+      "updatable": true,
+      "removable": true,
+      "backup_supported": true,
+      "rollback_supported": true,
+      "requires_reboot": false,
+      "requires_gui_restart": true,
+      "compatibility_confidence": "high",
+      "status": "maintenance",
+      "evidence": [
+        "https://github.com/OpenPLi/enigma2-binary-plugins"
+      ]
+    },
+    {
+      "id": "moviecut",
+      "name": "MovieCut",
+      "display_name": "MovieCut",
+      "category": "recording",
+      "subcategory": "editing",
+      "author": "OpenPLi contributors",
+      "repository": "https://github.com/OpenPLi/enigma2-binary-plugins",
+      "source_type": "binary_plugin_source",
+      "package_name": "unknown",
+      "images": [
+        "openpli",
+        "compatible-enigma2"
+      ],
+      "architectures": [
+        "image-dependent"
+      ],
+      "dependencies": [],
+      "conflicts": [],
+      "required_binaries": [],
+      "required_services": [],
+      "configuration_files": [],
+      "data_directories": [],
+      "system_services": [],
+      "ports": [],
+      "api": [],
+      "installable": true,
+      "updatable": true,
+      "removable": true,
+      "backup_supported": false,
+      "rollback_supported": false,
+      "requires_reboot": false,
+      "requires_gui_restart": true,
+      "compatibility_confidence": "high",
+      "status": "maintenance",
+      "evidence": [
+        "https://github.com/OpenPLi/enigma2-binary-plugins"
+      ]
+    },
+    {
+      "id": "lcd4linux",
+      "name": "LCD4Linux",
+      "display_name": "LCD4Linux",
+      "category": "gui",
+      "subcategory": "display",
+      "author": "OpenPLi contributors",
+      "repository": "https://github.com/OpenPLi/enigma2-binary-plugins",
+      "source_type": "binary_plugin_source",
+      "package_name": "unknown",
+      "images": [
+        "openpli",
+        "compatible-enigma2"
+      ],
+      "architectures": [
+        "image-dependent"
+      ],
+      "dependencies": [],
+      "conflicts": [],
+      "required_binaries": [],
+      "required_services": [],
+      "configuration_files": [
+        "plugin-specific"
+      ],
+      "data_directories": [],
+      "system_services": [],
+      "ports": [],
+      "api": [],
+      "installable": true,
+      "updatable": true,
+      "removable": true,
+      "backup_supported": true,
+      "rollback_supported": true,
+      "requires_reboot": false,
+      "requires_gui_restart": true,
+      "compatibility_confidence": "high",
+      "status": "maintenance",
+      "evidence": [
+        "https://github.com/OpenPLi/enigma2-binary-plugins"
+      ]
+    },
+    {
+      "id": "ofgwrite",
+      "name": "ofgwrite",
+      "display_name": "ofgwrite",
+      "category": "system",
+      "subcategory": "image_flash",
+      "author": "OE-Alliance ecosystem",
+      "repository": "https://github.com/oe-alliance/ofgwrite",
+      "source_type": "system_component",
+      "package_name": "ofgwrite",
+      "images": [
+        "oe-alliance-family"
+      ],
+      "architectures": [
+        "image-dependent"
+      ],
+      "dependencies": [],
+      "conflicts": [],
+      "required_binaries": [
+        "flash tooling"
+      ],
+      "required_services": [],
+      "configuration_files": [],
+      "data_directories": [],
+      "system_services": [],
+      "ports": [],
+      "api": [],
+      "installable": true,
+      "updatable": true,
+      "removable": true,
+      "backup_supported": false,
+      "rollback_supported": false,
+      "requires_reboot": true,
+      "requires_gui_restart": false,
+      "compatibility_confidence": "verified",
+      "status": "active",
+      "evidence": [
+        "https://github.com/oe-alliance/ofgwrite"
+      ]
+    },
+    {
+      "id": "picons",
+      "name": "Picons",
+      "display_name": "Picon feeds",
+      "category": "gui",
+      "subcategory": "channel_branding",
+      "author": "OpenATV Picons ecosystem",
+      "repository": "https://github.com/openatv-picons",
+      "source_type": "feed_ecosystem",
+      "package_name": "image/feed dependent",
+      "images": [
+        "openatv",
+        "compatible-enigma2"
+      ],
+      "architectures": [
+        "image-dependent"
+      ],
+      "dependencies": [],
+      "conflicts": [],
+      "required_binaries": [],
+      "required_services": [],
+      "configuration_files": [
+        "picon location setting"
+      ],
+      "data_directories": [
+        "picon directory"
+      ],
+      "system_services": [],
+      "ports": [],
+      "api": [],
+      "installable": true,
+      "updatable": true,
+      "removable": true,
+      "backup_supported": true,
+      "rollback_supported": true,
+      "requires_reboot": false,
+      "requires_gui_restart": true,
+      "compatibility_confidence": "verified",
+      "status": "active",
+      "evidence": [
+        "https://github.com/openatv-picons",
+        "https://github.com/openatv/enigma2/blob/master/data/setup.xml"
+      ]
+    }
+  ],
   "rules": {
     "require_compatibility_check": true,
     "require_dependency_check": true,
-    "allow_untrusted_urls": false
+    "allow_untrusted_urls": false,
+    "unknown_is_not_supported": true
   }
 }

@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "types": [
+    "string",
+    "integer",
+    "boolean",
+    "enum",
+    "list",
+    "path",
+    "ip",
+    "password",
+    "duration"
+  ],
+  "record": {
+    "id": "stable identifier",
+    "key": "raw implementation key",
+    "display_name": "localized display label",
+    "category": "normalized category",
+    "type": "value type",
+    "default": null,
+    "current": null,
+    "allowed_values": [],
+    "min": null,
+    "max": null,
+    "unit": null,
+    "config_file": null,
+    "config_key": null,
+    "setter": null,
+    "getter": null,
+    "requires_gui_restart": false,
+    "requires_reboot": false,
+    "destructive": false,
+    "image_scope": [],
+    "plugin_scope": [],
+    "evidence": []
+  }
+}

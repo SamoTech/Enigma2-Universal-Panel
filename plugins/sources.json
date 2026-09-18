@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "id": "openatv",
+      "type": "image_source",
+      "url": "https://github.com/openatv/enigma2",
+      "authority": "high"
+    },
+    {
+      "id": "openvix",
+      "type": "image_source",
+      "url": "https://github.com/OpenViX/enigma2",
+      "authority": "high"
+    },
+    {
+      "id": "openpli",
+      "type": "image_source",
+      "url": "https://github.com/OpenPLi/enigma2",
+      "authority": "high"
+    },
+    {
+      "id": "oe_alliance",
+      "type": "ecosystem",
+      "url": "https://github.com/oe-alliance",
+      "authority": "high"
+    },
+    {
+      "id": "oe_3rdparty",
+      "type": "package_collection",
+      "url": "https://github.com/oe-alliance/3rdparty-plugins",
+      "authority": "medium"
+    },
+    {
+      "id": "e2openplugins",
+      "type": "plugin_ecosystem",
+      "url": "https://github.com/e2openplugins",
+      "authority": "high"
+    },
+    {
+      "id": "openhdf",
+      "type": "image_ecosystem",
+      "url": "https://github.com/openhdf",
+      "authority": "high"
+    },
+    {
+      "id": "openatv_picons",
+      "type": "picon_ecosystem",
+      "url": "https://github.com/openatv-picons",
+      "authority": "high"
+    }
+  ]
+}
