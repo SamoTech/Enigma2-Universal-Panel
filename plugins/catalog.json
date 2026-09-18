@@ -1,6 +1,9 @@
 {
-  "version": "0.1.0",
-  "description": "Enigma2 Universal Panel — Plugin Catalog",
-  "updated": "2026-08-29",
-  "plugins": []
+  "schema_version": 1,
+  "plugins": [],
+  "rules": {
+    "require_compatibility_check": true,
+    "require_dependency_check": true,
+    "allow_untrusted_urls": false
+  }
 }

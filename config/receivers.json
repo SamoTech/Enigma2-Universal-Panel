@@ -1,41 +1,8 @@
 {
-  "version": "0.1.0",
-  "description": "Enigma2 Universal Panel — Receiver Compatibility Definitions",
-  "receivers": [
-    {
-      "id": "dreambox",
-      "name": "DreamBox",
-      "images": ["DreamOS", "OpenATV", "OpenVIX"],
-      "arch": ["mips", "arm"],
-      "pkg_manager": "opkg"
-    },
-    {
-      "id": "vuplus",
-      "name": "Vu+",
-      "images": ["OpenATV", "OpenVIX", "Black Hole", "Egami"],
-      "arch": ["mips", "arm"],
-      "pkg_manager": "opkg"
-    },
-    {
-      "id": "gigablue",
-      "name": "GigaBlue",
-      "images": ["OpenATV", "OpenVIX"],
-      "arch": ["arm", "aarch64"],
-      "pkg_manager": "opkg"
-    },
-    {
-      "id": "formuler",
-      "name": "Formuler",
-      "images": ["OpenATV"],
-      "arch": ["arm"],
-      "pkg_manager": "opkg"
-    },
-    {
-      "id": "octagon",
-      "name": "Octagon",
-      "images": ["OpenATV", "OpenVIX"],
-      "arch": ["arm"],
-      "pkg_manager": "opkg"
-    }
+  "schema_version": 2,
+  "receiver_families": [
+    {"id":"dreambox","match":["dreambox","dm9","dm920","one"],"images":["dreamos","enigma2"]},
+    {"id":"vuplus","match":["vu+","vuplus","uno4k","duo4k","zero4k"],"images":["openatv","openvix","openpli","enigma2"]},
+    {"id":"generic","match":[],"images":["enigma2"]}
   ]
 }

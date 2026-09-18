@@ -1,150 +1,87 @@
 # Enigma2 Universal Panel
 
-> A universal management and installation panel for Enigma2 receivers.
+A Universal Management Layer for Enigma2 receivers.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-Enigma2-blue.svg)](https://github.com/SamoTech/Enigma2-Universal-Panel)
-[![Shell](https://img.shields.io/badge/shell-POSIX%20sh-green.svg)](install.sh)
+The project is designed as a control plane, not as a collection of unrelated shell scripts. It detects the receiver and image, normalizes capabilities, selects the correct adapter, and exposes safe operations for plugins, bouquets, settings, maintenance, backups, diagnostics, and remote management.
 
----
+## Architecture
 
-## 📖 About
+```
+Web / CLI Control Plane
+        |
+        v
+Action + Policy Layer
+        |
+        v
+Capability / Compatibility Engine
+        |
+        +--> OpenATV adapter
+        +--> OpenVIX adapter
+        +--> OpenPLi adapter
+        +--> DreamOS adapter
+        +--> Generic Enigma2 adapter
+        |
+        v
+Receiver Agent / SSH Transport
+        |
+        v
+Enigma2 receiver
+```
 
-The **Enigma2 Universal Panel** provides a centralized system for managing and installing everything your Enigma2 Linux receiver needs — from plugins and channel lists to system maintenance tools — all from a single bootstrap script.
+The web control plane must never expose arbitrary shell execution. Operations are declared actions with capability requirements, previews, validation, audit records, and rollback metadata where practical.
 
-Supported receivers include DreamBox, Vu+, OpenATV, OpenVIX, and any Enigma2-based set-top box running a standard Linux image.
+## Current reconstruction
 
----
+- POSIX/BusyBox-safe receiver bootstrap
+- Structured receiver fingerprint
+- Image and package-manager detection
+- Capability model
+- Adapter registry
+- Safe operation dispatcher
+- Plugin catalog schema
+- Receiver profile schema
+- Backup/restore foundations
+- Maintenance and diagnostics commands
+- Audit log foundation
+- Remote-management architecture documented for the next layer
 
-## 🎯 Project Goal
+## Supported target families
 
-This panel will provide a centralized system for managing and installing:
+DreamOS, OpenATV, OpenVIX, OpenPLi and other Enigma2-based Linux images. Compatibility is capability-driven; an unknown image falls back to the generic adapter rather than being incorrectly classified.
 
-- **Enigma2 plugins** — install, update, and remove plugins
-- **Channel lists** — deploy curated channel lists to your receiver
-- **Satellite bouquets** — manage satellite and FTA bouquets
-- **IPTV bouquets** — import and manage IPTV channel groups
-- **Settings packages** — deploy full settings backups/presets
-- **Installation scripts** — run targeted scripts for specific tasks
-- **System maintenance tools** — clean, repair, and optimize your receiver
-- **Backup and restore tools** — full or partial backup/restore of settings
+## Install
 
----
-
-## ⚙️ Installation Methods (Planned)
-
-| Method | Description |
-|---|---|
-| Direct Download | Download and run scripts from this repository |
-| OPKG Installation | Install packages via the OPKG package manager |
-| Shell Scripts | Execute targeted shell scripts via SSH/Telnet |
-| SSH Execution | Run commands remotely over SSH |
-| Telnet Execution | Run commands remotely over Telnet |
-| Manual Command Copy | Copy and paste commands into the receiver terminal |
-
----
-
-## 🚀 Quick Start — Bootstrap Installer
-
-To install the panel bootstrap script on your Enigma2 receiver, connect via SSH or Telnet and run:
-
-### Using `wget`:
+Run as root on the receiver:
 
 ```sh
-wget -O - https://raw.githubusercontent.com/USERNAME/Enigma2-Universal-Panel/main/install.sh | sh
+wget -O - https://raw.githubusercontent.com/SamoTech/Enigma2-Universal-Panel/main/install.sh | sh
 ```
 
-### Using `curl`:
+After installation:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/USERNAME/Enigma2-Universal-Panel/main/install.sh | sh
+/usr/local/bin/e2panel status
+/usr/local/bin/e2panel capabilities
+/usr/local/bin/e2panel diagnose
+/usr/local/bin/e2panel menu
 ```
 
-> ⚠️ **Important:** Replace `USERNAME` with the actual GitHub username hosting this repository (e.g. `SamoTech`).
+## Design principles
 
-**Requirements:**
-- Must be run as `root`
-- Enigma2 Linux receiver with network access
-- `wget` or `curl` available on the receiver
+1. Detect before acting.
+2. Declare capabilities before exposing operations.
+3. Prefer adapters over image-specific conditionals scattered across scripts.
+4. Never expose unrestricted browser-to-shell execution.
+5. Make destructive operations explicit and auditable.
+6. Keep receiver-side code POSIX/BusyBox compatible where possible.
+7. Separate the receiver agent from the web control plane.
+8. Fail closed when compatibility is unknown.
 
----
+## Roadmap
 
-## 🗺️ Roadmap
-
-### Phase 1 — Repository & Installer Foundation *(current)*
-- [x] Project structure setup
-- [x] Bootstrap installer script (`install.sh`)
-- [x] System detection (architecture, package manager, tools)
-- [x] Working environment preparation
-- [ ] Module loading framework
-
-### Phase 2 — Plugin Catalog
-- [ ] `plugins/catalog.json` with curated plugin list
-- [ ] Plugin install/remove/update commands
-- [ ] Plugin compatibility metadata per receiver/image
-
-### Phase 3 — Channel & Bouquet Management
-- [ ] Satellite bouquet packages
-- [ ] IPTV bouquet import support
-- [ ] Channel list deployment scripts
-
-### Phase 4 — Settings Deployment
-- [ ] Settings backup packages
-- [ ] One-command settings restore
-- [ ] Image-specific settings profiles
-
-### Phase 5 — Remote Receiver Management via SSH
-- [ ] SSH command execution from panel
-- [ ] Remote status monitoring
-- [ ] Multi-receiver management support
-
-### Phase 6 — Web-Based Universal Panel
-- [ ] Browser-accessible management panel
-- [ ] Receiver connection manager
-- [ ] Plugin/channel/settings dashboard
-- [ ] Scheduled tasks and automation
-
----
-
-## 📁 Repository Structure
-
-```
-Enigma2-Universal-Panel/
-├── install.sh              # Bootstrap installer
-├── scripts/
-│   ├── install/            # Installation scripts
-│   ├── maintenance/        # Maintenance and repair scripts
-│   ├── backup/             # Backup and restore scripts
-│   └── system/             # System utility scripts
-├── plugins/
-│   └── catalog.json        # Plugin catalog metadata
-├── channels/
-│   ├── bouquets/           # Satellite and IPTV bouquet files
-│   └── settings/           # Channel settings packages
-├── config/
-│   └── receivers.json      # Receiver compatibility definitions
-└── docs/
-    ├── installation.md     # Detailed installation guide
-    ├── compatibility.md    # Receiver and image compatibility
-    └── architecture.md     # Project architecture overview
-```
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Feel free to open issues or submit pull requests for:
-- New plugin catalog entries
-- Additional receiver compatibility data
-- Script improvements
-- Documentation updates
-
----
-
-## 📄 License
-
-This project is licensed under the [MIT License](LICENSE).
-
----
-
-*Built with ❤️ for the Enigma2 community.*
+Phase 1: receiver core and compatibility layer.
+Phase 2: plugin/channel/settings modules.
+Phase 3: receiver-side API/agent.
+Phase 4: SSH multi-receiver control plane.
+Phase 5: web dashboard, jobs, audit and fleet management.
+Phase 6: signed module repository and controlled update channel.
