@@ -1,5 +1,5 @@
 #!/bin/sh
-# Enigma2 Universal Panel installer v1.1.0
+# Enigma2 Universal Panel installer v1.3.0
 set -e
 REPO="https://raw.githubusercontent.com/SamoTech/Enigma2-Universal-Panel/main"
 DEST="/usr/lib/enigma2-universal-panel"
@@ -7,7 +7,7 @@ BIN="/usr/local/bin/e2panel"
 
 [ "$(id -u)" = 0 ] || { echo "Run as root."; exit 1; }
 command -v wget >/dev/null 2>&1 || command -v curl >/dev/null 2>&1 || { echo "wget or curl is required."; exit 1; }
-mkdir -p "$DEST/scripts/lib" "$DEST/config" "$DEST/plugins" "$DEST/docs/discovery" "$DEST/docs/api" "$DEST/channels" "$DEST/settings"
+mkdir -p "$DEST/scripts/lib" "$DEST/config" "$DEST/plugins" "$DEST/docs/discovery" "$DEST/docs/api" "$DEST/channels" "$DEST/settings" "$DEST/packages"
 
 fetch() {
   url="$REPO/$1"
@@ -38,9 +38,11 @@ fetch channels/schema.json
 fetch channels/capabilities.json
 fetch settings/schema.json
 fetch settings/categories.json
+fetch packages/schema.json
 fetch docs/discovery/PLUGIN_INSTALLATION.md
+fetch docs/discovery/PACKAGE_INTELLIGENCE.md
 
 chmod 755 "$DEST/panel.sh" "$DEST/scripts/lib/"*.sh
 ln -sf "$DEST/panel.sh" "$BIN"
-echo "Enigma2 Universal Panel 1.2.0 installed."
+echo "Enigma2 Universal Panel 1.3.0 installed."
 "$BIN" status
