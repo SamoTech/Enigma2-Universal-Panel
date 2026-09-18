@@ -18,6 +18,7 @@ Usage:
   e2panel plugin-source-status | plugin-refresh | plugin-list [pattern]
   e2panel plugin-info <package>
   e2panel plugin-resolve <plugin-id>
+  e2panel plugin-preview <plugin-id>
   e2panel plugin-install <package>
   e2panel plugin-update <package>
   e2panel plugin-remove <package> --confirm
@@ -29,19 +30,20 @@ EOF
 menu() {
   while :; do
     printf '\nEnigma2 Universal Panel\n'
-    printf '1) Status\n2) Capabilities\n3) Diagnostics\n4) Package/source state\n5) Plugin source status\n6) Refresh sources\n7) Discover packages\n8) Resolve plugin ID\n9) Install package\n10) Update package\n11) Remove package\n12) Restart Enigma2\n13) Restart GUI\n14) Reboot\n15) Exit\nSelect: '
+    printf '1) Status\n2) Capabilities\n3) Diagnostics\n4) Package/source state\n5) Plugin source status\n6) Refresh sources\n7) Discover packages\n8) Resolve plugin ID\n9) Preview plugin install\n10) Install package\n11) Update package\n12) Remove package\n13) Restart Enigma2\n14) Restart GUI\n15) Reboot\n16) Exit\nSelect: '
     read choice
     case "$choice" in
       1) print_status;; 2) print_capabilities;; 3) diagnose;; 4) plugin_package_state;;
       5) plugin_source_status;; 6) plugin_refresh_sources;;
       7) printf 'Pattern: '; read pattern; plugin_list "$pattern";;
       8) printf 'Plugin ID: '; read id; plugin_resolve "$id";;
-      9) printf 'Package: '; read pkg; action_plugin_install "$pkg";;
-      10) printf 'Package: '; read pkg; action_plugin_update "$pkg";;
-      11) printf 'Package: '; read pkg; printf 'Type REMOVE: '; read confirm; [ "$confirm" = REMOVE ] && action_plugin_remove "$pkg";;
-      12) action_restart_enigma2;; 13) action_restart_gui;;
-      14) printf 'Type REBOOT: '; read confirm; [ "$confirm" = REBOOT ] && action_reboot;;
-      15) return 0;; *) printf 'Invalid selection\n';;
+      9) printf 'Plugin ID: '; read id; plugin_preview "$id";;
+      10) printf 'Package: '; read pkg; action_plugin_install "$pkg";;
+      11) printf 'Package: '; read pkg; action_plugin_update "$pkg";;
+      12) printf 'Package: '; read pkg; printf 'Type REMOVE: '; read confirm; [ "$confirm" = REMOVE ] && action_plugin_remove "$pkg";;
+      13) action_restart_enigma2;; 14) action_restart_gui;;
+      15) printf 'Type REBOOT: '; read confirm; [ "$confirm" = REBOOT ] && action_reboot;;
+      16) return 0;; *) printf 'Invalid selection\n';;
     esac
   done
 }
@@ -52,6 +54,7 @@ case "$cmd" in
   plugin-source-status) plugin_source_status;; plugin-refresh) plugin_refresh_sources;;
   plugin-list) plugin_list "$1";; plugin-info) plugin_info "$1";;
   plugin-resolve) plugin_resolve "$1";;
+  plugin-preview) plugin_preview "$1";;
   plugin-install) action_plugin_install "$1";;
   plugin-update) action_plugin_update "$1";;
   plugin-remove) [ "$2" = "--confirm" ] && action_plugin_remove "$1" || { error 'plugin-remove requires package and --confirm'; exit 2; };;
