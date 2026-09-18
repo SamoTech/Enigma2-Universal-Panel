@@ -7,12 +7,39 @@ plugin_validate_package() {
     ""|*[!A-Za-z0-9._+:@%/-]*) error "invalid package identifier"; return 2 ;;
   esac
 }
-
 plugin_package_manager() {
   detect_all >/dev/null 2>&1
   [ "$E2_PKG" != none ] || { error "no supported package manager detected"; return 1; }
 }
-
+plugin_feed_inventory() {
+  case "$E2_PKG" in
+    opkg)
+      for f in /etc/opkg/*.conf; do
+        [ -r "$f" ] || continue
+        while IFS= read -r line; do
+          case "$line" in
+            src*) set -- $line; [ "$#" -ge 3 ] && printf '%s\t%s\n' "$1" "$3" ;;
+          esac
+        done < "$f"
+      done ;;
+    apt)
+      for f in /etc/apt/sources.list /etc/apt/sources.list.d/*.list; do
+        [ -r "$f" ] || continue
+        grep -E '^[[:space:]]*(deb|deb-src)[[:space:]]+' "$f" 2>/dev/null | while IFS= read -r line; do
+          set -- $line; [ "$#" -ge 2 ] && printf '%s\t%s\n' "$1" "$2"
+        done
+      done ;;
+    ipkg)
+      [ -r /etc/ipkg.conf ] || return 0
+      grep -E '^[[:space:]]*src[[:space:]]+' /etc/ipkg.conf 2>/dev/null | while IFS= read -r line; do
+        set -- $line; [ "$#" -ge 3 ] && printf '%s\t%s\n' "$1" "$3"
+      done ;;
+  esac
+}
+plugin_feed_urls() {
+  [ -r /proc/getFeedsUrl ] && cat /proc/getFeedsUrl
+  plugin_feed_inventory | awk -F '\t' 'NF >= 2 {print $2}'
+}
 plugin_refresh_sources() {
   plugin_package_manager || return 1
   require_root || return 1
@@ -22,86 +49,97 @@ plugin_refresh_sources() {
     ipkg) info "Refreshing configured ipkg feeds"; ipkg update ;;
   esac
 }
-
 plugin_list() {
   plugin_package_manager || return 1
   pattern="$1"
   case "$E2_PKG" in
-    opkg) if [ -n "$pattern" ]; then opkg list 2>/dev/null | grep -i -- "$pattern"; else opkg list 2>/dev/null; fi ;;
-    apt) if has apt-cache; then if [ -n "$pattern" ]; then apt-cache search "$pattern"; else apt-cache pkgnames; fi; else error "apt-cache is required"; return 1; fi ;;
-    ipkg) if [ -n "$pattern" ]; then ipkg list 2>/dev/null | grep -i -- "$pattern"; else ipkg list 2>/dev/null; fi ;;
+    opkg) [ -n "$pattern" ] && opkg list 2>/dev/null | grep -i -- "$pattern" || opkg list 2>/dev/null ;;
+    apt) has apt-cache || { error "apt-cache is required"; return 1; }; [ -n "$pattern" ] && apt-cache search "$pattern" || apt-cache pkgnames ;;
+    ipkg) [ -n "$pattern" ] && ipkg list 2>/dev/null | grep -i -- "$pattern" || ipkg list 2>/dev/null ;;
   esac
 }
-
 plugin_info() {
   plugin_validate_package "$1" || return 2
   plugin_package_manager || return 1
-  case "$E2_PKG" in
-    opkg) opkg info "$1" ;;
-    apt) apt-cache show "$1" ;;
-    ipkg) ipkg info "$1" ;;
-  esac
+  case "$E2_PKG" in opkg) opkg info "$1";; apt) apt-cache show "$1";; ipkg) ipkg info "$1";; esac
 }
-
 plugin_install() {
   plugin_validate_package "$1" || return 2
   plugin_package_manager || return 1
   require_root || return 1
-  pkg="$1"
-  info "Installing package from configured receiver feeds: $pkg"
-  case "$E2_PKG" in
-    opkg) opkg install "$pkg" ;;
-    apt) DEBIAN_FRONTEND=noninteractive apt-get install -y "$pkg" ;;
-    ipkg) ipkg install "$pkg" ;;
-  esac
+  info "Installing package from configured receiver feeds: $1"
+  case "$E2_PKG" in opkg) opkg install "$1";; apt) DEBIAN_FRONTEND=noninteractive apt-get install -y "$1";; ipkg) ipkg install "$1";; esac
 }
-
 plugin_update() {
   plugin_validate_package "$1" || return 2
   plugin_package_manager || return 1
   require_root || return 1
-  pkg="$1"
-  info "Updating package from configured receiver feeds: $pkg"
   case "$E2_PKG" in
-    opkg) opkg update || return 1; opkg install "$pkg" ;;
-    apt) apt-get update || return 1; DEBIAN_FRONTEND=noninteractive apt-get install --only-upgrade -y "$pkg" ;;
-    ipkg) ipkg update || return 1; ipkg install "$pkg" ;;
+    opkg) opkg update || return 1; opkg install "$1";;
+    apt) apt-get update || return 1; DEBIAN_FRONTEND=noninteractive apt-get install --only-upgrade -y "$1";;
+    ipkg) ipkg update || return 1; ipkg install "$1";;
   esac
 }
-
 plugin_remove() {
   plugin_validate_package "$1" || return 2
   plugin_package_manager || return 1
   require_root || return 1
-  pkg="$1"
-  info "Removing package: $pkg"
-  case "$E2_PKG" in
-    opkg) opkg remove "$pkg" ;;
-    apt) DEBIAN_FRONTEND=noninteractive apt-get remove -y "$pkg" ;;
-    ipkg) ipkg remove "$pkg" ;;
-  esac
+  info "Removing package: $1"
+  case "$E2_PKG" in opkg) opkg remove "$1";; apt) DEBIAN_FRONTEND=noninteractive apt-get remove -y "$1";; ipkg) ipkg remove "$1";; esac
 }
-
 plugin_installed() {
   plugin_validate_package "$1" || return 2
   plugin_package_manager || return 1
   case "$E2_PKG" in
-    opkg) opkg status "$1" 2>/dev/null | grep -q "^Status:.*installed" ;;
-    apt) dpkg-query -W -f='${Status}' "$1" 2>/dev/null | grep -q "install ok installed" ;;
-    ipkg) ipkg status "$1" 2>/dev/null | grep -q "^Status:.*installed" ;;
+    opkg) opkg status "$1" 2>/dev/null | grep -q "^Status:.*installed";;
+    apt) dpkg-query -W -f='${Status}' "$1" 2>/dev/null | grep -q "install ok installed";;
+    ipkg) ipkg status "$1" 2>/dev/null | grep -q "^Status:.*installed";;
   esac
 }
-
 plugin_source_status() {
+  detect_all
   info "Plugin binaries are not stored in this repository."
   info "Installation uses the receiver's configured package feeds."
   info "Detected image: $E2_IMAGE"
+  info "Detected architecture: $E2_ARCH"
   info "Detected package manager: $E2_PKG"
-  if [ -r /proc/getFeedsUrl ]; then
-    printf 'Detected feed URL: '; cat /proc/getFeedsUrl
-  fi
+  info "Detected network: $E2_NETWORK"
+  [ -r /proc/getFeedsUrl ] && { printf 'Native feed URL: '; cat /proc/getFeedsUrl; }
+  printf 'Configured feed entries:\n'
+  plugin_feed_inventory | while IFS='\t' read -r kind uri; do [ -n "$uri" ] && printf '  %s %s\n' "$kind" "$uri"; done
 }
-
+plugin_package_state() {
+  detect_all
+  printf '{\n'
+  printf '  "schema_version": 1,\n'
+  printf '  "timestamp": "%s",\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ' 2>/dev/null || date '+%Y-%m-%dT%H:%M:%S')"
+  printf '  "image": "%s",\n' "$E2_IMAGE"
+  printf '  "architecture": "%s",\n' "$E2_ARCH"
+  printf '  "package_manager": "%s",\n' "$E2_PKG"
+  printf '  "network": "%s",\n' "$E2_NETWORK"
+  printf '  "feeds": ['
+  first=1
+  plugin_feed_urls 2>/dev/null | while IFS= read -r uri; do
+    [ -n "$uri" ] || continue
+    [ "$first" -eq 0 ] && printf ','
+    printf '\n    {"uri":"%s","enabled":true}' "$uri"
+    first=0
+  done
+  printf '\n  ],\n'
+  printf '  "installed_packages": ['
+  first=1
+  case "$E2_PKG" in
+    opkg) opkg list-installed 2>/dev/null | awk -F ' - ' '{print $1"\t"$2}' ;;
+    apt) dpkg-query -W -f='${Package}\t${Version}\t${Architecture}\n' 2>/dev/null ;;
+    ipkg) ipkg list_installed 2>/dev/null | awk -F ' - ' '{print $1"\t"$2}' ;;
+  esac | while IFS='\t' read -r name version arch; do
+    [ -n "$name" ] || continue
+    [ "$first" -eq 0 ] && printf ','
+    printf '\n    {"name":"%s","version":"%s","architecture":"%s","status":"installed"}' "$name" "$version" "$arch"
+    first=0
+  done
+  printf '\n  ],\n  "available_packages": [],\n  "updates": [],\n  "dependencies": [],\n  "conflicts": []\n}\n'
+}
 plugin_source_add_external() {
   error "Arbitrary external feed registration is disabled by policy"
   return 1
