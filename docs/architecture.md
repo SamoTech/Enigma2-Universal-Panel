@@ -1,46 +1,60 @@
-# Architecture Overview
+# Architecture
 
-This document describes the planned architecture of the Enigma2 Universal Panel.
+## 1. Control-plane model
 
-## Design Principles
+The panel has two execution domains.
 
-- **POSIX compatibility**: All shell scripts target `/bin/sh` and BusyBox environments.
-- **Modularity**: Each feature is an independent module loaded on demand.
-- **Minimal footprint**: No persistent background daemons in early phases.
-- **Safety first**: Scripts never modify critical system files without explicit user confirmation.
+Receiver plane: a small POSIX shell runtime installed on the Enigma2 receiver. It performs detection, local operations, validation and controlled module execution.
 
-## Component Overview
+Control plane: a future web service that stores receiver profiles, credentials/keys, jobs, module metadata and audit events. It communicates through a receiver agent or SSH adapter.
 
-```
-install.sh (bootstrap)
-    └── Detects environment
-    └── Creates /tmp/enigma2-universal-panel
-    └── Writes env.sh
-    └── Loads requested modules
+## 2. Detection pipeline
 
-modules/
-    ├── plugins.sh       # Plugin install/remove
-    ├── channels.sh      # Channel list deployment
-    ├── bouquets.sh      # Bouquet management
-    ├── settings.sh      # Settings backup/restore
-    ├── maintenance.sh   # System cleanup and repair
-    └── ssh-manager.sh   # Remote SSH management
+boot -> root check -> OS/image detection -> Enigma2 detection -> architecture -> package manager -> storage/network -> capabilities -> adapter selection.
 
-config/
-    └── receivers.json   # Receiver metadata and compatibility
+Detection output is stored as a normalized fingerprint. No module should independently reinvent receiver detection.
 
-plugins/
-    └── catalog.json     # Available plugins with metadata
-```
+## 3. Adapter contract
 
-## Module Loading (Planned)
+Every image adapter should expose:
 
-Modules will be downloaded from the repository on demand and sourced into the running shell:
+- id
+- image families
+- supported architectures
+- required commands
+- capabilities
+- install package
+- remove package
+- update package
+- restart enigma2
+- restart gui
+- reboot
+- read logs
+- backup
+- restore
 
-```sh
-. "${PANEL_WORK_DIR}/modules/plugins.sh"
-```
+An operation is rejected if its required capability is absent.
 
-## Web Panel (Phase 6)
+## 4. Security boundary
 
-The Phase 6 web panel will be a lightweight web application deployable to a local server or accessible externally, communicating with receivers over SSH.
+The web application must not accept an arbitrary command string and send it to a receiver. It sends an action identifier plus validated parameters. The receiver resolves that action through a fixed allowlist.
+
+Examples: system.restart_enigma2, system.reboot, package.install, package.remove, backup.create.
+
+## 5. State
+
+Receiver state is ephemeral and can be re-detected. Desired state belongs in the control plane. This enables idempotent jobs and drift detection.
+
+## 6. Future web API
+
+GET /api/receivers
+POST /api/receivers
+POST /api/receivers/:id/detect
+GET /api/receivers/:id/capabilities
+POST /api/receivers/:id/actions
+GET /api/receivers/:id/logs
+POST /api/receivers/:id/backups
+POST /api/receivers/:id/restores
+GET /api/plugins
+GET /api/jobs
+GET /api/audit
