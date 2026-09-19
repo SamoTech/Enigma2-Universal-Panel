@@ -3,12 +3,19 @@ select_adapter() {
   image_family="${E2_IMAGE_FAMILY:-unknown}"
   image_id="${E2_IMAGE:-unknown}"
   case "$image_family:$image_id" in
-    dreamos:*|dreambox-deb:*) ADAPTER=dreamos ;;
+    dreamos:*) ADAPTER=dreamos ;;
+    dreambox-deb:*) ADAPTER=dreambox-deb ;;
     oe-alliance:openatv) ADAPTER=openatv ;;
     oe-alliance:openvix) ADAPTER=openvix ;;
+    oe-alliance:openhdf) ADAPTER=openhdf ;;
+    oe-alliance:opendroid) ADAPTER=opendroid ;;
+    oe-alliance:openeight) ADAPTER=openeight ;;
+    oe-alliance:openld) ADAPTER=openld ;;
     openpli:*) ADAPTER=openpli ;;
     oe-alliance:*) ADAPTER=oe-alliance ;;
     vti:*) ADAPTER=vti ;;
+    community-enigma2:*) ADAPTER=community-enigma2 ;;
+    generic-enigma2:*) ADAPTER=generic-enigma2 ;;
     *) ADAPTER=generic-enigma2 ;;
   esac
 }
