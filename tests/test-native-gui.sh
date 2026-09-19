@@ -62,6 +62,12 @@ p = Path("Plugins/Extensions/Enigma2UniversalPanel/actions.py").read_text()
 screens = Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert "ACTIONS =" in p
 assert '"receiver.status"' in p
+assert '"receiver.package_state"' in p
+assert '"receiver.package_info"' in p
+assert '"package.install"' in p
+assert '"package.update"' in p
+assert '"package.remove"' in p
+
 assert '"receiver.telemetry"' in p
 assert '"receiver.compatibility"' in p
 assert '"receiver.audit_history"' in p
@@ -100,6 +106,7 @@ assert 'class ReceiverCompatibility' in Path("Plugins/Extensions/Enigma2Universa
 assert 'receiver.compatibility' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'Community Sources' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'class CommunityInstallerCatalog' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'class PackageBrowser' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'class PackageBrowser' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'class PluginLibrary' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'class PluginCategorySelector' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
