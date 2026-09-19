@@ -17,6 +17,7 @@ ACTIONS = {
     "receiver.package_state": {"command": ("/usr/local/bin/e2panel", "package-state"), "risk": "low", "confirmation": False},
     "receiver.telemetry": {"command": ("/usr/local/bin/e2panel", "telemetry"), "risk": "low", "confirmation": False},
     "receiver.audit_history": {"command": ("/usr/local/bin/e2panel", "audit-history"), "risk": "low", "confirmation": False},
+    "receiver.panel_update": {"command": ("/usr/local/bin/e2panel", "update"), "risk": "critical", "confirmation": True},
     "receiver.restart_gui": {"command": ("/usr/local/bin/e2panel", "restart-gui"), "risk": "critical", "confirmation": True},
     "receiver.reboot_status": {"command": ("/usr/local/bin/e2panel", "reboot-status"), "risk": "low", "confirmation": False},
     "receiver.reboot_for_plugin": {"command": ("/usr/local/bin/e2panel", "reboot-for-plugin"), "risk": "critical", "confirmation": True},
