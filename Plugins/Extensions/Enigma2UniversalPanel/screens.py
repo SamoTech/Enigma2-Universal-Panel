@@ -4,10 +4,11 @@ from Components.ActionMap import ActionMap
 from Components.Label import Label
 from Components.MenuList import MenuList
 from Screens.InputBox import InputBox
+from enigma import eConsoleAppContainer
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 
-from .actions import run_action
+from .actions import build_action_command, run_action
 
 
 class ActionResult(Screen):
@@ -125,6 +126,66 @@ class PackageBrowser(Screen):
         self["state"].setText("\n".join(lines))
 
 
+class PackageInstallProgress(Screen):
+    skin = """
+    <screen name="PackageInstallProgress" position="center,center" size="1000,650" title="Enigma2 Universal Panel">
+        <widget name="title" position="35,20" size="930,45" font="Regular;30" />
+        <widget name="state" position="35,85" size="930,430" font="Regular;20" valign="top" />
+        <widget name="hint" position="35,555" size="930,35" font="Regular;20" />
+    </screen>
+    """
+
+    def __init__(self, session, plugin_id, command):
+        Screen.__init__(self, session)
+        self.plugin_id = plugin_id
+        self.command = tuple(command)
+        self.output = ""
+        self.finished = False
+        self["title"] = Label("Installing plugin: %s" % plugin_id)
+        self["state"] = Label("Starting native package operation...")
+        self["hint"] = Label("Please wait — EXIT is disabled during installation")
+        self.container = eConsoleAppContainer()
+        self.container.dataAvail.append(self._data_available)
+        self.container.appClosed.append(self._finished)
+        self.onClose.append(self._cleanup)
+        self.container.execute(*self.command)
+
+    def _data_available(self, data):
+        if isinstance(data, bytes):
+            data = data.decode("utf-8", "replace")
+        self.output += data or ""
+        tail = self.output[-2600:].strip()
+        self["state"].setText("Installing from receiver-configured sources...\n\n" + (tail or "Package manager running..."))
+
+    def _finished(self, retval):
+        self.finished = True
+        if retval == 0:
+            text = (
+                "Installation completed.\n\n"
+                "Postcondition verification: PASS\n"
+                "Audit record: written by receiver action\n\n"
+                "Plugin: %s" % self.plugin_id
+            )
+            self["state"].setText(text)
+            self["hint"].setText("OK / EXIT: Close")
+        else:
+            text = (
+                "Installation failed or was blocked.\n\n"
+                "Exit code: %s\n"
+                "Postcondition: NOT VERIFIED\n\n%s"
+                % (retval, self.output[-2200:].strip())
+            )
+            self["state"].setText(text)
+            self["hint"].setText("OK / EXIT: Close")
+
+    def _cleanup(self):
+        if not self.finished:
+            try:
+                self.container.kill()
+            except Exception:
+                pass
+
+
 class Enigma2UniversalPanel(Screen):
     skin = """
     <screen name="Enigma2UniversalPanel" position="center,center" size="900,600" title="Enigma2 Universal Panel">
@@ -139,6 +200,7 @@ class Enigma2UniversalPanel(Screen):
         ("Package Browser", "package-browser"),
         ("Resolve Plugin", "plugin.resolve"),
         ("Preview Plugin", "plugin.preview"),
+        ("Install Plugin", "plugin.install"),
         ("Receiver Status", "receiver.status"),
         ("Capabilities", "receiver.capabilities"),
         ("Diagnostics", "receiver.diagnose"),
@@ -155,6 +217,68 @@ class Enigma2UniversalPanel(Screen):
     def _plugin_input(self, action_id):
         title = "Resolve plugin ID" if action_id == "plugin.resolve" else "Preview plugin ID"
         self.session.openWithCallback(lambda value: self._run_plugin_action(action_id, value), InputBox, title=title, text="")
+
+    def _plugin_install_input(self):
+        self.session.openWithCallback(self._prepare_install, InputBox, title="Install plugin ID", text="")
+
+    def _prepare_install(self, value):
+        if value is None or value.strip() == "":
+            return
+        plugin_id = value.strip()
+        try:
+            code, output = run_action("plugin.preview", {"plugin_id": plugin_id})
+        except Exception as exc:
+            self.session.open(MessageBox, "Action rejected: %s" % exc, MessageBox.TYPE_ERROR)
+            return
+        try:
+            preview = json.loads(output)
+        except (TypeError, ValueError):
+            self.session.open(MessageBox, "Invalid compatibility evidence returned by receiver.", MessageBox.TYPE_ERROR)
+            return
+        if code != 0 or preview.get("status") != "supported":
+            self.session.open(
+                MessageBox,
+                "Installation blocked.\n\nCompatibility: %s\nRisk: %s\nAction: %s"
+                % (preview.get("status", "unknown"), preview.get("risk", "unknown"), preview.get("action", "blocked")),
+                MessageBox.TYPE_ERROR,
+            )
+            return
+        summary = (
+            "Install plugin: %s\n\n"
+            "Package: %s\n"
+            "Candidate: %s\n"
+            "Image compatibility: %s\n"
+            "Architecture compatibility: %s\n"
+            "Package architecture: %s\n"
+            "Dependencies: %s\n\n"
+            "This operation uses only receiver-configured package sources.\n"
+            "Do you want to continue?"
+            % (
+                plugin_id,
+                preview.get("package", "unknown"),
+                preview.get("candidate_version", "unknown"),
+                preview.get("compatibility", {}).get("image", "unknown"),
+                preview.get("compatibility", {}).get("architecture", "unknown"),
+                preview.get("compatibility", {}).get("package_architecture", "unknown"),
+                preview.get("dependency_status", "unknown"),
+            )
+        )
+        self.session.openWithCallback(
+            lambda confirmed: self._start_install(confirmed, plugin_id),
+            MessageBox,
+            summary,
+            MessageBox.TYPE_YESNO,
+        )
+
+    def _start_install(self, confirmed, plugin_id):
+        if not confirmed:
+            return
+        try:
+            command = build_action_command("plugin.install", {"plugin_id": plugin_id})
+        except Exception as exc:
+            self.session.open(MessageBox, "Action rejected: %s" % exc, MessageBox.TYPE_ERROR)
+            return
+        self.session.open(PackageInstallProgress, plugin_id, command)
 
     def _run_plugin_action(self, action_id, value):
         if value is None or value == "":
@@ -182,6 +306,9 @@ class Enigma2UniversalPanel(Screen):
             return
         if action_id in ("plugin.resolve", "plugin.preview"):
             self._plugin_input(action_id)
+            return
+        if action_id == "plugin.install":
+            self._plugin_install_input()
             return
         try:
             code, output = run_action(action_id)

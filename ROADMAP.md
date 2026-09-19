@@ -126,7 +126,7 @@ Unknown values must be displayed as unknown, not inferred.
 
 ### 1.4 Plugin/package GUI
 
-Status: IN PROGRESS — read-only browser/resolver slice
+Status: IN PROGRESS — async mutation slice implemented
 
 Current slice:
 
@@ -142,17 +142,21 @@ Acceptance for current slice:
 - Invalid plugin IDs are rejected before subprocess execution.
 - Unknown mappings remain fail-closed.
 - External arbitrary feeds remain blocked.
-- No package mutation is exposed by this slice.
+- Native installation is exposed only through a registered high-risk action.
+- Compatibility preview must return `status=supported` before confirmation is offered.
+- Installation requires explicit remote-control confirmation.
+- Package execution is asynchronous through Enigma2's native `eConsoleAppContainer`.
+- The receiver-side install action performs post-install verification and writes an audit record.
+- Unknown/unsupported/partial compatibility remains blocked.
+- No arbitrary package-manager arguments or feed URLs are accepted.
 
 Remaining Phase 1.4 work:
 
 - plugin metadata browsing
-- confirmation flow
-- native asynchronous installation
-- installation progress
-- postcondition verification
-- result/audit display
-- update/remove flows with confirmation and policy enforcement
+- asynchronous update flow with confirmation
+- asynchronous remove flow with confirmation
+- richer audit-history display
+- GUI restart handling when required by verified metadata
 
 ## Phase 2 — Core receiver management
 
@@ -276,7 +280,7 @@ Repository binary-hosting policy remains unchanged.
 4. Read-only plugin/package browser and resolver screens.
 5. Native GUI test/harness coverage.
 6. Native asynchronous package mutation with confirmation/postcondition/audit.
-7. Receiver-side real-device validation.
+7. Native receiver-side real-device validation.
 8. Core management screens.
 9. Channels/bouquets/EPG.
 10. Settings and backup/recovery.
