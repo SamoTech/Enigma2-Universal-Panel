@@ -670,6 +670,15 @@ class PackageInstallProgress(Screen):
                 self._offer_gui_restart()
             else:
                 self["hint"].setText("OK / EXIT: Close")
+        else:
+            text = (
+                "%s failed or was blocked.\n\n"
+                "Exit code: %s\n"
+                "Postcondition: NOT VERIFIED\n\n%s"
+                % (self.operation, retval, self.output[-2200:].strip())
+            )
+            self["state"].setText(text)
+            self["hint"].setText("OK / EXIT: Close")
 
     def _offer_gui_restart(self):
         self.session.openWithCallback(
@@ -692,15 +701,6 @@ class PackageInstallProgress(Screen):
             self["hint"].setText("GUI restart action rejected: %s" % exc)
             return
         self.session.open(RestartGuiProgress, command)
-        else:
-            text = (
-                "%s failed or was blocked.\n\n"
-                "Exit code: %s\n"
-                "Postcondition: NOT VERIFIED\n\n%s"
-                % (self.operation, retval, self.output[-2200:].strip())
-            )
-            self["state"].setText(text)
-            self["hint"].setText("OK / EXIT: Close")
 
     def _cleanup(self):
         if not self.finished:
