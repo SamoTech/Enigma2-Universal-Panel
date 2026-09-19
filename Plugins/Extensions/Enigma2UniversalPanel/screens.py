@@ -220,11 +220,12 @@ class CommunityInstallerCatalog(Screen):
             self["details"].setText("No registry entry selected.")
             return
         self["details"].setText(
-            "%s | %s | source=%s\n%s"
+            "%s | %s | source=%s | health=%s\n%s"
             % (
                 entry.get("developer", "unknown"),
                 entry.get("delivery", "unknown"),
                 entry.get("source_status", "unknown"),
+                (entry.get("health") or {}).get("network_reachability", "unknown"),
                 entry.get("notes", ""),
             )
         )
@@ -244,6 +245,9 @@ class CommunityInstallerCatalog(Screen):
             "Source status: %s" % entry.get("source_status", "unknown"),
             "Execution status: %s" % entry.get("execution_status", "unknown"),
             "Version: %s" % entry.get("installer_version", entry.get("release_version", "unknown")),
+            "Hosting: %s" % (entry.get("health") or {}).get("hosting_type", "unknown"),
+            "Reachability: %s" % (entry.get("health") or {}).get("network_reachability", "unknown"),
+            "Maintenance: %s" % (entry.get("health") or {}).get("maintenance_status", "unknown"),
             "",
             entry.get("notes", ""),
         ]
