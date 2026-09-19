@@ -34,6 +34,8 @@ Capture the native Receiver Compatibility / Dashboard evidence for:
 - network state
 - available storage
 
+The receiver-side CLI also exposes a read-only `e2panel validation-snapshot` command. It prints status, capabilities, compatibility, telemetry and reboot-verification evidence in clearly separated sections and ends with `physical_validation=not_claimed`. This is an evidence collection aid, not a certification command.
+
 Expected outcome: runtime identity is internally consistent and the compatibility layer does not claim unsupported evidence as supported.
 
 ## Native GUI acceptance flow
@@ -56,6 +58,7 @@ Expected outcome: runtime identity is internally consistent and the compatibilit
 16. If verified metadata requires reboot, confirm the native reboot prompt and verify post-boot package state and reboot verification.
 17. Test update/remove only when the catalog and receiver evidence make those operations supported.
 18. Open Audit History and verify the recent mutation records are visible.
+19. Optionally retain the `e2panel validation-snapshot` output as supplementary evidence for the tested receiver state.
 
 ## Safety checks
 

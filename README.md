@@ -57,6 +57,7 @@ The existing shell/CLI runtime remains a receiver-side foundation and diagnostic
 - Verified metadata-driven GUI restart handling with explicit confirmation
 - Persistent post-boot reboot verification for metadata-required reboots
 - Confirmed asynchronous install, update and removal flows
+- Read-only receiver validation evidence snapshot for physical-test preflight
 - Mock receiver harness and policy tests
 - Master native-GUI roadmap
 
@@ -108,7 +109,17 @@ The GUI must never execute arbitrary shell commands. GUI operations are register
 
 Run the bootstrap installer as root on the receiver:
 
-    wget -O - https://raw.githubusercontent.com/SamoTech/Enigma2-Universal-Panel/main/install.sh | sh
+    wget -qO- https://raw.githubusercontent.com/SamoTech/Enigma2-Universal-Panel/main/install.sh | sh
+
+For a download-and-validate-only preflight:
+
+    wget -qO- https://raw.githubusercontent.com/SamoTech/Enigma2-Universal-Panel/main/install.sh | sh -s -- --check
+
+After installation, the read-only receiver evidence command is:
+
+    e2panel validation-snapshot
+
+It prints live receiver status, capabilities, compatibility, telemetry and reboot-verification evidence and explicitly ends with `physical_validation=not_claimed`. It is an evidence collection aid, not a hardware certification mechanism.
 
 The current bootstrap installs the receiver-side runtime and native GUI. The runtime separates receiver device identity from image identity and detects the package backend before exposing package operations. Dreambox/DreamOS is a first-class compatibility path. The plugin/package manager uses receiver-configured sources. Community third-party installer sources are cataloged separately and remain blocked until explicitly admitted after source and secondary-payload review. Real-receiver validation remains outstanding.
 
