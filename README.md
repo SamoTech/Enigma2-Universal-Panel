@@ -78,7 +78,6 @@ The installed plugin will also provide:
 - Dashboard
 - Receiver information and capabilities
 - Packages
-- Packages
 - Sources/feeds
 - Channels and bouquets
 - EPG
