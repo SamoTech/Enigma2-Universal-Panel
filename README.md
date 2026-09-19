@@ -74,7 +74,7 @@ Run the bootstrap installer as root on the receiver:
 
     wget -O - https://raw.githubusercontent.com/SamoTech/Enigma2-Universal-Panel/main/install.sh | sh
 
-The current bootstrap installs the receiver-side runtime. Native GUI packaging/registration is the next implementation milestone.
+The current bootstrap installs the receiver-side runtime. Native GUI registration and the Phase 1.4 read-only browser plus confirmed asynchronous installation flow are implemented incrementally; real-receiver validation remains outstanding.
 
 ## Design principles
 
