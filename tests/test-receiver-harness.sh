@@ -147,7 +147,7 @@ assert d["schema_version"] == 1
 assert d["policy"]["repository_hosts_binaries"] is False
 assert d["policy"]["arbitrary_urls"] is False
 assert d["policy"]["arbitrary_shell"] is False
-assert len(d["entries"]) == 23
+assert len(d["entries"]) == 21
 expected_new = {
     "dreamsatpanel","linuxsat-panel","jedi-maker-xtream","jedi-epg-xtream",
     "epg-grabber","ipaudio","ipaudio-pro","subssupport","raedquicksignal",
