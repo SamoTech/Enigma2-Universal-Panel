@@ -1,0 +1,137 @@
+#!/bin/sh
+set -eu
+ROOT="$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)"
+fail(){ printf 'FAIL: %s\n' "$1" >&2; exit 1; }
+pass(){ printf 'PASS: %s\n' "$1"; }
+
+for f in "$ROOT/panel.sh" "$ROOT/scripts/lib/"*.sh "$ROOT/install.sh"; do
+  sh -n "$f" || fail "syntax: $f"
+done
+pass "all shell scripts parse"
+
+python3 - "$ROOT" <<'PY'
+import json, pathlib, sys
+root=pathlib.Path(sys.argv[1])
+for p in root.rglob("*.json"):
+    json.loads(p.read_text())
+print("PASS: all repository JSON files parse")
+PY
+
+if find "$ROOT" -type f \( -name '*.ipk' -o -name '*.deb' \) -print -quit | grep -q .; then
+  fail "binary package found"
+fi
+pass "no binary packages hosted"
+
+grep -q '"arbitrary_url_installation": false' "$ROOT/plugins/catalog.json" || fail "URL policy"
+grep -q 'Arbitrary external feed registration is disabled by policy' "$ROOT/scripts/lib/plugins.sh" || fail "feed guard"
+grep -q 'plugin-preview' "$ROOT/panel.sh" || fail "preview command"
+pass "security policy gates"
+
+TMP="$(mktemp -d)"
+BIN="$TMP/bin"
+STATE="$TMP/state"
+mkdir -p "$BIN" "$STATE"
+trap 'rm -rf "$TMP"' EXIT
+
+cat >"$BIN/opkg" <<'EOF'
+#!/bin/sh
+set -eu
+STATE="${MOCK_STATE:?}"
+case "${1:-}" in
+  list-installed) cat "$STATE/installed" ;;
+  status)
+    pkg="$2"
+    grep -q "^$pkg " "$STATE/installed" || exit 1
+    v="$(awk -v p="$pkg" '$1==p{print $2;exit}' "$STATE/installed")"
+    printf 'Package: %s\nVersion: %s\nStatus: install ok installed\n' "$pkg" "$v"
+    ;;
+  info)
+    [ "$2" = "enigma2-plugin-extensions-openwebif" ] || exit 1
+    printf 'Package: enigma2-plugin-extensions-openwebif\nVersion: 2.0\nArchitecture: all\nDepends: python3\nConflicts: old-openwebif\n'
+    ;;
+  list) printf '%s\n' 'enigma2-plugin-extensions-openwebif - 2.0' 'python3 - 3.12' ;;
+  update) exit 0 ;;
+  install)
+    [ "$2" = "enigma2-plugin-extensions-openwebif" ] || exit 1
+    grep -q "^$2 " "$STATE/installed" || printf '%s 2.0\n' "$2" >>"$STATE/installed"
+    ;;
+  *) exit 1 ;;
+esac
+EOF
+chmod +x "$BIN/opkg"
+
+cat >"$BIN/uname" <<'EOF'
+#!/bin/sh
+printf '%s\n' x86_64
+EOF
+cat >"$BIN/df" <<'EOF'
+#!/bin/sh
+printf '%s\n' 'Filesystem 1K-blocks Used Available Use% Mounted on' '/dev/mock 100000 1000 99000 1% /'
+EOF
+cat >"$BIN/ip" <<'EOF'
+#!/bin/sh
+printf '%s\n' 'default via 192.0.2.1 dev eth0'
+EOF
+
+(
+  export PATH="$BIN:$PATH"
+  export MOCK_STATE="$STATE"
+  export PANEL_ROOT="$ROOT"
+  export PANEL_ETC="$TMP/etc"
+  export PANEL_LOG="$TMP/panel.log"
+  export E2_IMAGE=openatv E2_ARCH=x86_64 E2_PKG=opkg E2_NETWORK=online
+  printf 'python3 - 3.12\n' >"$STATE/installed"
+
+  . "$ROOT/scripts/lib/common.sh"
+  . "$ROOT/scripts/lib/detect.sh"
+  . "$ROOT/scripts/lib/plugins.sh"
+  . "$ROOT/scripts/lib/plugin-resolver.sh"
+
+  require_root() { return 0; }
+
+  detect_all() {
+    E2_ARCH=x86_64
+    E2_ARCH_FAMILY=x86_64
+    E2_PKG=opkg
+    E2_IMAGE=openatv
+    E2_BIN=/usr/bin/enigma2
+    E2_VERSION=mock
+    E2_STORAGE_AVAILABLE=99000
+    E2_NETWORK=online
+  }
+
+  plugin_package_state >"$TMP/state.json"
+  python3 - "$TMP/state.json" <<'PY'
+import json,sys
+d=json.load(open(sys.argv[1]))
+assert d["package_manager"] == "opkg"
+assert any(x["name"] == "python3" for x in d["installed_packages"])
+PY
+  pass "mock receiver package-state"
+
+  if ! plugin_preview openwebif >"$TMP/preview.json" 2>&1; then
+    cat "$TMP/preview.json" >&2
+    fail "mock receiver plugin preflight returned blocked"
+  fi
+  python3 - "$TMP/preview.json" <<'PY'
+import json,sys
+d=json.load(open(sys.argv[1]))
+assert d["status"] == "supported"
+assert d["candidate_version"] == "2.0"
+assert d["compatibility"]["image"] is True
+assert d["compatibility"]["architecture"] is True
+PY
+  pass "mock receiver plugin preflight"
+
+  plugin_resolve_install openwebif >"$TMP/install.log"
+  grep -q '^enigma2-plugin-extensions-openwebif 2.0$' "$STATE/installed"
+  pass "mock receiver install and postcondition"
+
+  if plugin_resolve_install openairplay >/dev/null 2>&1; then exit 1; fi
+  pass "unknown package mapping blocked"
+
+  if plugin_source_add_external https://attacker.invalid/feed >/dev/null 2>&1; then exit 1; fi
+  pass "arbitrary feed blocked"
+)
+
+printf 'Mock receiver harness completed. No real receiver was contacted.\n'
