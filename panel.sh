@@ -40,7 +40,7 @@ Usage:
   e2panel compatibility
   e2panel community-catalog | community-preview <plugin-id> | community-install <plugin-id>
   e2panel plugin-library
-  e2panel update
+  e2panel update-check | update
   e2panel restart-enigma2 | restart-gui
   e2panel reboot-for-plugin <plugin-id>
   e2panel reboot --confirm
@@ -77,6 +77,7 @@ case "$cmd" in
   telemetry) print_telemetry;;
   compatibility) print_compatibility;;
   community-catalog) community_catalog;;
+  update-check) panel_update_check;;
   plugin-library) plugin_library;;
   community-preview) community_preview "$1";;
   community-install) community_install "$1";;

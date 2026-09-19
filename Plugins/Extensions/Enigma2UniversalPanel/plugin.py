@@ -1,10 +1,9 @@
 from Plugins.Plugin import PluginDescriptor
 from .screens import Enigma2UniversalPanel
 from .audit_history import AuditHistory
+from .version import PLUGIN_NAME, PLUGIN_DESCRIPTION, PANEL_VERSION
 
-PLUGIN_NAME = "Enigma2 Universal Panel"
-PLUGIN_DESCRIPTION = "Native receiver management panel"
-PLUGIN_VERSION = "1.10.0"
+PLUGIN_VERSION = PANEL_VERSION
 
 
 def main(session, **kwargs):

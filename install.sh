@@ -198,6 +198,7 @@ docs/native-gui/PLUGIN_PACKAGE.md
 PLUGIN_FILES="
 Plugins/Extensions/Enigma2UniversalPanel/__init__.py
 Plugins/Extensions/Enigma2UniversalPanel/plugin.py
+Plugins/Extensions/Enigma2UniversalPanel/version.py
 Plugins/Extensions/Enigma2UniversalPanel/actions.py
 Plugins/Extensions/Enigma2UniversalPanel/audit_history.py
 Plugins/Extensions/Enigma2UniversalPanel/debug.py

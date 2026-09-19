@@ -10,6 +10,7 @@
   },
   "actions": [
     {"id":"receiver.detect","domain":"receiver","name":"Detect receiver fingerprint","risk":"low","requires_confirmation":false},
+    {"id":"receiver.panel_update_check","domain":"receiver","name":"Check Enigma2 Universal Panel for updates","risk":"low","requires_confirmation":false},
     {"id":"receiver.panel_update","domain":"receiver","name":"Update Enigma2 Universal Panel from official source","risk":"critical","requires_confirmation":true},
     {"id":"receiver.capabilities","domain":"receiver","name":"Resolve normalized capabilities","risk":"low","requires_confirmation":false},
     {"id":"system.status","domain":"system","name":"Read normalized status","risk":"low","requires_confirmation":false},
