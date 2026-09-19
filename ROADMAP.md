@@ -338,7 +338,7 @@ Repository binary-hosting policy remains unchanged.
 12. Native receiver-side real-device validation across representative device/image matrix.
 13. Richer audit-history display.
 14. GUI restart handling when required by verified metadata.
-14. Core management screens.
+15. Core management screens.
 15. Channels/bouquets/EPG.
 16. Settings and backup/recovery.
 17. Local automation.
