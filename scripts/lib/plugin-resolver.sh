@@ -86,9 +86,9 @@ plugin_native_arch_compatibility() {
   native_arch="$1"
   receiver_arch="$2"
   case "$native_arch" in
-    all|"$receiver_arch") return 0 ;;
-    ""|unknown) return 2 ;;
-    *) return 1 ;;
+    all|"$receiver_arch") printf 'true\n' ;;
+    ""|unknown) printf 'unknown\n' ;;
+    *) printf 'false\n' ;;
   esac
 }
 
@@ -173,11 +173,7 @@ plugin_preview() {
   image_ok=false; arch_ok=false; native_arch_ok=unknown; candidate_ok=false; deps_ok=true; conflicts_ok=true
   plugin_catalog_match_image "$id" "$E2_IMAGE" && image_ok=true
   plugin_catalog_match_arch "$id" "$E2_ARCH" && arch_ok=true
-  plugin_native_arch_compatibility "$native_arch" "$E2_ARCH"
-  case "$?" in
-    0) native_arch_ok=true ;;
-    1) native_arch_ok=false ;;
-  esac
+  native_arch_ok="$(plugin_native_arch_compatibility "$native_arch" "$E2_ARCH")"
   [ -n "$candidate" ] && [ "$candidate" != "(none)" ] && candidate_ok=true
 
   dep_status="$(plugin_dependency_status "$deps")"
