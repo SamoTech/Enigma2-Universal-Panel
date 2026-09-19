@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "description": "Normalized receiver package/source state. Runtime package data is discovered from the receiver.",
+  "package_state": {
+    "receiver": "string",
+    "timestamp": "ISO-8601",
+    "image": "string",
+    "architecture": "string",
+    "package_manager": "opkg|apt|ipkg|none",
+    "network": "online|offline|unknown",
+    "feeds": [{"id":"string","uri":"string","enabled":true,"source":"native|configured|unknown","evidence":"string"}],
+    "installed_packages": [{"name":"string","version":"string","architecture":"string","status":"installed|unknown","source":"string|null"}],
+    "available_packages": [{"name":"string","version":"string","architecture":"string","source":"string|null"}],
+    "updates": [{"name":"string","installed_version":"string","available_version":"string","source":"string|null"}],
+    "dependencies": [{"package":"string","dependency":"string","status":"satisfied|missing|unknown"}],
+    "conflicts": [{"package":"string","conflict":"string","status":"detected|unknown"}]
+  }
+}

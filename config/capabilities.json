@@ -3,98 +3,27 @@
   "capabilities": {
     "system.status": {},
     "system.diagnose": {},
-    "system.restart_enigma2": {
-      "destructive": false
-    },
-    "system.restart_gui": {
-      "destructive": false
-    },
-    "system.reboot": {
-      "destructive": true,
-      "confirmation": true
-    },
-    "package.install": {
-      "requires": [
-        "package_manager"
-      ],
-      "source": "receiver_feed"
-    },
-    "package.remove": {
-      "requires": [
-        "package_manager"
-      ],
-      "destructive": true,
-      "confirmation": true
-    },
-    "package.update": {
-      "requires": [
-        "package_manager"
-      ],
-      "source": "receiver_feed"
-    },
-    "plugin.source_status": {
-      "requires": [
-        "package_manager"
-      ]
-    },
-    "plugin.source_refresh": {
-      "requires": [
-        "package_manager"
-      ],
-      "requires_root": true
-    },
-    "plugin.discover": {
-      "requires": [
-        "package_manager"
-      ],
-      "read_only": true
-    },
-    "plugin.info": {
-      "requires": [
-        "package_manager"
-      ],
-      "read_only": true
-    },
-    "plugin.install": {
-      "requires": [
-        "package_manager"
-      ],
-      "source": "receiver_feed"
-    },
-    "plugin.update": {
-      "requires": [
-        "package_manager"
-      ],
-      "source": "receiver_feed"
-    },
-    "plugin.remove": {
-      "requires": [
-        "package_manager"
-      ],
-      "destructive": true,
-      "confirmation": true
-    },
-    "backup.create": {
-      "requires": [
-        "storage"
-      ]
-    },
-    "backup.restore": {
-      "requires": [
-        "storage"
-      ],
-      "destructive": true,
-      "confirmation": true
-    },
-    "channels.deploy": {
-      "requires": [
-        "enigma2"
-      ]
-    },
-    "diagnostics.network": {
-      "requires": [
-        "network"
-      ]
-    }
+    "system.restart_enigma2": {"destructive":false},
+    "system.restart_gui": {"destructive":false},
+    "system.reboot": {"destructive":true,"confirmation":true},
+    "package.install": {"requires":["package_manager"],"source":"receiver_feed"},
+    "package.remove": {"requires":["package_manager"],"destructive":true,"confirmation":true},
+    "package.update": {"requires":["package_manager"],"source":"receiver_feed"},
+    "package.state": {"requires":["package_manager"],"read_only":true},
+    "package.discover": {"requires":["package_manager"],"read_only":true},
+    "plugin.source_status": {"requires":["package_manager"]},
+    "plugin.source_refresh": {"requires":["package_manager"],"requires_root":true},
+    "plugin.discover": {"requires":["package_manager"],"read_only":true},
+    "plugin.info": {"requires":["package_manager"],"read_only":true},
+    "plugin.resolve": {"requires":["package_manager"],"read_only":true},
+    "plugin.preview": {"requires":["package_manager"],"read_only":true,"no_mutation":true},
+    "plugin.install": {"requires":["package_manager"],"source":"receiver_feed","preflight":"plugin.preview"},
+    "plugin.install_id": {"requires":["package_manager"],"source":"receiver_feed","preflight":"plugin.preview","postcondition":"installed"},
+    "plugin.update": {"requires":["package_manager"],"source":"receiver_feed","preflight":"plugin.preview"},
+    "plugin.remove": {"requires":["package_manager"],"destructive":true,"confirmation":true},
+    "backup.create": {"requires":["storage"]},
+    "backup.restore": {"requires":["storage"],"destructive":true,"confirmation":true},
+    "channels.deploy": {"requires":["enigma2"]},
+    "diagnostics.network": {"requires":["network"]}
   }
 }
