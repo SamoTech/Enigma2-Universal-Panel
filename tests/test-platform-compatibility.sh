@@ -90,6 +90,8 @@ EOF
 
 profile_dreamos_dreambox() {
   reset_root
+  E2_TEST_DISABLE_OPKG=1
+  export E2_TEST_DISABLE_OPKG
   printf '%s\n' 'Dreambox DM920 UHD' >"$MOCK/proc/stb/info/model"
   printf '%s\n' 'dm920' >"$MOCK/proc/stb/info/boxtype"
   printf '%s\n' 'DreamOS 4.5' >"$MOCK/etc/issue"
@@ -111,6 +113,8 @@ EOF
 
 profile_openpli_zgemma() {
   reset_root
+  E2_TEST_DISABLE_OPKG=0
+  export E2_TEST_DISABLE_OPKG
   printf '%s\n' 'Zgemma H9 Twin' >"$MOCK/proc/stb/info/model"
   printf '%s\n' 'h9twin' >"$MOCK/proc/stb/info/boxtype"
   printf '%s\n' 'OpenPLi 9.2' >"$MOCK/etc/issue"
@@ -131,6 +135,8 @@ EOF
 
 profile_unknown_enigma2() {
   reset_root
+  E2_TEST_DISABLE_OPKG=0
+  export E2_TEST_DISABLE_OPKG
   printf '%s\n' 'UnknownBox X1' >"$MOCK/proc/stb/info/model"
   printf '%s\n' 'x1' >"$MOCK/proc/stb/info/boxtype"
   : >"$MOCK/etc/issue"
