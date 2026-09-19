@@ -68,8 +68,8 @@
       "description": "Signal, temperature, bitrate and receiver diagnostics."
     },
     {
-      "id": "softcams",
-      "name": "Softcams & EMU",
+      "id": "emu",
+      "name": "EMU & Softcams",
       "description": "Softcams, card-sharing clients, EMU engines and conditional-access runtime components."
     },
     {
