@@ -226,10 +226,11 @@ class PluginLibrary(Screen):
         choices = []
         for entry in self.filtered_entries:
             source = "Feed" if entry.get("source") == "receiver_feed" else "Community"
+            item_type = entry.get("item_type", "plugin")
             availability = entry.get("availability", "unknown")
             choices.append(
-                "%s  [%s | %s]"
-                % (entry.get("name", "unknown"), source, availability)
+                "%s  [%s | %s | %s]"
+                % (entry.get("name", "unknown"), item_type, source, availability)
             )
         self["menu"].setList(choices)
         self._selection_changed()
@@ -349,7 +350,9 @@ class PluginLibrary(Screen):
             "Category: %s" % entry.get("category", "unknown"),
             "Subcategory: %s" % entry.get("subcategory", "unknown"),
             "Author: %s" % entry.get("author", "unknown"),
+            "Type: %s" % entry.get("item_type", "plugin"),
             "Source: %s" % entry.get("source", "unknown"),
+            "Source reference: %s" % entry.get("source_reference", entry.get("repository", "unknown")),
             "Availability: %s" % entry.get("availability", "unknown"),
             "Status: %s" % entry.get("status", "unknown"),
             "Compatibility: %s" % entry.get("compatibility_confidence", "unknown"),
