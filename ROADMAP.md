@@ -156,6 +156,7 @@ Remaining Phase 1.4 work:
 - plugin metadata browsing — implemented
 - asynchronous update flow with confirmation — implemented
 - asynchronous remove flow with confirmation — implemented
+- community installer source registry and native inspection screen — implemented
 - richer audit-history display
 - GUI restart handling when required by verified metadata
 
