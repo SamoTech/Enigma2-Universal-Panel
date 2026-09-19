@@ -289,7 +289,7 @@ if ! mv "$DEPLOY_PLUGIN" "$PLUGIN_ROOT/Enigma2UniversalPanel"; then
   rollback
   fail "Plugin deployment failed."
 fi
-if ! ln -s "$DEST/panel.sh" "$BIN"; then
+mkdir -p "$(dirname "$BIN")" || {\n  rollback\n  fail "Unable to create command directory: $(dirname "$BIN")"\n}\nif ! ln -s "$DEST/panel.sh" "$BIN"; then
   rollback
   fail "Unable to create e2panel command link."
 fi
