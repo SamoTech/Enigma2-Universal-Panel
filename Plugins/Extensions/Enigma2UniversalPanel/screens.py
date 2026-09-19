@@ -889,6 +889,9 @@ class Enigma2UniversalPanel(Screen):
         if action_id == "package-browser":
             self.session.open(PackageBrowser)
             return
+        if action_id == "plugin.library":
+            self.session.open(PluginLibrary)
+            return
         if action_id == "community.catalog":
             self.session.open(CommunityInstallerCatalog)
             return
