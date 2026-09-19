@@ -42,8 +42,9 @@ The existing shell/CLI runtime remains a receiver-side foundation and diagnostic
 
 - POSIX/BusyBox-safe receiver bootstrap
 - Structured receiver fingerprint
-- Image and package-manager detection
-- Capability and compatibility model
+- Runtime-first device, image-family, CPU architecture and package-backend detection
+- Capability and compatibility model with explicit support tiers
+- First-class Dreambox / DreamOS compatibility path
 - Adapter registry
 - Registered action/policy dispatcher
 - Plugin Library / Store catalog and source metadata
@@ -53,17 +54,25 @@ The existing shell/CLI runtime remains a receiver-side foundation and diagnostic
 - Community Plugin Library with fail-closed installation admission and source-health metadata (49 community entries)
 - Postcondition verification and audit foundations
 - Read-only native audit-history display backed by the receiver audit log
+- Verified metadata-driven GUI restart handling with explicit confirmation
 - Confirmed asynchronous install, update and removal flows
 - Mock receiver harness and policy tests
 - Master native-GUI roadmap
 
 ## Native Plugin Library / Store target
 
-The installed plugin will provide a store-like library as its primary screen:
+The installed plugin is organized into four native top-level sections:
+
+- STORE — Plugin Library, Community Sources, Install/Update/Remove
+- RECEIVER — Dashboard, Compatibility, Telemetry, Status, Capabilities
+- MANAGEMENT — Packages and Diagnostics
+- ADVANCED — Resolver, Preview and Metadata
+
+The Store remains the primary user journey. The installed plugin will provide a store-like library as its primary screen:
 
 - Plugin Library / Store
+- Store categories: System, Network, Remote Access, Media & Streaming, EPG, Channels & Bouquets, Recording & Timeshift, Skins & Display, Language & Subtitles, Audio, Multiboot & Recovery, Monitoring & Diagnostics, Security & Access, Religious & Community, Utilities
 - Search
-- Categories
 - Plugin details
 - Compatibility and availability state
 - Install from receiver-configured feeds
@@ -100,7 +109,7 @@ Run the bootstrap installer as root on the receiver:
 
     wget -O - https://raw.githubusercontent.com/SamoTech/Enigma2-Universal-Panel/main/install.sh | sh
 
-The current bootstrap installs the receiver-side runtime and native GUI. The plugin/package manager uses receiver-configured sources. Community third-party installer sources are cataloged separately and remain blocked until explicitly admitted after source and secondary-payload review. Real-receiver validation remains outstanding.
+The current bootstrap installs the receiver-side runtime and native GUI. The runtime separates receiver device identity from image identity and detects the package backend before exposing package operations. Dreambox/DreamOS is a first-class compatibility path. The plugin/package manager uses receiver-configured sources. Community third-party installer sources are cataloged separately and remain blocked until explicitly admitted after source and secondary-payload review. Real-receiver validation remains outstanding.
 
 ## Design principles
 
@@ -120,6 +129,21 @@ The current bootstrap installs the receiver-side runtime and native GUI. The plu
 
 The authoritative roadmap is ROADMAP.md.
 
-The immediate product milestone is the native Enigma2 Plugin Library / Store: registration, store navigation, catalog/search/categories, plugin details, compatibility preview, controlled installation through the existing action/policy/resolver layers, and read-only audit-history display.
+The immediate product milestone is the native Enigma2 Plugin Library / Store: registration, categorized store navigation, catalog/search, plugin details, receiver compatibility inspection, compatibility preview, and controlled installation through the existing action/policy/resolver layers.
 
 Remote management and web/fleet management are later phases, not prerequisites for the receiver application.
+
+
+## Universal device and image support
+
+The panel uses a runtime-first compatibility model rather than maintaining a hard-coded list of “supported boxes”. Device identity and image identity are detected separately because the same receiver can run different Enigma2 images.
+
+The runtime currently recognizes major Enigma2 image families including OE-Alliance-derived images, OpenPLi, DreamOS/Dreambox-oriented Debian images, VTi and several community image families, then falls back to generic Enigma2 when the runtime is valid but the image identity is unknown.
+
+Device-family detection includes Dreambox/Dream Multimedia, VU+, GigaBlue, Zgemma, Octagon, Edision, Mutant, Amiko, Formuler, AB-COM, Axas, Golden Interstar, Maxytec, Qviart, Uclan, Xsarius, Xtrend, SAB, Miraclebox and WeTek, with a generic Enigma2 fallback for otherwise unidentified receivers.
+
+Dreambox is treated as a first-class device family. DreamOS environments use a Debian-style package model in the compatibility layer, while OE-family images keep their native `opkg` path. Package installation is never enabled solely because a model or image name is recognized; the live receiver backend, package candidate, architecture, dependency/conflict state and image policy must all pass.
+
+See `docs/compatibility/PLATFORM_MATRIX.md` for the compatibility contract and support tiers.
+
+Compatibility states are intentionally conservative: runtime detection, generic-compatible, image/device detected, operation-supported and physical-validated are distinct states. The project currently has no physical receiver validation record, so CI/harness evidence must not be presented as hardware certification.
