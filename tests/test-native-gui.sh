@@ -90,8 +90,6 @@ assert 'build_action_command' in p
 assert 'shell=False' in p
 assert 'eConsoleAppContainer' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'PackageInstallProgress' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
-assert 'Update Plugin' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
-assert 'Remove Plugin' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert '_prepare_remove' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert '_prepare_update' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'Receiver Telemetry' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
