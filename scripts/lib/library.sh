@@ -85,7 +85,7 @@ canonical_categories = set(category_titles)
 items = []
 for entry in catalog.get("plugins") or []:
     category_original = entry.get("category", "unknown")
-    category = category_original if category_original in canonical_categories else category_aliases.get(category_original, "utilities")
+    category = normalized_category
     items.append({
         "id": entry.get("id"),
         "item_type": "plugin",
