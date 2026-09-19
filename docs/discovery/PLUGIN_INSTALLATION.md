@@ -78,3 +78,12 @@ This registry is deliberately separate from the normal package-feed catalog:
 - Entries whose current repository or installer cannot be established are retained as provenance records and remain blocked.
 
 The native GUI exposes the registry as **Community Installers** so an administrator can inspect the developer, repository, pinned source reference, delivery method, and current execution status before any future installation action is admitted.
+
+
+## Community source health
+
+The community registry now records source-health metadata independently from installation admission. Hosting type, repository reachability, installer endpoint evidence, and maintenance evidence are tracked separately.
+
+A repository being reachable does not imply that a raw installer endpoint is reachable. A web/API cache miss is not treated as proof that an external host is down. Legacy HTTP/DynDNS sources remain blocked unless their current endpoint can be established.
+
+The native **Community Installers** screen exposes these health fields before any future execution workflow.
