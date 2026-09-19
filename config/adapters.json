@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "adapters": [
     {
       "id": "openatv",
@@ -14,6 +14,42 @@
       "id": "openvix",
       "match": [
         "openvix"
+      ],
+      "fallback": false,
+      "package_manager": "opkg",
+      "capability_policy": "evidence_required"
+    },
+    {
+      "id": "openhdf",
+      "match": [
+        "openhdf"
+      ],
+      "fallback": false,
+      "package_manager": "opkg",
+      "capability_policy": "evidence_required"
+    },
+    {
+      "id": "opendroid",
+      "match": [
+        "opendroid"
+      ],
+      "fallback": false,
+      "package_manager": "opkg",
+      "capability_policy": "evidence_required"
+    },
+    {
+      "id": "openeight",
+      "match": [
+        "openeight"
+      ],
+      "fallback": false,
+      "package_manager": "opkg",
+      "capability_policy": "evidence_required"
+    },
+    {
+      "id": "openld",
+      "match": [
+        "openld"
       ],
       "fallback": false,
       "package_manager": "opkg",
@@ -40,17 +76,34 @@
     {
       "id": "dreamos",
       "match": [
-        "dreamos",
-        "dreambox-deb"
+        "dreamos"
       ],
       "fallback": false,
       "package_manager": "apt",
       "capability_policy": "evidence_required"
     },
     {
+      "id": "dreambox-deb",
+      "match": [
+        "dreambox-deb"
+      ],
+      "fallback": false,
+      "package_manager": "image-dependent",
+      "capability_policy": "evidence_required"
+    },
+    {
       "id": "vti",
       "match": [
         "vti"
+      ],
+      "fallback": false,
+      "package_manager": "image-dependent",
+      "capability_policy": "evidence_required"
+    },
+    {
+      "id": "community-enigma2",
+      "match": [
+        "community-enigma2"
       ],
       "fallback": false,
       "package_manager": "image-dependent",
