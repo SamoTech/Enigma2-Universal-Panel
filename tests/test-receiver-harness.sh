@@ -87,6 +87,8 @@ EOF
   . "$ROOT/scripts/lib/plugins.sh"
   . "$ROOT/scripts/lib/plugin-resolver.sh"
 
+  require_root() { return 0; }
+
   detect_all() {
     E2_ARCH=x86_64
     E2_ARCH_FAMILY=x86_64
