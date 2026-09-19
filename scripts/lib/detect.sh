@@ -25,7 +25,7 @@ detect_arch() {
 detect_package_manager() {
   E2_PKG=none
   E2_PACKAGE_FAMILY=unknown
-  if has opkg; then
+  if [ "${E2_TEST_DISABLE_OPKG:-0}" != 1 ] && has opkg; then
     E2_PKG=opkg
     E2_PACKAGE_FAMILY=opkg
   elif has apt-get && has dpkg; then
