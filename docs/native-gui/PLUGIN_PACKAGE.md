@@ -4,7 +4,7 @@ The first GUI milestone is implemented as a native Enigma2 Python plugin under:
 
     Plugins/Extensions/Enigma2UniversalPanel/
 
-The entry point uses Enigma2's PluginDescriptor with WHERE_PLUGINMENU, so the panel is registered in the normal Plugins/Extensions menu. This registration pattern is consistent with current Enigma2 plugin implementations. citeturn0search0turn0search5
+The entry point uses Enigma2's PluginDescriptor with WHERE_PLUGINMENU, so the panel is registered in the normal Plugins/Extensions menu. This registration pattern is consistent with current Enigma2 plugin implementations.
 
 ## Current scope
 
