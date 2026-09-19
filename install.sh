@@ -19,6 +19,7 @@ fetch scripts/lib/compatibility.sh
 fetch scripts/lib/actions.sh
 fetch scripts/lib/plugins.sh
 fetch scripts/lib/plugin-resolver.sh
+fetch scripts/lib/reboot.sh
 fetch scripts/lib/status.sh
 fetch scripts/lib/telemetry.sh
 fetch scripts/lib/diagnose.sh
