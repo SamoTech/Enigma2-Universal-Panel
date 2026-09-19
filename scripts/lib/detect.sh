@@ -83,7 +83,7 @@ detect_device() {
   low="$(printf '%s' "$raw" | tr '[:upper:]' '[:lower:]')"
 
   case "$low" in
-    *dreambox*|*dreambox*|*dm500*|*dm520*|*dm525*|*dm820*|*dm900*|*dm920*|*dmone*|*dmtwo*|*one ultra*)
+    *dreambox*|*dm500*|*dm520*|*dm525*|*dm820*|*dm900*|*dm920*|*dmone*|*dmtwo*|*one ultra*)
       E2_DEVICE_FAMILY=dreambox
       E2_VENDOR="Dream Multimedia"
       ;;
@@ -178,7 +178,7 @@ detect_image() {
   E2_IMAGE_VERSION=unknown
 
   text=""
-  for f in /etc/image-version /etc/enigma2/image-version /etc/os-release /etc/issue /etc/hostname; do
+  for f in /etc/image-version /etc/enigma2/image-version /etc/os-release /etc/issue; do
     [ -r "$(_detect_path "$f")" ] || continue
     text="$text $(cat "$(_detect_path "$f")" 2>/dev/null)"
   done
@@ -203,7 +203,7 @@ detect_image() {
     *oozoon*) E2_IMAGE=oozoon; E2_IMAGE_FAMILY=dreambox-deb ;;
     *oe-alliance*|*oea*) E2_IMAGE=oe-alliance; E2_IMAGE_FAMILY=oe-alliance ;;
     *)
-      if has enigma2 || [ -x /usr/bin/enigma2 ] || [ -x /usr/bin/enigma2.sh ]; then
+      if has enigma2 || [ -x "$(_detect_path /usr/bin/enigma2)" ] || [ -x "$(_detect_path /usr/bin/enigma2.sh)" ]; then
         E2_IMAGE=generic-enigma2
         E2_IMAGE_FAMILY=generic-enigma2
       fi
@@ -211,7 +211,7 @@ detect_image() {
   esac
 
   for f in /etc/image-version /etc/enigma2/image-version; do
-    [ -r "$f" ] || continue
+    [ -r "$(_detect_path "$f")" ] || continue
     version="$(sed -n 's/.*[Vv]ersion[[:space:]]*[:=][[:space:]]*\([^[:space:]]*\).*/\1/p' "$(_detect_path "$f")" 2>/dev/null | head -1)"
     [ -n "$version" ] && { E2_IMAGE_VERSION="$version"; break; }
   done
