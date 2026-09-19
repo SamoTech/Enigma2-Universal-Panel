@@ -43,14 +43,43 @@ category_titles = {}
 for category in taxonomy.get("categories") or []:
     category_titles[category.get("id")] = category.get("name") or category.get("id")
 
+category_aliases = {
+    "system_administration": "system",
+    "service_management": "system",
+    "satellite_configuration": "channels",
+    "conditional_access_configuration": "security",
+    "conditional_access_software": "security",
+    "backup_flash": "multiboot",
+    "multi_boot": "multiboot",
+    "media_streaming": "media",
+    "iptv_interface": "media",
+    "iptv_stalker": "media",
+    "iptv_streaming": "media",
+    "stalker_portal": "media",
+    "audio_commentary": "audio",
+    "epg_bouquet_generation": "epg",
+    "iptv_bouquet_generation": "channels",
+    "iptv_to_dvb_mapping": "channels",
+    "sports_and_satellite": "media",
+    "signal_diagnostics": "monitoring",
+    "picons": "gui",
+    "subtitles": "localization",
+    "translation": "localization",
+    "timeshift": "recording",
+    "third_party_catalog": "utilities",
+}
+canonical_categories = set(category_titles)
+
 items = []
 for entry in catalog.get("plugins") or []:
-    category = entry.get("category", "unknown")
+    category_original = entry.get("category", "unknown")
+    category = category_original if category_original in canonical_categories else category_aliases.get(category_original, "utilities")
     items.append({
         "id": entry.get("id"),
         "item_type": "plugin",
         "name": entry.get("display_name") or entry.get("name") or entry.get("id"),
         "category": category,
+        "category_original": category_original,
         "category_name": category_titles.get(category, category.replace("_", " ").title()),
         "subcategory": entry.get("subcategory", "unknown"),
         "author": entry.get("author", "unknown"),
@@ -68,7 +97,8 @@ for entry in catalog.get("plugins") or []:
 
 for entry in community.get("entries") or []:
     health = entry.get("health") or {}
-    category = entry.get("category", "unknown")
+    category_original = entry.get("category", "unknown")
+    category = category_original if category_original in canonical_categories else category_aliases.get(category_original, "utilities")
     items.append({
         "id": entry.get("id"),
         "item_type": entry.get("item_type", "plugin"),
@@ -150,6 +180,7 @@ for entry in community.get("entries") or []:
     items.append({
         "id": entry.get("id"), "item_type": entry.get("item_type", "plugin"),
         "name": entry.get("name") or entry.get("id"), "category": category,
+        "category_original": category_original,
         "category_name": category.replace("_", " ").title(), "subcategory": "community",
         "author": entry.get("developer", "unknown"), "source": "community",
         "source_type": entry.get("delivery", "unknown"), "status": entry.get("execution_status", "blocked"),
