@@ -76,19 +76,28 @@ plugin_install() {
   plugin_validate_package "$1" || return 2
   plugin_package_manager || return 1
   require_root || return 1
+  pkg="$1"
   # Refresh only the receiver's already-configured feeds. Never add an
   # arbitrary source from the control plane.
   plugin_refresh_sources || {
     error "Configured receiver package feeds could not be refreshed"
     return 1
   }
-  info "Installing package from configured receiver feeds: $1"
+  info "Installing package from configured receiver feeds: $pkg"
   case "$E2_PKG" in
-    opkg) opkg install "$1";;
-    apt) DEBIAN_FRONTEND=noninteractive apt-get install -y "$1";;
-    ipkg) ipkg install "$1";;
-    dpkg) error "Debian receiver has no supported configured-feed installer"; return 1;;
+    opkg) opkg install "$pkg" ;;
+    apt) DEBIAN_FRONTEND=noninteractive apt-get install -y "$pkg" ;;
+    ipkg) ipkg install "$pkg" ;;
+    dpkg) error "Debian receiver has no supported configured-feed installer"; return 1 ;;
   esac
+  rc=$?
+  [ "$rc" -eq 0 ] || return "$rc"
+  if ! plugin_installed "$pkg"; then
+    error "Package installation postcondition failed: $pkg is not installed"
+    return 1
+  fi
+  info "Package installation verified: $pkg"
+  return 0
 }
 plugin_update() {
   plugin_validate_package "$1" || return 2
