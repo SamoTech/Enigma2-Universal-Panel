@@ -22,6 +22,8 @@ The inventory is generated on the receiver and is not committed into the reposit
 
 Native package names and versions are preserved. A normalized plugin identifier may map to a native package name only when evidence establishes the mapping. Unknown mappings remain unknown; the engine must never guess.
 
+For installation preflight, an explicit native package architecture of `all` or an exact match to the detected receiver architecture is accepted. An explicit mismatch is rejected. Missing or unknown native package architecture remains `unknown` and blocks installation rather than being guessed compatible.
+
 ## Safety
 
 Package mutations require a supported package manager, root privileges, a valid package identifier, a receiver-configured source, compatibility checks where metadata exists, post-install verification, and audit logging. Removal is destructive and requires explicit confirmation.
