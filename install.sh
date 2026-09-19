@@ -326,6 +326,47 @@ sh -n "$DEST/panel.sh" || { rollback; fail "Installed runtime syntax check faile
   fail "Installed plugin syntax verification failed."
 }
 
+# Verify the deployed payload byte-for-byte against the staged release.
+# A successful transaction must never leave a stale or partial native plugin.
+verify_deployed_file() {
+  staged="$1"
+  deployed="$2"
+  [ -f "$staged" ] || return 1
+  [ -f "$deployed" ] || return 1
+  if command -v sha256sum >/dev/null 2>&1; then
+    staged_sha="$(sha256sum "$staged" | awk '{print $1}')"
+    deployed_sha="$(sha256sum "$deployed" | awk '{print $1}')"
+    [ -n "$staged_sha" ] && [ "$staged_sha" = "$deployed_sha" ]
+    return $?
+  fi
+  if command -v openssl >/dev/null 2>&1; then
+    staged_sha="$(openssl dgst -sha256 "$staged" | awk '{print $NF}')"
+    deployed_sha="$(openssl dgst -sha256 "$deployed" | awk '{print $NF}')"
+    [ -n "$staged_sha" ] && [ "$staged_sha" = "$deployed_sha" ]
+    return $?
+  fi
+  cmp -s "$staged" "$deployed"
+}
+
+for rel in $PLUGIN_FILES; do
+  staged="$PLUGIN_STAGE/${rel#Plugins/Extensions/Enigma2UniversalPanel/}"
+  deployed="$PLUGIN_ROOT/Enigma2UniversalPanel/${rel#Plugins/Extensions/Enigma2UniversalPanel/}"
+  if ! verify_deployed_file "$staged" "$deployed"; then
+    rollback
+    fail "Installed plugin payload verification failed: $rel"
+  fi
+done
+
+for rel in $RUNTIME_FILES; do
+  staged="$RUNTIME_STAGE/$rel"
+  deployed="$DEST/$rel"
+  if ! verify_deployed_file "$staged" "$deployed"; then
+    rollback
+    fail "Installed runtime payload verification failed: $rel"
+  fi
+done
+
+info "Installed payload verification passed."
 info "Installation files deployed."
 if "$BIN" status >/dev/null 2>&1; then
   info "Runtime status verification passed."
