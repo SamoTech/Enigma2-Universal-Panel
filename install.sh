@@ -169,6 +169,7 @@ scripts/lib/telemetry.sh
 scripts/lib/diagnose.sh
 scripts/lib/library.sh
 scripts/lib/validation.sh
+scripts/lib/update.sh
 config/capabilities.json
 config/actions.json
 config/settings.json
