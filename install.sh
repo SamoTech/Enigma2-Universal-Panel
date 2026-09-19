@@ -236,7 +236,7 @@ import re
 import sys
 path = sys.argv[1]
 text = open(path, "r").read()
-match = re.search(r'^[[:space:]]*PANEL_VERSION[[:space:]]*=[[:space:]]*["'"']([^"'"']+)["'"']', text, re.M)
+match = re.search(r'^\s*PANEL_VERSION\s*=\s*["\']([^"\']+)["\']', text, re.M)
 print(match.group(1) if match else "")
 PY
 )"
