@@ -54,6 +54,7 @@ fetch_plugin() {
 fetch_plugin __init__.py
 fetch_plugin plugin.py
 fetch_plugin actions.py
+fetch_plugin audit_history.py
 fetch_plugin screens.py
 chmod 755 "$DEST/panel.sh" "$DEST/scripts/lib/"*.sh
 chmod 644 "$PLUGIN_DEST/"*.py
