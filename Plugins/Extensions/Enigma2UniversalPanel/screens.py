@@ -37,7 +37,7 @@ class ActionResult(Screen):
         <widget name="text" position="35,105" size="930,445" font="Regular;20" valign="top" />
         <widget name="hint" position="35,570" size="930,30" font="Regular;18" />
     </screen>
-    """        _add_scroll_actions(self, "text")
+    """
 
 
     def __init__(self, session, title, text):
@@ -47,6 +47,7 @@ class ActionResult(Screen):
         self["text"] = ScrollLabel(text or "No output.")
         self["hint"] = Label("OK / EXIT: Back")
         self["actions"] = DebugActionMap(["OkCancelActions"], {"ok": self.close, "cancel": self.close}, -2)
+        _add_scroll_actions(self, "text")
 
 
 class Dashboard(Screen):
@@ -58,7 +59,6 @@ class Dashboard(Screen):
         <widget name="hint" position="35,565" size="930,28" font="Regular;18" />
     </screen>
     """
-        _add_scroll_actions(self, "state")
 
     def __init__(self, session):
         Screen.__init__(self, session)
@@ -69,6 +69,7 @@ class Dashboard(Screen):
         self["actions"] = ActionMap(["OkCancelActions", "ColorActions"], {"cancel": self.close, "green": self.refresh}, -2)
         self.onLayoutFinish.append(self.refresh)
 
+        _add_scroll_actions(self, "state")
     def _kv(self, text):
         values = {}
         for line in text.splitlines():
@@ -139,7 +140,6 @@ class ReceiverTelemetry(Screen):
         <widget name="hint" position="35,565" size="930,28" font="Regular;18" />
     </screen>
     """
-        _add_scroll_actions(self, "state")
 
     def __init__(self, session):
         Screen.__init__(self, session)
@@ -155,6 +155,7 @@ class ReceiverTelemetry(Screen):
         self.onLayoutFinish.append(self.refresh)
 
     @staticmethod
+        _add_scroll_actions(self, "state")
     def _kv(text):
         values = {}
         for line in text.splitlines():
@@ -537,7 +538,6 @@ class ReceiverCompatibility(Screen):
         <widget name="hint" position="35,565" size="930,28" font="Regular;18" />
     </screen>
     """
-        _add_scroll_actions(self, "state")
 
     def __init__(self, session):
         Screen.__init__(self, session)
@@ -552,6 +552,7 @@ class ReceiverCompatibility(Screen):
         )
         self.onLayoutFinish.append(self.refresh)
 
+        _add_scroll_actions(self, "state")
     def refresh(self):
         try:
             code, output = run_action("receiver.compatibility")
@@ -1191,7 +1192,6 @@ class PluginMetadata(Screen):
         <widget name="hint" position="35,565" size="930,28" font="Regular;18" />
     </screen>
     """
-        _add_scroll_actions(self, "state")
 
     def __init__(self, session, plugin_id):
         Screen.__init__(self, session)
@@ -1203,6 +1203,7 @@ class PluginMetadata(Screen):
         self["actions"] = ActionMap(["OkCancelActions"], {"ok": self.close, "cancel": self.close}, -2)
         self.onLayoutFinish.append(self.refresh)
 
+        _add_scroll_actions(self, "state")
     def refresh(self):
         try:
             code, output = run_action("plugin.info", {"plugin_id": self.plugin_id})
