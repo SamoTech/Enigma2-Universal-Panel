@@ -114,17 +114,19 @@ class Dashboard(Screen):
 class ReceiverTelemetry(Screen):
     skin = """
     <screen name="ReceiverTelemetry" position="center,center" size="1000,650" title="Enigma2 Universal Panel">
-        <widget name="title" position="35,20" size="930,45" font="Regular;30" />
-        <widget name="state" position="35,80" size="930,450" font="Regular;22" valign="top" />
-        <widget name="hint" position="35,555" size="930,35" font="Regular;20" />
+        <widget name="title" position="35,20" size="930,42" font="Regular;30" />
+        <widget name="summary" position="35,62" size="930,30" font="Regular;18" />
+        <widget name="state" position="35,102" size="930,428" font="Regular;21" valign="top" />
+        <widget name="hint" position="35,565" size="930,28" font="Regular;18" />
     </screen>
     """
 
     def __init__(self, session):
         Screen.__init__(self, session)
         self["title"] = Label("Receiver Telemetry")
+        self["summary"] = Label("Runtime, memory and filesystem telemetry")
         self["state"] = Label("Reading telemetry...")
-        self["hint"] = Label("GREEN: Refresh    EXIT: Close")
+        self["hint"] = Label("GREEN: Refresh    EXIT: Back")
         self["actions"] = ActionMap(
             ["OkCancelActions", "ColorActions"],
             {"cancel": self.close, "green": self.refresh},
@@ -434,17 +436,19 @@ class PluginLibrary(Screen):
 class ReceiverCompatibility(Screen):
     skin = """
     <screen name="ReceiverCompatibility" position="center,center" size="1000,650" title="Receiver Compatibility">
-        <widget name="title" position="35,20" size="930,45" font="Regular;30" />
-        <widget name="state" position="35,80" size="930,440" font="Regular;20" valign="top" />
-        <widget name="hint" position="35,555" size="930,35" font="Regular;20" />
+        <widget name="title" position="35,20" size="930,42" font="Regular;30" />
+        <widget name="summary" position="35,62" size="930,30" font="Regular;18" />
+        <widget name="state" position="35,102" size="930,428" font="Regular;20" valign="top" />
+        <widget name="hint" position="35,565" size="930,28" font="Regular;18" />
     </screen>
     """
 
     def __init__(self, session):
         Screen.__init__(self, session)
         self["title"] = Label("Receiver Compatibility")
+        self["summary"] = Label("Fail-closed compatibility evidence")
         self["state"] = Label("Detecting device and image...")
-        self["hint"] = Label("GREEN: Refresh    EXIT: Close")
+        self["hint"] = Label("GREEN: Refresh    EXIT: Back")
         self["actions"] = ActionMap(
             ["OkCancelActions", "ColorActions"],
             {"ok": self.close, "cancel": self.close, "green": self.refresh},
@@ -602,17 +606,19 @@ class CommunityInstallerCatalog(Screen):
 class PackageBrowser(Screen):
     skin = """
     <screen name="PackageBrowser" position="center,center" size="1000,650" title="Enigma2 Universal Panel">
-        <widget name="title" position="35,20" size="930,45" font="Regular;30" />
-        <widget name="state" position="35,80" size="930,450" font="Regular;20" valign="top" />
-        <widget name="hint" position="35,555" size="930,35" font="Regular;20" />
+        <widget name="title" position="35,20" size="930,42" font="Regular;30" />
+        <widget name="summary" position="35,62" size="930,30" font="Regular;18" />
+        <widget name="state" position="35,102" size="930,428" font="Regular;20" valign="top" />
+        <widget name="hint" position="35,565" size="930,28" font="Regular;18" />
     </screen>
     """
 
     def __init__(self, session):
         Screen.__init__(self, session)
-        self["title"] = Label("Packages — receiver configured sources")
+        self["title"] = Label("Package Browser")
+        self["summary"] = Label("Receiver-configured package sources")
         self["state"] = Label("Loading package state...")
-        self["hint"] = Label("GREEN: Refresh    EXIT: Close")
+        self["hint"] = Label("GREEN: Refresh    EXIT: Back")
         self["actions"] = ActionMap(["OkCancelActions", "ColorActions"], {"cancel": self.close, "green": self.refresh}, -2)
         self.onLayoutFinish.append(self.refresh)
 
@@ -889,9 +895,10 @@ class RestartGuiProgress(Screen):
 class PluginMetadata(Screen):
     skin = """
     <screen name="PluginMetadata" position="center,center" size="1000,650" title="Enigma2 Universal Panel">
-        <widget name="title" position="35,20" size="930,45" font="Regular;30" />
-        <widget name="state" position="35,80" size="930,450" font="Regular;20" valign="top" />
-        <widget name="hint" position="35,555" size="930,35" font="Regular;20" />
+        <widget name="title" position="35,20" size="930,42" font="Regular;30" />
+        <widget name="summary" position="35,62" size="930,30" font="Regular;18" />
+        <widget name="state" position="35,102" size="930,428" font="Regular;20" valign="top" />
+        <widget name="hint" position="35,565" size="930,28" font="Regular;18" />
     </screen>
     """
 
@@ -899,8 +906,9 @@ class PluginMetadata(Screen):
         Screen.__init__(self, session)
         self.plugin_id = plugin_id
         self["title"] = Label("Plugin Metadata — %s" % plugin_id)
+        self["summary"] = Label("Read-only package and compatibility metadata")
         self["state"] = Label("Loading metadata...")
-        self["hint"] = Label("OK / EXIT: Close")
+        self["hint"] = Label("OK / EXIT: Back")
         self["actions"] = ActionMap(["OkCancelActions"], {"ok": self.close, "cancel": self.close}, -2)
         self.onLayoutFinish.append(self.refresh)
 
