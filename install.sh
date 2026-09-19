@@ -167,6 +167,7 @@ scripts/lib/reboot.sh
 scripts/lib/status.sh
 scripts/lib/telemetry.sh
 scripts/lib/diagnose.sh
+scripts/lib/library.sh
 scripts/lib/validation.sh
 config/capabilities.json
 config/actions.json
