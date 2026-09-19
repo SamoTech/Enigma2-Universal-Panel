@@ -53,6 +53,11 @@ category_aliases = {
     "backup_flash": "multiboot",
     "multi_boot": "multiboot",
     "media_streaming": "media",
+    "iptv_stalker": "iptv",
+    "iptv_streaming": "iptv",
+    "iptv_interface": "iptv",
+    "stalker_portal": "iptv",
+    "iptv_bouquet_generation": "iptv",
     "iptv_interface": "media",
     "iptv_stalker": "media",
     "iptv_streaming": "media",
@@ -63,7 +68,8 @@ category_aliases = {
     "iptv_to_dvb_mapping": "channels",
     "sports_and_satellite": "media",
     "signal_diagnostics": "monitoring",
-    "picons": "gui",
+    "picons": "skins",
+    "skins": "skins",
     "subtitles": "localization",
     "translation": "localization",
     "timeshift": "recording",
@@ -97,6 +103,11 @@ for entry in catalog.get("plugins") or []:
     })
 
 for entry in community.get("entries") or []:
+    # Store shows only independently verified current sources or explicitly admitted sources.
+    # Metadata-only/unverified forum claims stay out of the user-facing Store.
+    admission = admitted_map.get(entry.get("id"))
+    if not admission and entry.get("source_status") not in ("verified", "current_verified"):
+        continue
     health = entry.get("health") or {}
     category_original = entry.get("category", "unknown")
     category = category_original if category_original in canonical_categories else category_aliases.get(category_original, "utilities")
@@ -123,11 +134,12 @@ for entry in community.get("entries") or []:
         "execution_status": entry.get("execution_status", "blocked"),
         "installer_path": entry.get("installer_path"),
         "installer_version": entry.get("installer_version") or entry.get("release_version"),
+        "latest_version": entry.get("latest_version") or entry.get("release_version") or entry.get("installer_version") or "latest source",
         "source_ref": entry.get("source_ref"),
-        "installable": bool(admitted_map.get(entry.get("id"))),
-        "updatable": bool(admitted_map.get(entry.get("id"))),
+        "installable": bool(admission),
+        "updatable": bool(admission),
         "removable": False,
-        "community_admitted": bool(admitted_map.get(entry.get("id"))),
+        "community_admitted": bool(admission),
         "requires_gui_restart": bool((admitted_map.get(entry.get("id")) or {}).get("requires_gui_restart", False)),
         "requires_reboot": bool((admitted_map.get(entry.get("id")) or {}).get("requires_reboot", False)),
     })
