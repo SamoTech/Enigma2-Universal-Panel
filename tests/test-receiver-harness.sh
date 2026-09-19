@@ -55,6 +55,11 @@ case "${1:-}" in
     [ "$2" = "enigma2-plugin-extensions-openwebif" ] || exit 1
     grep -q "^$2 " "$STATE/installed" || printf '%s 2.0\n' "$2" >>"$STATE/installed"
     ;;
+  remove)
+    [ "$2" = "enigma2-plugin-extensions-openwebif" ] || exit 1
+    grep -v "^$2 " "$STATE/installed" >"$STATE/installed.next"
+    mv "$STATE/installed.next" "$STATE/installed"
+    ;;
   *) exit 1 ;;
 esac
 EOF
@@ -138,6 +143,31 @@ PY
   plugin_resolve_install openwebif >"$TMP/install.log"
   grep -q '^enigma2-plugin-extensions-openwebif 2.0$' "$STATE/installed"
   pass "mock receiver install and postcondition"
+
+  if ! plugin_remove_preview openwebif >"$TMP/remove-preview.json" 2>&1; then
+    cat "$TMP/remove-preview.json" >&2
+    fail "mock receiver plugin remove preflight returned blocked"
+  fi
+  python3 - "$TMP/remove-preview.json" <<'PY'
+import json,sys
+d=json.load(open(sys.argv[1]))
+assert d["status"] == "supported"
+assert d["action"] == "remove"
+assert d["removable"] is True
+assert d["installed_version"] == "2.0"
+assert d["compatibility"]["image"] is True
+assert d["compatibility"]["architecture"] is True
+assert d["compatibility"]["package_architecture"] is True
+PY
+  pass "mock receiver plugin remove preflight"
+
+  plugin_remove_id openwebif >"$TMP/remove.log"
+  if grep -q '^enigma2-plugin-extensions-openwebif ' "$STATE/installed"; then
+    fail "mock receiver remove postcondition"
+  fi
+  grep -q 'plugin-remove-id id=openwebif package=enigma2-plugin-extensions-openwebif verified=true installed_before=2.0 installed_after=removed' "$PANEL_LOG" ||
+    fail "remove audit record missing"
+  pass "mock receiver remove and postcondition/audit"
 
   if plugin_resolve_install openairplay >/dev/null 2>&1; then exit 1; fi
   pass "unknown package mapping blocked"
