@@ -153,7 +153,7 @@ Acceptance for current slice:
 Remaining Phase 1.4 work:
 
 - plugin metadata browsing — implemented
-- asynchronous update flow with confirmation
+- asynchronous update flow with confirmation — implemented
 - asynchronous remove flow with confirmation
 - richer audit-history display
 - GUI restart handling when required by verified metadata
@@ -281,7 +281,7 @@ Repository binary-hosting policy remains unchanged.
 5. Native plugin metadata browsing.
 6. Native GUI test/harness coverage.
 7. Native asynchronous package mutation with confirmation/postcondition/audit.
-7. Native receiver-side real-device validation.
+8. Native receiver-side real-device validation.
 8. Core management screens.
 9. Channels/bouquets/EPG.
 10. Settings and backup/recovery.
