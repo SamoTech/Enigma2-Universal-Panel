@@ -106,6 +106,7 @@ EOF
   . "$ROOT/scripts/lib/reboot.sh"
 
   require_root() { return 0; }
+  reboot() { printf '%s\n' "mock reboot requested" >>"$MOCK_REBOOT_LOG"; return 0; }
 
   detect_all() {
     E2_ARCH=x86_64
