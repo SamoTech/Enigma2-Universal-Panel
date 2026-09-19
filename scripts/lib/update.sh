@@ -62,7 +62,7 @@ _panel_extract_panel_version() {
 _panel_validate_version() {
   value="$1"
   printf '%s\n' "$value" | awk '
-    /^[0-9]+(\.[0-9]+)+$/ { ok=1; exit }
+    /^[0-9]+\.[0-9]+\.[0-9]+$/ { ok=1; exit }
     { ok=0; exit }
     END { exit(ok ? 0 : 1) }
   '
