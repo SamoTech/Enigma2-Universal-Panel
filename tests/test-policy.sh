@@ -37,6 +37,9 @@ grep -q 'plugin_remove_preview()' "$ROOT/scripts/lib/plugin-resolver.sh" || fail
 grep -q 'plugin-remove-id' "$ROOT/panel.sh" || fail "plugin ID remove command missing"
 grep -q 'telemetry) print_telemetry' "$ROOT/panel.sh" || fail "telemetry command missing"
 [ -f "$ROOT/scripts/lib/telemetry.sh" ] || fail "telemetry module missing"
+[ -f "$ROOT/plugins/community.json" ] || fail "community registry missing"
+grep -q '"pipe_to_shell": false' "$ROOT/plugins/community.json" || fail "community shell-pipe policy changed"
+grep -q '"default_execution": "blocked_until_explicitly_admitted"' "$ROOT/plugins/community.json" || fail "community admission policy changed"
 pass "source/install policy gates"
 
 if find "$ROOT" -type f \( -name '*.ipk' -o -name '*.deb' \) -print -quit | grep -q .; then
@@ -45,6 +48,7 @@ fi
 pass "no plugin/package binaries"
 
 grep -q 'plugin-preview' "$ROOT/panel.sh" || fail "preview command missing"
+grep -q 'community-catalog' "$ROOT/panel.sh" || fail "community catalog command missing"
 grep -q 'plugin-install-id' "$ROOT/panel.sh" || fail "plugin ID install command missing"
 pass "panel commands"
 
