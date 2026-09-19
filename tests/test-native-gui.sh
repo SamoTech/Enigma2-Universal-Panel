@@ -202,6 +202,9 @@ for value in ("", "OpenWebif", "openwebif;rm", "../../etc/passwd", "openwebif --
     else:
         raise AssertionError("unsafe plugin id accepted: %r" % value)
 
+assert 'Enigma2 Universal Panel v1.8.0' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'PLUGIN_VERSION = "1.8.0"' in Path("Plugins/Extensions/Enigma2UniversalPanel/plugin.py").read_text()
+
 try:
     mod.run_action("receiver.status", {"unexpected": "value"})
 except ValueError:
@@ -211,6 +214,3 @@ else:
 PY
 
 pass "native GUI package, registered actions, parameter validation, shell policy and telemetry wiring"
-
-assert 'Enigma2 Universal Panel v1.8.0' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
-assert 'PLUGIN_VERSION = "1.8.0"' in Path("Plugins/Extensions/Enigma2UniversalPanel/plugin.py").read_text()
