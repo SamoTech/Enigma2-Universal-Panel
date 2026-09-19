@@ -117,16 +117,6 @@ EOF
   . "$ROOT/scripts/lib/compatibility.sh"
   . "$ROOT/scripts/lib/reboot.sh"
 
-for community_id in ciefpplugins ciefptmdbsearch ciefpe2converter ajpanel-direct; do
-  if ! community_preview "$community_id" >"$TMP/$community_id-preview.json" 2>&1; then
-    cat "$TMP/$community_id-preview.json" >&2
-    fail "admitted community installer preview blocked: $community_id"
-  fi
-  grep -q '"status":"supported"' "$TMP/$community_id-preview.json" || fail "community preview status: $community_id"
-  grep -q '"action":"install"' "$TMP/$community_id-preview.json" || fail "community preview action: $community_id"
-done
-pass "admitted direct community installers preview successfully"
-
   require_root() { return 0; }
   reboot() { printf '%s\n' "mock reboot requested" >>"$MOCK_REBOOT_LOG"; return 0; }
 
@@ -151,6 +141,16 @@ pass "admitted direct community installers preview successfully"
     E2_STORAGE_AVAILABLE=99000
     E2_NETWORK=online
   }
+
+for community_id in ciefpplugins ciefptmdbsearch ciefpe2converter ajpanel-direct; do
+  if ! community_preview "$community_id" >"$TMP/$community_id-preview.json" 2>&1; then
+    cat "$TMP/$community_id-preview.json" >&2
+    fail "admitted community installer preview blocked: $community_id"
+  fi
+  grep -q '"status":"supported"' "$TMP/$community_id-preview.json" || fail "community preview status: $community_id"
+  grep -q '"action":"install"' "$TMP/$community_id-preview.json" || fail "community preview action: $community_id"
+done
+pass "admitted direct community installers preview successfully"
 
   [ "$(plugin_native_arch_compatibility all x86_64)" = true ] || fail "architecture all compatibility"
   [ "$(plugin_native_arch_compatibility x86_64 x86_64)" = true ] || fail "exact architecture compatibility"
