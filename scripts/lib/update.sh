@@ -26,6 +26,38 @@ _update_fetch() {
   return 1
 }
 
+panel_update_check() {
+  tmp="$(mktemp /tmp/e2panel-self-update-check.XXXXXX)" || {
+    printf 'status=failed\\nreason=unable_to_create_staging_file\\n'
+    return 1
+  }
+
+  if ! _update_fetch "$PANEL_UPDATE_INSTALLER_URL" "$tmp"; then
+    rm -f "$tmp"
+    printf 'status=failed\\nreason=unable_to_download_official_installer\\n'
+    return 1
+  fi
+
+  if ! sh -n "$tmp"; then
+    rm -f "$tmp"
+    printf 'status=failed\\nreason=installer_syntax_validation_failed\\n'
+    return 1
+  fi
+
+  latest_version="$(sed -n 's/^VERSION="\\([^"]*\\)"$/\\1/p' "$tmp" | head -n 1)"
+  rm -f "$tmp"
+  case "$latest_version" in
+    ''|*[!0-9.]*) printf 'status=failed\\nreason=invalid_official_installer_version\\n'; return 1 ;;
+  esac
+
+  if [ "$latest_version" = "$PANEL_VERSION" ]; then
+    printf 'status=current\\ncurrent_version=%s\\nlatest_version=%s\\nupdate_available=0\\n' "$PANEL_VERSION" "$latest_version"
+  else
+    printf 'status=available\\ncurrent_version=%s\\nlatest_version=%s\\nupdate_available=1\\n' "$PANEL_VERSION" "$latest_version"
+  fi
+  return 0
+}
+
 panel_update() {
   tmp="$(mktemp /tmp/e2panel-self-update.XXXXXX)" || {
     printf 'status=failed\nreason=unable_to_create_staging_file\n'
