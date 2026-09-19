@@ -42,16 +42,19 @@ compatibility_status() {
 
   overall=generic-compatible
   overall_reason="native_enigma2_runtime_detected"
+  image_family="${E2_IMAGE_FAMILY:-unknown}"
+  package_family="${E2_PACKAGE_FAMILY:-unknown}"
+  device_family="${E2_DEVICE_FAMILY:-unknown}"
   if [ "$native_gui" != supported ]; then
     overall=unsupported
     overall_reason="$native_gui_reason"
-  elif [ "$E2_IMAGE_FAMILY" = unknown ]; then
+  elif [ "$image_family" = unknown ]; then
     overall=generic-compatible
     overall_reason="unknown_image_fail_closed_for_image_specific_operations"
-  elif [ "$E2_PACKAGE_FAMILY" = unknown ]; then
+  elif [ "$package_family" = unknown ]; then
     overall=generic-compatible
     overall_reason="package_backend_unknown"
-  elif [ "$E2_DEVICE_FAMILY" = unknown ]; then
+  elif [ "$device_family" = unknown ]; then
     overall=generic-compatible
     overall_reason="device_identity_unknown_but_enigma2_runtime_is_present"
   else
@@ -70,19 +73,19 @@ compatibility_status() {
   printf '  "reason":"%s",
 ' "$overall_reason"
   printf '  "device":{"family":"%s","vendor":"%s","model":"%s","machine":"%s","chipset":"%s","state":"%s","reason":"%s"},
-'     "$E2_DEVICE_FAMILY" "$E2_VENDOR" "$E2_MODEL" "$E2_MACHINE" "$E2_CHIPSET" "$device_state" "$device_reason"
+'     "${E2_DEVICE_FAMILY:-unknown}" "${E2_VENDOR:-unknown}" "${E2_MODEL:-unknown}" "${E2_MACHINE:-unknown}" "${E2_CHIPSET:-unknown}" "$device_state" "$device_reason"
   printf '  "image":{"id":"%s","family":"%s","version":"%s","state":"%s","reason":"%s"},
-'     "$E2_IMAGE" "$E2_IMAGE_FAMILY" "$E2_IMAGE_VERSION" "$image_state" "$image_reason"
+'     "${E2_IMAGE:-unknown}" "${E2_IMAGE_FAMILY:-unknown}" "${E2_IMAGE_VERSION:-unknown}" "$image_state" "$image_reason"
   printf '  "runtime":{"enigma2_binary":"%s","enigma2_version":"%s","python_binary":"%s","python_major":"%s","python_version":"%s","native_gui":"%s"},
-'     "$E2_BIN" "$E2_VERSION" "$E2_PYTHON_BIN" "$E2_PYTHON_MAJOR" "$E2_PYTHON_VERSION" "$native_gui"
+'     "${E2_BIN:-unknown}" "${E2_VERSION:-unknown}" "${E2_PYTHON_BIN:-unknown}" "${E2_PYTHON_MAJOR:-unknown}" "${E2_PYTHON_VERSION:-unknown}" "$native_gui"
   printf '  "package":{"manager":"%s","family":"%s","install_capability":"%s","reason":"%s"},
-'     "$E2_PKG" "$E2_PACKAGE_FAMILY" "$package_install" "$package_install_reason"
+'     "${E2_PKG:-none}" "${E2_PACKAGE_FAMILY:-unknown}" "$package_install" "$package_install_reason"
   printf '  "adapter":"%s",
 ' "$ADAPTER"
   printf '  "architecture":{"raw":"%s","family":"%s"},
-' "$E2_ARCH" "$E2_ARCH_FAMILY"
+' "${E2_ARCH:-unknown}" "${E2_ARCH_FAMILY:-unknown}"
   printf '  "network":"%s",
-' "$E2_NETWORK"
+' "${E2_NETWORK:-unknown}"
   printf '  "real_receiver_validation":false
 '
   printf '}
