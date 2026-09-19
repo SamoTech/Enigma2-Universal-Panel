@@ -141,16 +141,24 @@ plugin_dep_clean() {
 plugin_dependency_status() {
   deps="$1"
   [ -n "$deps" ] || { printf 'none'; return 0; }
+  unresolved=""
   for dep in $(printf '%s' "$deps" | tr ',|' '  '); do
     dep="$(plugin_dep_clean "$dep")"
     [ -n "$dep" ] || continue
+    installed=false
     case "$E2_PKG" in
-      opkg) opkg status "$dep" 2>/dev/null | grep -q '^Status:.*installed' || printf 'missing:%s ' "$dep" ;;
-      apt) dpkg-query -W -f='%{Status}' "$dep" 2>/dev/null | grep -q 'install ok installed' || printf 'missing:%s ' "$dep" ;;
-      ipkg) ipkg status "$dep" 2>/dev/null | grep -q '^Status:.*installed' || printf 'missing:%s ' "$dep" ;;
-      dpkg) dpkg-query -W -f='${Status}' "$dep" 2>/dev/null | grep -q 'install ok installed' || printf 'missing:%s ' "$dep" ;;
+      opkg) opkg status "$dep" 2>/dev/null | grep -q '^Status:.*installed' && installed=true ;;
+      apt) dpkg-query -W -f='\${Status}' "$dep" 2>/dev/null | grep -q 'install ok installed' && installed=true ;;
+      ipkg) ipkg status "$dep" 2>/dev/null | grep -q '^Status:.*installed' && installed=true ;;
+      dpkg) dpkg-query -W -f='\${Status}' "$dep" 2>/dev/null | grep -q 'install ok installed' && installed=true ;;
     esac
+    [ "$installed" = true ] && continue
+    candidate="$(plugin_native_candidate "$dep")"
+    if [ -z "$candidate" ] || [ "$candidate" = "(none)" ]; then
+      unresolved="$unresolved missing:$dep"
+    fi
   done
+  [ -n "$unresolved" ] && printf '%s' "$unresolved" || printf 'resolvable'
 }
 
 plugin_conflict_status() {
@@ -191,6 +199,10 @@ plugin_preview() {
 
   installed="$(plugin_native_installed_version "$pkg")"
   candidate="$(plugin_native_candidate "$pkg")"
+  if [ -z "$candidate" ] || [ "$candidate" = "(none)" ]; then
+    plugin_refresh_sources >/dev/null 2>&1 || true
+    candidate="$(plugin_native_candidate "$pkg")"
+  fi
   native_arch="$(plugin_native_field "$pkg" Architecture)"
   deps="$(plugin_native_field "$pkg" Depends)"
   conflicts="$(plugin_native_field "$pkg" Conflicts)"
