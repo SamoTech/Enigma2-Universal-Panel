@@ -8,9 +8,12 @@ compatibility_status() {
 
   native_gui=blocked
   native_gui_reason="enigma2_runtime_or_python_unavailable"
-  case "$E2_PYTHON_MAJOR" in
+  python_major="${E2_PYTHON_MAJOR:-unknown}"
+  enigma2_bin="${E2_BIN:-unknown}"
+  package_manager="${E2_PKG:-none}"
+  case "$python_major" in
     2|3)
-      [ "$E2_BIN" != unknown ] && {
+      [ "$enigma2_bin" != unknown ] && {
         native_gui=supported
         native_gui_reason="enigma2_runtime_and_python_detected"
       }
@@ -19,7 +22,7 @@ compatibility_status() {
 
   package_install=blocked
   package_install_reason="no_supported_feed_package_manager"
-  case "$E2_PKG" in
+  case "$package_manager" in
     opkg|apt|ipkg)
       package_install=supported
       package_install_reason="receiver_package_manager_detected"
