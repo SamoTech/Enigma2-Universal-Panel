@@ -105,7 +105,7 @@ EOF
   select_adapter
   [ "$E2_DEVICE_FAMILY" = vuplus ] || fail "VU+ device detection"
   [ "$E2_VENDOR" = "VU+" ] || fail "VU+ vendor detection"
-  [ "$E2_MODEL" = vuuno4kse ] || fail "VU+ Uno 4K SE model detection"
+  [ "$E2_MODEL" = "VU+ Uno 4K SE" ] || fail "VU+ Uno 4K SE canonical model detection"
   [ "$E2_MACHINE" = vuuno4kse ] || fail "VU+ Uno 4K SE machine detection"
   [ "$E2_IMAGE" = openatv ] || fail "OpenATV image detection on VU+"
   [ "$E2_IMAGE_FAMILY" = oe-alliance ] || fail "OpenATV image family on VU+"
