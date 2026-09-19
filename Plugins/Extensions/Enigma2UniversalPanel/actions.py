@@ -3,6 +3,8 @@
 import re
 import subprocess
 
+from .debug import log
+
 
 ACTIONS = {
     "receiver.status": {"command": ("/usr/local/bin/e2panel", "status"), "risk": "low", "confirmation": False},
@@ -66,6 +68,7 @@ def build_action_command(action_id, params=None):
 
 
 def _run(command):
+    log("action.start", command=command)
     process = subprocess.Popen(
         command,
         shell=False,
@@ -74,7 +77,9 @@ def _run(command):
         universal_newlines=True,
     )
     stdout, _ = process.communicate()
-    return process.returncode, (stdout or "").strip()
+    output = (stdout or "").strip()
+    log("action.result", command=command, returncode=process.returncode, output=output)
+    return process.returncode, output
 
 
 def run_action(action_id, params=None):
