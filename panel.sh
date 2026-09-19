@@ -18,6 +18,7 @@ Enigma2 Universal Panel $PANEL_VERSION
 Usage:
   e2panel status | capabilities | compatibility | diagnose
   e2panel package-state
+  e2panel audit-history
   e2panel plugin-source-status | plugin-refresh | plugin-list [pattern]
   e2panel plugin-info <package>
   e2panel plugin-resolve <plugin-id>
@@ -40,7 +41,7 @@ EOF
 menu() {
   while :; do
     printf '\nEnigma2 Universal Panel\n'
-    printf '1) Status\n2) Capabilities\n3) Diagnostics\n4) Package/source state\n5) Plugin source status\n6) Refresh sources\n7) Discover packages\n8) Resolve plugin ID\n9) Preview plugin install\n10) Install package\n11) Update package\n12) Remove package\n13) Restart Enigma2\n14) Restart GUI\n15) Reboot\n16) Exit\nSelect: '
+    printf '1) Status\n2) Capabilities\n3) Diagnostics\n4) Package/source state\n5) Plugin source status\n6) Refresh sources\n7) Discover packages\n8) Resolve plugin ID\n9) Preview plugin install\n10) Install package\n11) Update package\n12) Remove package\n13) Restart Enigma2\n14) Restart GUI\n15) Reboot\n16) Audit history\n17) Exit\nSelect: '
     read choice
     case "$choice" in
       1) print_status;; 2) print_capabilities;; 3) diagnose;; 4) plugin_package_state;;
@@ -53,7 +54,7 @@ menu() {
       12) printf 'Package: '; read pkg; printf 'Type REMOVE: '; read confirm; [ "$confirm" = REMOVE ] && action_plugin_remove "$pkg";;
       13) action_restart_enigma2;; 14) action_restart_gui;;
       15) printf 'Type REBOOT: '; read confirm; [ "$confirm" = REBOOT ] && action_reboot;;
-      16) return 0;; *) printf 'Invalid selection\n';;
+      16) audit_history;; 17) return 0;; *) printf 'Invalid selection\n';;
     esac
   done
 }
@@ -61,6 +62,7 @@ cmd="$1"; shift 2>/dev/null || true
 case "$cmd" in
   status) print_status;; capabilities) print_capabilities;; diagnose) diagnose;;
   package-state) plugin_package_state;;
+  audit-history) audit_history;;
   telemetry) print_telemetry;;
   compatibility) print_compatibility;;
   community-catalog) community_catalog;;
