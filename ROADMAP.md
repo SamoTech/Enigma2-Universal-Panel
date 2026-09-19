@@ -126,7 +126,7 @@ Unknown values must be displayed as unknown, not inferred.
 
 ### 1.4 Plugin/package GUI
 
-Status: IN PROGRESS — metadata browsing and async mutation implemented
+Status: IN PROGRESS — metadata browsing and async install/update/remove mutation implemented
 
 Current slice:
 
@@ -154,7 +154,7 @@ Remaining Phase 1.4 work:
 
 - plugin metadata browsing — implemented
 - asynchronous update flow with confirmation — implemented
-- asynchronous remove flow with confirmation
+- asynchronous remove flow with confirmation — implemented
 - richer audit-history display
 - GUI restart handling when required by verified metadata
 
