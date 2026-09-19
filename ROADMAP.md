@@ -177,6 +177,7 @@ Acceptance for current slice:
 - GUI restart handling is offered only when verified plugin metadata declares `requires_gui_restart=true`.
 - Restart execution uses the registered `receiver.restart_gui` action and an explicit remote-control confirmation.
 - Restart requests are audited by the native receiver action layer.
+- Verified reboots persist a receiver-side intent, require a boot identity source, and verify package state after the next boot before clearing the intent.
 
 Remaining Phase 1.4 work:
 
@@ -343,8 +344,9 @@ Repository binary-hosting policy remains unchanged.
 12. Native receiver-side real-device validation across representative device/image matrix.
 13. Richer audit-history display.
 14. GUI restart handling when required by verified metadata.
-15. Core management screens.
-15. Channels/bouquets/EPG.
+15. Verified reboot handling when required by plugin metadata.
+16. Core management screens.
+17. Channels/bouquets/EPG.
 16. Settings and backup/recovery.
 17. Local automation.
 18. Optional remote control plane.
