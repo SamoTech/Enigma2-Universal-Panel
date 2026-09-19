@@ -71,11 +71,13 @@ Status: COMPLETE
 
 ## Phase 1 — Native Enigma2 GUI foundation
 
-Status: NEXT
+Status: IN PROGRESS
 
 Goal: make the project a real Enigma2 application that opens and runs on the receiver itself.
 
 ### 1.1 Plugin registration
+
+Status: COMPLETE
 
 - Create native Enigma2 plugin package.
 - Register through Enigma2 PluginDescriptor.
@@ -90,6 +92,8 @@ Acceptance:
 
 ### 1.2 Native screen framework
 
+Status: COMPLETE
+
 - Main dashboard.
 - MenuList-based navigation.
 - Action/status screens.
@@ -103,6 +107,8 @@ Acceptance:
 - No browser or SSH session is required.
 
 ### 1.3 Receiver dashboard
+
+Status: COMPLETE for the initial read-only dashboard slice.
 
 Expose evidence-backed runtime state:
 
@@ -119,6 +125,8 @@ Expose evidence-backed runtime state:
 Unknown values must be displayed as unknown, not inferred.
 
 ### 1.4 Plugin/package GUI
+
+Status: NEXT
 
 Build native screens over the existing resolver/action layer:
 
