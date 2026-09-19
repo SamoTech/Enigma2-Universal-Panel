@@ -65,14 +65,24 @@ plugin_list() {
 plugin_info() {
   plugin_validate_package "$1" || return 2
   plugin_package_manager || return 1
-  case "$E2_PKG" in opkg) opkg info "$1";; apt) apt-cache show "$1";; ipkg) ipkg info "$1";; esac
+  case "$E2_PKG" in
+    opkg) opkg info "$1";;
+    apt) apt-cache show "$1";;
+    ipkg) ipkg info "$1";;
+    dpkg) dpkg-query -s "$1";;
+  esac
 }
 plugin_install() {
   plugin_validate_package "$1" || return 2
   plugin_package_manager || return 1
   require_root || return 1
   info "Installing package from configured receiver feeds: $1"
-  case "$E2_PKG" in opkg) opkg install "$1";; apt) DEBIAN_FRONTEND=noninteractive apt-get install -y "$1";; ipkg) ipkg install "$1";; esac
+  case "$E2_PKG" in
+    opkg) opkg install "$1";;
+    apt) DEBIAN_FRONTEND=noninteractive apt-get install -y "$1";;
+    ipkg) ipkg install "$1";;
+    dpkg) error "Debian receiver has no supported configured-feed installer"; return 1;;
+  esac
 }
 plugin_update() {
   plugin_validate_package "$1" || return 2
@@ -90,7 +100,12 @@ plugin_remove() {
   plugin_package_manager || return 1
   require_root || return 1
   info "Removing package: $1"
-  case "$E2_PKG" in opkg) opkg remove "$1";; apt) DEBIAN_FRONTEND=noninteractive apt-get remove -y "$1";; ipkg) ipkg remove "$1";; esac
+  case "$E2_PKG" in
+    opkg) opkg remove "$1";;
+    apt) DEBIAN_FRONTEND=noninteractive apt-get remove -y "$1";;
+    ipkg) ipkg remove "$1";;
+    dpkg) error "Debian receiver removal requires an apt-capable configured source"; return 1;;
+  esac
 }
 plugin_installed() {
   plugin_validate_package "$1" || return 2
