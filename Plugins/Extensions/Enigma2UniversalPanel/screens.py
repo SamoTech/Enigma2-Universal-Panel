@@ -3,6 +3,7 @@ import json
 from Components.ActionMap import ActionMap
 from Components.Label import Label
 from Components.MenuList import MenuList
+from Components.ScrollLabel import ScrollLabel
 from Screens.InputBox import InputBox
 from enigma import eConsoleAppContainer
 from Screens.MessageBox import MessageBox
@@ -11,6 +12,21 @@ from Screens.Screen import Screen
 from .actions import build_action_command, run_action
 from .debug import DebugActionMap, DebugMenuList, log
 from .audit_history import AuditHistory
+
+
+def _add_scroll_actions(screen, widget_name):
+    widget = screen[widget_name]
+    screen["scroll_actions_%s" % widget_name] = DebugActionMap(
+        ["DirectionActions"],
+        {
+            "up": widget.pageUp,
+            "down": widget.pageDown,
+            "left": widget.pageUp,
+            "right": widget.pageDown,
+        },
+        -1,
+    )
+
 
 
 class ActionResult(Screen):
@@ -23,13 +39,15 @@ class ActionResult(Screen):
     </screen>
     """
 
+
     def __init__(self, session, title, text):
         Screen.__init__(self, session)
         self["title"] = Label(title)
         self["subtitle"] = Label("Receiver-local result")
-        self["text"] = Label(text or "No output.")
+        self["text"] = ScrollLabel(text or "No output.")
         self["hint"] = Label("OK / EXIT: Back")
         self["actions"] = DebugActionMap(["OkCancelActions"], {"ok": self.close, "cancel": self.close}, -2)
+        _add_scroll_actions(self, "text")
 
 
 class Dashboard(Screen):
@@ -46,11 +64,12 @@ class Dashboard(Screen):
         Screen.__init__(self, session)
         self["title"] = Label("Dashboard")
         self["summary"] = Label("Receiver-local system status")
-        self["state"] = Label("Loading receiver state...")
+        self["state"] = ScrollLabel("Loading receiver state...")
         self["hint"] = Label("GREEN: Refresh    EXIT: Back")
         self["actions"] = ActionMap(["OkCancelActions", "ColorActions"], {"cancel": self.close, "green": self.refresh}, -2)
         self.onLayoutFinish.append(self.refresh)
 
+        _add_scroll_actions(self, "state")
     def _kv(self, text):
         values = {}
         for line in text.splitlines():
@@ -126,13 +145,14 @@ class ReceiverTelemetry(Screen):
         Screen.__init__(self, session)
         self["title"] = Label("Receiver Telemetry")
         self["summary"] = Label("Runtime, memory and filesystem telemetry")
-        self["state"] = Label("Reading telemetry...")
+        self["state"] = ScrollLabel("Reading telemetry...")
         self["hint"] = Label("GREEN: Refresh    EXIT: Back")
         self["actions"] = ActionMap(
             ["OkCancelActions", "ColorActions"],
             {"cancel": self.close, "green": self.refresh},
             -2,
         )
+        _add_scroll_actions(self, "state")
         self.onLayoutFinish.append(self.refresh)
 
     @staticmethod
@@ -523,7 +543,7 @@ class ReceiverCompatibility(Screen):
         Screen.__init__(self, session)
         self["title"] = Label("Receiver Compatibility")
         self["summary"] = Label("Fail-closed compatibility evidence")
-        self["state"] = Label("Detecting device and image...")
+        self["state"] = ScrollLabel("Detecting device and image...")
         self["hint"] = Label("GREEN: Refresh    EXIT: Back")
         self["actions"] = ActionMap(
             ["OkCancelActions", "ColorActions"],
@@ -532,6 +552,7 @@ class ReceiverCompatibility(Screen):
         )
         self.onLayoutFinish.append(self.refresh)
 
+        _add_scroll_actions(self, "state")
     def refresh(self):
         try:
             code, output = run_action("receiver.compatibility")
@@ -939,13 +960,14 @@ class PackageInstallProgress(Screen):
         self.output = ""
         self.finished = False
         self["title"] = Label("%s: %s" % (operation, plugin_id))
-        self["state"] = Label("Starting native package operation...")
+        self["state"] = ScrollLabel("Starting native package operation...")
         self["hint"] = Label("Please wait — %s running" % operation.lower())
         self["actions"] = ActionMap(
             ["OkCancelActions"],
             {"ok": self._close_when_finished, "cancel": self._close_when_finished},
             -2,
         )
+        _add_scroll_actions(self, "state")
         self.container = eConsoleAppContainer()
         self.container.dataAvail.append(self._data_available)
         self.container.appClosed.append(self._finished)
@@ -1061,7 +1083,7 @@ class RebootProgress(Screen):
         self.finished = False
         self.plugin_id = plugin_id
         self["title"] = Label("Rebooting Receiver")
-        self["state"] = Label(
+        self["state"] = ScrollLabel(
             "Persisting reboot verification intent...\n\n"
             "The receiver will restart now. Verification will occur the next time "
             "Enigma2 Universal Panel is opened."
@@ -1072,6 +1094,7 @@ class RebootProgress(Screen):
             {"ok": self._close_when_finished, "cancel": self._close_when_finished},
             -2,
         )
+        _add_scroll_actions(self, "state")
         self.container = eConsoleAppContainer()
         self.container.appClosed.append(self._finished)
         self.onClose.append(self._cleanup)
@@ -1119,13 +1142,14 @@ class RestartGuiProgress(Screen):
         Screen.__init__(self, session)
         self.finished = False
         self["title"] = Label("Restarting Enigma2 GUI")
-        self["state"] = Label("Starting the controlled GUI restart action...")
+        self["state"] = ScrollLabel("Starting the controlled GUI restart action...")
         self["hint"] = Label("Please wait — Enigma2 may restart this interface")
         self["actions"] = ActionMap(
             ["OkCancelActions"],
             {"ok": self._close_when_finished, "cancel": self._close_when_finished},
             -2,
         )
+        _add_scroll_actions(self, "state")
         self.container = eConsoleAppContainer()
         self.container.appClosed.append(self._finished)
         self.onClose.append(self._cleanup)
@@ -1174,11 +1198,12 @@ class PluginMetadata(Screen):
         self.plugin_id = plugin_id
         self["title"] = Label("Plugin Metadata — %s" % plugin_id)
         self["summary"] = Label("Read-only package and compatibility metadata")
-        self["state"] = Label("Loading metadata...")
+        self["state"] = ScrollLabel("Loading metadata...")
         self["hint"] = Label("OK / EXIT: Back")
         self["actions"] = ActionMap(["OkCancelActions"], {"ok": self.close, "cancel": self.close}, -2)
         self.onLayoutFinish.append(self.refresh)
 
+        _add_scroll_actions(self, "state")
     def refresh(self):
         try:
             code, output = run_action("plugin.info", {"plugin_id": self.plugin_id})
