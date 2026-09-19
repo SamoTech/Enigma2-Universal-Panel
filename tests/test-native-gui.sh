@@ -51,6 +51,7 @@ from pathlib import Path
 import importlib.util
 
 p = Path("Plugins/Extensions/Enigma2UniversalPanel/actions.py").read_text()
+screens = Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert "ACTIONS =" in p
 assert '"receiver.status"' in p
 assert '"receiver.telemetry"' in p
