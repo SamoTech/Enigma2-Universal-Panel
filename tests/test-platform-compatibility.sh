@@ -156,6 +156,8 @@ EOF
 
 profile_python2_legacy() {
   reset_root
+  E2_TEST_DISABLE_PYTHON3=1
+  export E2_TEST_DISABLE_PYTHON3
   rm -f "$BIN/python3"
   cat >"$BIN/python" <<'EOF'
 #!/bin/sh
@@ -174,6 +176,7 @@ EOF
   detect_all
   capability native_gui || fail "Python 2 native GUI capability"
   [ "$E2_PYTHON_MAJOR" = 2 ] || fail "Python 2 detection"
+  [ "$E2_PYTHON_VERSION" = 2.7.18 ] || fail "Python 2 version detection"
   pass "Legacy Python 2 runtime detection"
 }
 
