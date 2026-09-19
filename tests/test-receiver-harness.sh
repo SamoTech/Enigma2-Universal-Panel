@@ -87,7 +87,6 @@ EOF
   . "$ROOT/scripts/lib/plugins.sh"
   . "$ROOT/scripts/lib/plugin-resolver.sh"
 
-  # Override hardware detection with deterministic mock-receiver facts.
   detect_all() {
     E2_ARCH=x86_64
     E2_ARCH_FAMILY=x86_64
