@@ -9,6 +9,7 @@ from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 
 from .actions import build_action_command, run_action
+from .debug import DebugActionMap, DebugMenuList, log
 from .audit_history import AuditHistory
 
 
@@ -28,7 +29,7 @@ class ActionResult(Screen):
         self["subtitle"] = Label("Receiver-local result")
         self["text"] = Label(text or "No output.")
         self["hint"] = Label("OK / EXIT: Back")
-        self["actions"] = ActionMap(["OkCancelActions"], {"ok": self.close, "cancel": self.close}, -2)
+        self["actions"] = DebugActionMap(["OkCancelActions"], {"ok": self.close, "cancel": self.close}, -2)
 
 
 class Dashboard(Screen):
@@ -194,7 +195,7 @@ class PluginLibrary(Screen):
         Screen.__init__(self, session)
         self["title"] = Label("Plugin Library")
         self["summary"] = Label("Loading library...")
-        self["menu"] = MenuList([])
+        self["menu"] = DebugMenuList([])
         self["details"] = Label("Loading plugin library...")
         self["key_red"] = Label("RED: Category")
         self["key_green"] = Label("GREEN: Install")
