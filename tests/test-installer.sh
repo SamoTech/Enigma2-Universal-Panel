@@ -32,6 +32,7 @@ grep -q 'json.load' "$INSTALL" || fail "JSON validation missing"
 grep -q 'scripts/lib/library.sh' "$INSTALL" || fail "plugin library runtime file missing"
 grep -q 'Plugins/Extensions/Enigma2UniversalPanel/debug.py' "$INSTALL" || fail "native UI debug logger missing"
 grep -q 'scripts/lib/validation.sh' "$INSTALL" || fail "receiver validation runtime file missing"
+grep -q 'scripts/lib/update.sh' "$INSTALL" || fail "panel self-update runtime file missing"
 
 grep -q 'BACKUP_DEST=' "$INSTALL" || fail "runtime backup path missing"
 grep -q 'BACKUP_PLUGIN=' "$INSTALL" || fail "plugin backup path missing"
