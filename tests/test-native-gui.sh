@@ -56,6 +56,7 @@ assert '"receiver.status"' in p
 assert '"receiver.telemetry"' in p
 assert '"receiver.compatibility"' in p
 assert '"receiver.audit_history"' in p
+assert '"receiver.restart_gui"' in p
 assert '"plugin.resolve"' in p
 assert '"plugin.preview"' in p
 assert '"plugin.install"' in p
@@ -75,6 +76,9 @@ assert '_prepare_remove' in Path("Plugins/Extensions/Enigma2UniversalPanel/scree
 assert '_prepare_update' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'Receiver Telemetry' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'class ReceiverTelemetry' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'class RestartGuiProgress' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'GUI restart required' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'receiver.restart_gui' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'class ReceiverCompatibility' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'receiver.compatibility' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'Community Sources' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
