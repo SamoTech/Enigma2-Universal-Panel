@@ -185,9 +185,9 @@ import json,sys
 d=json.load(open(sys.argv[1]))
 assert d["schema_version"] == 1
 assert d["type"] == "plugin_library"
-assert d["counts"]["community"] == 21
-assert d["counts"]["feed_managed"] == len(d["entries"]) - 21
-assert d["counts"]["community_blocked"] == 21
+assert d["counts"]["community"] == 49
+assert d["counts"]["feed_managed"] == len(d["entries"]) - 49
+assert d["counts"]["community_blocked"] == 49
 ids = [x["id"] for x in d["entries"]]
 assert "openwebif" in ids
 assert "ajpanel" in ids
