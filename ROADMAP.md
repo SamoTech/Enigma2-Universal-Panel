@@ -347,10 +347,10 @@ Repository binary-hosting policy remains unchanged.
 15. Verified reboot handling when required by plugin metadata.
 16. Core management screens.
 17. Channels/bouquets/EPG.
-16. Settings and backup/recovery.
-17. Local automation.
-18. Optional remote control plane.
-19. Optional web/fleet layer.
+18. Settings and backup/recovery.
+19. Local automation.
+20. Optional remote control plane.
+21. Optional web/fleet layer.
 
 ## Definition of done for the native GUI milestone
 
