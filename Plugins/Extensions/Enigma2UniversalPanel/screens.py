@@ -8,7 +8,7 @@ from enigma import eConsoleAppContainer
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 
-from .actions import run_action
+from .actions import build_action_command, run_action
 
 
 class ActionResult(Screen):
