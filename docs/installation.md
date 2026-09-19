@@ -1,39 +1,61 @@
 # Installation Guide
 
-This document provides detailed installation instructions for the Enigma2 Universal Panel.
+The final product is a native Enigma2 GUI plugin. Installation therefore has two layers:
+
+1. bootstrap the receiver-side runtime;
+2. install/register the native Enigma2 plugin package.
 
 ## Prerequisites
 
-- Enigma2 receiver running a supported Linux image (OpenATV, OpenVIX, DreamOS, etc.)
-- Network/internet access on the receiver
-- SSH or Telnet access to the receiver
-- Root privileges
+- Enigma2 receiver running a supported Linux image
+- Network access for bootstrap/package discovery
+- SSH or Telnet access for the current bootstrap path
+- root privileges
 
-## Bootstrap Install
+## Current bootstrap
 
-### Via wget
+    wget -O - https://raw.githubusercontent.com/SamoTech/Enigma2-Universal-Panel/main/install.sh | sh
 
-```sh
-wget -O - https://raw.githubusercontent.com/SamoTech/Enigma2-Universal-Panel/main/install.sh | sh
-```
+or:
 
-### Via curl
+    curl -fsSL https://raw.githubusercontent.com/SamoTech/Enigma2-Universal-Panel/main/install.sh | sh
 
-```sh
-curl -fsSL https://raw.githubusercontent.com/SamoTech/Enigma2-Universal-Panel/main/install.sh | sh
-```
+The bootstrap currently establishes the receiver-side runtime and management shell. It is not yet the final native GUI installation mechanism.
 
-## What the Bootstrap Does
+## Native GUI milestone
 
-1. Verifies root access
-2. Detects the package manager (opkg preferred)
-3. Detects receiver architecture
-4. Collects system information
-5. Checks for `wget` or `curl`
-6. Creates the working directory at `/tmp/enigma2-universal-panel`
-7. Writes an environment file for use by future modules
-8. Prints a system summary
+The native GUI implementation must install a standard Enigma2 plugin under the receiver's plugin path and register it with Enigma2 so that it appears in the normal Plugins/Extensions menu.
 
-## After Bootstrap
+The completed installation experience should be:
 
-Once bootstrap completes, the working environment is ready at `/tmp/enigma2-universal-panel`. Future module installers will build on this foundation.
+Install panel
+   |
+   v
+Enigma2 plugin registered
+   |
+   v
+Plugins / Extensions
+   |
+   v
+Enigma2 Universal Panel
+   |
+   v
+Native remote-control GUI
+
+No web server is required.
+
+## Validation after installation
+
+The release acceptance test must verify:
+
+- plugin registration;
+- appearance in the normal Plugins/Extensions menu;
+- successful launch;
+- remote-control navigation;
+- dashboard loading;
+- capability display;
+- package/plugin discovery;
+- preview and confirmation flow;
+- postcondition verification.
+
+A mock harness is not a substitute for testing on a real Enigma2 receiver.
