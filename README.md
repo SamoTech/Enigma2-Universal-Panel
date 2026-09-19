@@ -1,12 +1,18 @@
 # Enigma2 Universal Panel
 
-A Universal Management Layer for Enigma2 receivers, implemented first as a **native Enigma2 GUI plugin**.
+A native **Enigma2 Plugin Library / Store** and receiver management application. The primary user experience is discovering, inspecting, and installing Enigma2 plugins directly from the receiver, with diagnostics and management capabilities supporting that library.
 
 The panel runs directly on the receiver, appears in the normal Enigma2 Plugins/Extensions menu, and is controlled with the receiver remote control. A browser, web server, phone, PC, SSH session or external control plane is not required for normal operation.
 
 ## Architecture
 
-Enigma2 Universal Panel — native GUI
+Enigma2 Universal Panel — native Enigma2 GUI
+        |
+        +--> Plugin Library / Store
+        |       +--> receiver-feed catalog
+        |       +--> community catalog
+        |       +--> search / categories / details
+        |       +--> compatibility / install preview
         |
         v
 GUI Controller Layer
@@ -40,7 +46,7 @@ The existing shell/CLI runtime remains a receiver-side foundation and diagnostic
 - Capability and compatibility model
 - Adapter registry
 - Registered action/policy dispatcher
-- Plugin catalog and source metadata
+- Plugin Library / Store catalog and source metadata
 - Source-driven receiver package/plugin management
 - Normalized runtime package state
 - Evidence-backed receiver telemetry
@@ -50,13 +56,28 @@ The existing shell/CLI runtime remains a receiver-side foundation and diagnostic
 - Mock receiver harness and policy tests
 - Master native-GUI roadmap
 
-## Native GUI target
+## Native Plugin Library / Store target
 
-The installed plugin will provide:
+The installed plugin will provide a store-like library as its primary screen:
+
+- Plugin Library / Store
+- Search
+- Categories
+- Plugin details
+- Compatibility and availability state
+- Install from receiver-configured feeds
+- Installed / update state
+- Community source discovery with explicit blocked/admitted state
+
+Receiver information, diagnostics, packages, channels, settings, maintenance, and recovery remain supporting management areas.
+
+## Native management areas
+
+The installed plugin will also provide:
 
 - Dashboard
 - Receiver information and capabilities
-- Plugins
+- Packages
 - Packages
 - Sources/feeds
 - Channels and bouquets
@@ -97,6 +118,6 @@ The current bootstrap installs the receiver-side runtime and native GUI. The plu
 
 The authoritative roadmap is ROADMAP.md.
 
-The immediate milestone is the native Enigma2 GUI plugin: registration, screens, remote-control navigation, dashboard, and integration with the existing action/policy/resolver layers.
+The immediate product milestone is the native Enigma2 Plugin Library / Store: registration, store navigation, catalog/search/categories, plugin details, compatibility preview, and controlled installation through the existing action/policy/resolver layers.
 
 Remote management and web/fleet management are later phases, not prerequisites for the receiver application.
