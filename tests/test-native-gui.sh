@@ -93,8 +93,8 @@ assert '"ok": self._close_when_finished' in Path("Plugins/Extensions/Enigma2Univ
 assert '"cancel": self._close_when_finished' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'unregistered action' in p
 assert "_PLUGIN_ID" in p
-assert '"subprocess.Popen"' in p
-assert '"universal_newlines=True"' in p
+assert 'subprocess.Popen' in p
+assert 'universal_newlines=True' in p
 
 spec = importlib.util.spec_from_file_location("e2_actions", "Plugins/Extensions/Enigma2UniversalPanel/actions.py")
 mod = importlib.util.module_from_spec(spec)
