@@ -39,15 +39,6 @@ if community_contains_unsafe_transport "$ROOT/tests/test-receiver-harness.sh"; t
 fi
 pass "admitted community installer transport flags accepted"
 
-for community_id in ciefpplugins ciefptmdbsearch ciefpe2converter ajpanel-direct; do
-  if ! community_preview "$community_id" >"$TMP/$community_id-preview.json" 2>&1; then
-    cat "$TMP/$community_id-preview.json" >&2
-    fail "admitted community installer preview blocked: $community_id"
-  fi
-  grep -q '"status":"supported"' "$TMP/$community_id-preview.json" || fail "community preview status: $community_id"
-  grep -q '"action":"install"' "$TMP/$community_id-preview.json" || fail "community preview action: $community_id"
-done
-pass "admitted direct community installers preview successfully"
 
 TMP="$(mktemp -d)"
 BIN="$TMP/bin"
@@ -125,6 +116,16 @@ EOF
   . "$ROOT/scripts/lib/compat.sh"
   . "$ROOT/scripts/lib/compatibility.sh"
   . "$ROOT/scripts/lib/reboot.sh"
+
+for community_id in ciefpplugins ciefptmdbsearch ciefpe2converter ajpanel-direct; do
+  if ! community_preview "$community_id" >"$TMP/$community_id-preview.json" 2>&1; then
+    cat "$TMP/$community_id-preview.json" >&2
+    fail "admitted community installer preview blocked: $community_id"
+  fi
+  grep -q '"status":"supported"' "$TMP/$community_id-preview.json" || fail "community preview status: $community_id"
+  grep -q '"action":"install"' "$TMP/$community_id-preview.json" || fail "community preview action: $community_id"
+done
+pass "admitted direct community installers preview successfully"
 
   require_root() { return 0; }
   reboot() { printf '%s\n' "mock reboot requested" >>"$MOCK_REBOOT_LOG"; return 0; }
