@@ -128,10 +128,10 @@ assert "_PLUGIN_ID" in p
 assert 'subprocess.Popen' in p
 assert 'universal_newlines=True' in p
 assert 'class PanelSectionMenu' in screens
-assert '("STORE", (' in screens
-assert '("RECEIVER", (' in screens
-assert '("MANAGEMENT", (' in screens
-assert '("ADVANCED", (' in screens
+assert '("Store", (' in screens
+assert '("Receiver", (' in screens
+assert '("Management", (' in screens
+assert '("Advanced", (' in screens
 assert 'Audit History' in Path("Plugins/Extensions/Enigma2UniversalPanel/plugin.py").read_text()
 
 spec = importlib.util.spec_from_file_location("e2_actions", "Plugins/Extensions/Enigma2UniversalPanel/actions.py")
