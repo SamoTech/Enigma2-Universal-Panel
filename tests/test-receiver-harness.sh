@@ -39,6 +39,7 @@ if community_contains_unsafe_transport "$ROOT/tests/test-receiver-harness.sh"; t
 fi
 pass "admitted community installer transport flags accepted"
 
+
 TMP="$(mktemp -d)"
 BIN="$TMP/bin"
 STATE="$TMP/state"
@@ -140,6 +141,16 @@ EOF
     E2_STORAGE_AVAILABLE=99000
     E2_NETWORK=online
   }
+
+for community_id in ciefpplugins ciefptmdbsearch ciefpe2converter ajpanel-direct; do
+  if ! community_preview "$community_id" >"$TMP/$community_id-preview.json" 2>&1; then
+    cat "$TMP/$community_id-preview.json" >&2
+    fail "admitted community installer preview blocked: $community_id"
+  fi
+  grep -q '"status":"supported"' "$TMP/$community_id-preview.json" || fail "community preview status: $community_id"
+  grep -q '"action":"install"' "$TMP/$community_id-preview.json" || fail "community preview action: $community_id"
+done
+pass "admitted direct community installers preview successfully"
 
   [ "$(plugin_native_arch_compatibility all x86_64)" = true ] || fail "architecture all compatibility"
   [ "$(plugin_native_arch_compatibility x86_64 x86_64)" = true ] || fail "exact architecture compatibility"

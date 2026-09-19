@@ -48,6 +48,9 @@ grep -q '"allow_admitted_insecure_transport": true' "$ROOT/plugins/community-adm
 grep -q '"installer_blob_sha_required": true' "$ROOT/plugins/community-admitted.json" || fail "community source pin policy missing"
 grep -q '"tls_certificate_verification_required": true' "$ROOT/plugins/community-admitted.json" || fail "community source TLS policy missing"
 grep -q '"community_confirmed"' "$ROOT/plugins/community-admitted.json" || fail "no confirmed community installer admitted"
+for id in ciefpplugins ciefptmdbsearch ciefpe2converter youtube-opensource-dreamos ajpanel-direct; do
+  grep -q '"id": "'"$id"'"' "$ROOT/plugins/community-admitted.json" || fail "admitted direct installer missing: $id"
+done
 pass "source/install policy gates"
 
 if find "$ROOT" -type f \( -name '*.ipk' -o -name '*.deb' \) -print -quit | grep -q .; then
