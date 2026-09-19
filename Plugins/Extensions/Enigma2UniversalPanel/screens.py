@@ -270,6 +270,7 @@ class Enigma2UniversalPanel(Screen):
         ("Plugin Metadata", "plugin.info"),
         ("Install Plugin", "plugin.install"),
         ("Update Plugin", "plugin.update"),
+        ("Remove Plugin", "plugin.remove"),
         ("Receiver Status", "receiver.status"),
         ("Capabilities", "receiver.capabilities"),
         ("Diagnostics", "receiver.diagnose"),
@@ -335,6 +336,78 @@ class Enigma2UniversalPanel(Screen):
             self.session.open(MessageBox, "Action rejected: %s" % exc, MessageBox.TYPE_ERROR)
             return
         self.session.open(PackageInstallProgress, plugin_id, command, "Updating", requires_gui_restart)
+
+    def _prepare_remove(self, value):
+        if value is None or value.strip() == "":
+            return
+        plugin_id = value.strip()
+        try:
+            code, output = run_action("plugin.remove_preview", {"plugin_id": plugin_id})
+        except Exception as exc:
+            self.session.open(MessageBox, "Action rejected: %s" % exc, MessageBox.TYPE_ERROR)
+            return
+        try:
+            preview = json.loads(output)
+        except (TypeError, ValueError):
+            self.session.open(MessageBox, "Invalid removal safety evidence returned by receiver.", MessageBox.TYPE_ERROR)
+            return
+        if code != 0 or preview.get("status") != "supported" or preview.get("action") != "remove":
+            self.session.open(
+                MessageBox,
+                "Removal blocked.\n\n"
+                "Status: %s\n"
+                "Reason: %s\n"
+                "Removable: %s\n"
+                "Installed: %s"
+                % (
+                    preview.get("status", "unknown"),
+                    preview.get("reason", "unknown"),
+                    preview.get("removable", "unknown"),
+                    preview.get("installed_version", "unknown"),
+                ),
+                MessageBox.TYPE_ERROR,
+            )
+            return
+        summary = (
+            "Remove plugin: %s\n\n"
+            "Package: %s\n"
+            "Installed: %s\n"
+            "Image compatibility: %s\n"
+            "Architecture compatibility: %s\n"
+            "Package architecture: %s\n"
+            "GUI restart required: %s\n"
+            "Reboot required: %s\n\n"
+            "This removes the catalog-resolved package through receiver-configured sources.\n"
+            "Do you want to continue?"
+            % (
+                plugin_id,
+                preview.get("package", "unknown"),
+                preview.get("installed_version", "unknown"),
+                preview.get("compatibility", {}).get("image", "unknown"),
+                preview.get("compatibility", {}).get("architecture", "unknown"),
+                preview.get("compatibility", {}).get("package_architecture", "unknown"),
+                preview.get("requires_gui_restart", "unknown"),
+                preview.get("requires_reboot", "unknown"),
+            )
+        )
+        self.session.openWithCallback(
+            lambda confirmed: self._start_remove(
+                confirmed, plugin_id, bool(preview.get("requires_gui_restart") is True)
+            ),
+            MessageBox,
+            summary,
+            MessageBox.TYPE_YESNO,
+        )
+
+    def _start_remove(self, confirmed, plugin_id, requires_gui_restart):
+        if not confirmed:
+            return
+        try:
+            command = build_action_command("plugin.remove", {"plugin_id": plugin_id})
+        except Exception as exc:
+            self.session.open(MessageBox, "Action rejected: %s" % exc, MessageBox.TYPE_ERROR)
+            return
+        self.session.open(PackageInstallProgress, plugin_id, command, "Removing", requires_gui_restart)
 
     def _plugin_install_input(self):
         self.session.openWithCallback(self._prepare_install, InputBox, title="Install plugin ID", text="")
@@ -433,6 +506,9 @@ class Enigma2UniversalPanel(Screen):
             return
         if action_id == "plugin.update":
             self.session.openWithCallback(self._prepare_update, InputBox, title="Update plugin ID", text="")
+            return
+        if action_id == "plugin.remove":
+            self.session.openWithCallback(self._prepare_remove, InputBox, title="Remove plugin ID", text="")
             return
         try:
             code, output = run_action(action_id)
