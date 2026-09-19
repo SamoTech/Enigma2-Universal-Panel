@@ -9,6 +9,8 @@ Phase 1.4 is being delivered incrementally. The current slice adds a confirmed, 
 - Preview Plugin: prompts for a normalized plugin ID and calls the registered, read-only compatibility/dependency preflight.
 - Plugin Metadata: prompts for a normalized plugin ID and displays evidence-backed catalog metadata plus installed/candidate package versions when the receiver can resolve them.
 - Install Plugin: performs the same preflight, requires explicit confirmation, then executes the registered high-risk install action asynchronously through Enigma2's native console container.
+- Update Plugin: performs an installed-state/preflight check, requires explicit confirmation, then executes the registered high-risk update action asynchronously.
+- Remove Plugin: performs a removal-specific safety preflight, requires explicit confirmation, then executes the registered high-risk removal action asynchronously.
 
 The GUI does not accept shell commands, feed URLs, package-manager arguments, or arbitrary command parameters. Plugin IDs are validated before they are appended to the fixed `e2panel` command argv.
 
@@ -23,7 +25,8 @@ The GUI does not accept shell commands, feed URLs, package-manager arguments, or
 - Confirmation is required before the high-risk install action.
 - The receiver-side install action performs post-install verification and writes an audit record.
 - A successful asynchronous action is therefore only reported as complete when the receiver action returns success.
-- Update/remove flows remain separate and are not exposed by this slice.
+- Removal is allowed only when the catalog declares the plugin `removable=true`, the package mapping is authoritative, the package is installed, and receiver/image/package-architecture checks pass.
+- The receiver-side removal action re-runs the removal preflight, uses the catalog-resolved package through receiver-configured sources, verifies that the package is no longer installed, and writes an audit record.
 - Metadata lookup is read-only and does not accept package names, URLs, shell commands, or arbitrary feed input.
 
 ## Acceptance criteria for this slice
@@ -40,3 +43,7 @@ The GUI does not accept shell commands, feed URLs, package-manager arguments, or
 ### Native update flow
 
 The native Update Plugin entry performs a read-only compatibility preflight and requires `status=supported` plus an installed package before confirmation. The mutation runs through the registered high-risk `plugin.update` action using `eConsoleAppContainer`. The receiver-side action re-runs preflight, updates only the catalog-resolved package through the receiver-configured package source, verifies that the package remains installed, and writes an audit record. GUI-restart requirements are displayed from verified catalog metadata; restart execution remains a separate controlled action.
+
+### Native remove flow
+
+The native Remove Plugin entry uses a dedicated read-only removal preflight rather than the install/update preview because removal must not depend on an available candidate version. The preflight requires an authoritative package mapping, `removable=true`, an installed package, and verified receiver/image/package-architecture compatibility. Confirmation is shown on the receiver, then the registered high-risk `plugin.remove` action runs asynchronously through `eConsoleAppContainer`. The receiver action repeats the same gates, removes only the catalog-resolved package through receiver-configured sources, verifies that it is no longer installed, and writes an audit record. GUI-restart/reboot requirements are displayed from catalog metadata; restart execution remains a separate controlled action.

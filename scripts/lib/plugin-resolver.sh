@@ -298,6 +298,102 @@ plugin_info_id() {
 '
 }
 
+plugin_remove_preview() {
+  id="$1"
+  plugin_validate_package "$id" || return 2
+  plugin_package_manager || return 1
+  [ -r "$PANEL_ROOT/plugins/catalog.json" ] || { error "plugin catalog unavailable"; return 1; }
+
+  pkg="$(plugin_catalog_field "$id" package_name)"
+  case "$pkg" in
+    ""|unknown|"image/feed dependent")
+      error "No authoritative package mapping for plugin: $id"
+      return 3
+      ;;
+  esac
+
+  removable="$(plugin_catalog_bool "$id" removable)"
+  installed="$(plugin_native_installed_version "$pkg")"
+  native_arch="$(plugin_native_field "$pkg" Architecture)"
+  image_ok=false
+  arch_ok=false
+  native_arch_ok=unknown
+  removable_ok=false
+
+  plugin_catalog_match_image "$id" "$E2_IMAGE" && image_ok=true
+  plugin_catalog_match_arch "$id" "$E2_ARCH" && arch_ok=true
+  native_arch_ok="$(plugin_native_arch_compatibility "$native_arch" "$E2_ARCH")"
+  [ "$removable" = true ] && removable_ok=true
+
+  status=blocked
+  risk=high
+  action=blocked
+  reason=blocked
+  if [ "$removable_ok" = true ] && [ -n "$installed" ] && [ "$image_ok" = true ] && [ "$arch_ok" = true ] && [ "$native_arch_ok" = true ]; then
+    status=supported
+    action=remove
+    reason=ready
+  elif [ "$removable_ok" != true ]; then
+    reason=plugin_not_declared_removable
+  elif [ -z "$installed" ]; then
+    reason=plugin_not_installed
+  elif [ "$image_ok" = false ] || [ "$arch_ok" = false ] || [ "$native_arch_ok" != true ]; then
+    reason=compatibility_not_verified
+  fi
+
+  cat <<EOF
+{
+  "plugin":"$(plugin_json_escape "$id")",
+  "package":"$(plugin_json_escape "$pkg")",
+  "installed_version":"$(plugin_json_escape "$installed")",
+  "receiver_image":"$(plugin_json_escape "$E2_IMAGE")",
+  "receiver_architecture":"$(plugin_json_escape "$E2_ARCH")",
+  "package_architecture":"$(plugin_json_escape "$native_arch")",
+  "package_manager":"$(plugin_json_escape "$E2_PKG")",
+  "removable":$removable,
+  "compatibility":{"image":$image_ok,"architecture":$arch_ok,"package_architecture":$native_arch_ok},
+  "status":"$status",
+  "risk":"$risk",
+  "action":"$action",
+  "reason":"$reason",
+  "requires_gui_restart":$(plugin_catalog_bool "$id" requires_gui_restart),
+  "requires_reboot":$(plugin_catalog_bool "$id" requires_reboot)
+}
+EOF
+  [ "$status" = supported ]
+}
+
+plugin_remove_id() {
+  id="$1"
+  plugin_validate_package "$id" || return 2
+  plugin_package_manager || return 1
+  [ -r "$PANEL_ROOT/plugins/catalog.json" ] || { error "plugin catalog unavailable"; return 1; }
+
+  pkg="$(plugin_catalog_field "$id" package_name)"
+  case "$pkg" in
+    ""|unknown|"image/feed dependent")
+      error "No authoritative package mapping for plugin: $id"
+      return 3
+      ;;
+  esac
+
+  installed="$(plugin_native_installed_version "$pkg")"
+  [ -n "$installed" ] || { error "Plugin is not installed: $id"; return 4; }
+  [ "$(plugin_catalog_bool "$id" removable)" = true ] || { error "Plugin is not declared removable: $id"; return 5; }
+
+  preview_output="$(plugin_remove_preview "$id" 2>&1)"
+  rc=$?
+  printf '%s\n' "$preview_output"
+  [ "$rc" -eq 0 ] || { error "Plugin removal blocked by preflight policy"; return "$rc"; }
+
+  resolved="$(plugin_resolve "$id")" || return $?
+  plugin_remove "$resolved" || return 1
+
+  verified="$(plugin_native_installed_version "$resolved")"
+  [ -z "$verified" ] || { error "Post-remove verification failed: $resolved"; return 1; }
+  audit "plugin-remove-id id=$id package=$resolved verified=true installed_before=$installed installed_after=removed"
+}
+
 plugin_update_id() {
   id="$1"
   plugin_validate_package "$id" || return 2
