@@ -30,6 +30,7 @@ grep -q 'sh -n "$file"' "$INSTALL" || fail "shell validation missing"
 grep -q 'py_compile' "$INSTALL" || fail "Python validation missing"
 grep -q 'json.load' "$INSTALL" || fail "JSON validation missing"
 grep -q 'scripts/lib/library.sh' "$INSTALL" || fail "plugin library runtime file missing"
+grep -q 'Plugins/Extensions/Enigma2UniversalPanel/debug.py' "$INSTALL" || fail "native UI debug logger missing"
 grep -q 'scripts/lib/validation.sh' "$INSTALL" || fail "receiver validation runtime file missing"
 
 grep -q 'BACKUP_DEST=' "$INSTALL" || fail "runtime backup path missing"
