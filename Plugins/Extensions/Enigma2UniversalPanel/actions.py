@@ -27,7 +27,10 @@ _PLUGIN_ID = re.compile(r"^[a-z0-9][a-z0-9._-]{0,63}$")
 
 
 def _validate_plugin_id(value):
-    if not isinstance(value, str) or not _PLUGIN_ID.fullmatch(value):
+    if not isinstance(value, str):
+        raise ValueError("invalid plugin id")
+    match = _PLUGIN_ID.match(value)
+    if match is None or match.group(0) != value:
         raise ValueError("invalid plugin id")
     return value
 
