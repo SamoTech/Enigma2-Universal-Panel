@@ -180,6 +180,7 @@ config/compatibility.json
 config/plugin-sources.json
 plugins/catalog.json
 plugins/community.json
+plugins/community-admitted.json
 plugins/categories.json
 plugins/compatibility.json
 plugins/sources.json
