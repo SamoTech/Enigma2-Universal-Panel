@@ -93,7 +93,7 @@ EOF
   export MOCK_REBOOT_LOG="$TMP/reboot.log"
   export E2_IMAGE=openatv E2_ARCH=x86_64 E2_PKG=opkg E2_NETWORK=online
   export E2_TEST_BOOT_ID=boot-1
-  printf 'python3 - 3.12\nenigma2-plugin-systemcomponents-ofgwrite 1.0\n' >"$STATE/installed"
+  printf 'python3 - 3.12\nofgwrite 1.0\n' >"$STATE/installed"
 
   . "$ROOT/scripts/lib/common.sh"
   . "$ROOT/scripts/lib/detect.sh"
@@ -303,7 +303,7 @@ PY
   printf "%s\n" "$verified_status" | grep -q '"boot_changed":true' || fail "boot change was not detected"
   printf "%s\n" "$verified_status" | grep -q '"package_verified":true' || fail "post-reboot package verification failed"
   [ ! -r "$PANEL_ETC/pending-reboot" ] || fail "verified reboot intent was not cleared"
-  grep -q 'reboot-verify plugin=ofgwrite package=enigma2-plugin-systemcomponents-ofgwrite expected=1.0 verified=true' "$PANEL_LOG" || fail "reboot verification audit missing"
+  grep -q 'reboot-verify plugin=ofgwrite package=ofgwrite expected=1.0 verified=true' "$PANEL_LOG" || fail "reboot verification audit missing"
   pass "persistent reboot request and post-boot verification"
 
   if plugin_resolve_install openairplay >/dev/null 2>&1; then exit 1; fi
