@@ -138,6 +138,21 @@ PY
   grep -q '^python_version=' "$telemetry_output"
   pass "mock receiver telemetry output"
 
+  community_catalog_output="$TMP/community.json"
+  community_catalog >"$community_catalog_output"
+  python3 - "$community_catalog_output" <<'PY'
+import json,sys
+d=json.load(open(sys.argv[1]))
+assert d["schema_version"] == 1
+assert d["policy"]["repository_hosts_binaries"] is False
+assert d["policy"]["arbitrary_urls"] is False
+assert d["policy"]["arbitrary_shell"] is False
+assert len(d["entries"]) >= 8
+assert any(x["id"] == "ajpanel" and x["source_status"] == "verified" for x in d["entries"])
+assert any(x["id"] == "aio-panel" and x["execution_status"] == "blocked_unverified_source" for x in d["entries"])
+PY
+  pass "community installer registry"
+
   if ! plugin_preview openwebif >"$TMP/preview.json" 2>&1; then
     cat "$TMP/preview.json" >&2
     fail "mock receiver plugin preflight returned blocked"
