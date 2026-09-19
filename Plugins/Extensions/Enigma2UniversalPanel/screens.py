@@ -196,74 +196,77 @@ class ReceiverTelemetry(Screen):
         self["state"].setText("\n".join(lines))
 
 
-class PluginCategorySelector(Screen):
+class StoreCategories(Screen):
     skin = """
-    <screen name="PluginCategorySelector" position="center,center" size="1000,650" title="Plugin Categories">
+    <screen name="StoreCategories" position="center,center" size="1000,650" title="Plugin Store">
         <widget name="title" position="35,20" size="930,42" font="Regular;30" />
         <widget name="summary" position="35,62" size="930,30" font="Regular;18" />
-        <widget name="menu" position="35,100" size="930,340" itemHeight="44" font="Regular;21" />
-        <widget name="details" position="35,455" size="930,82" font="Regular;19" valign="top" />
-        <widget name="hint" position="35,565" size="930,30" font="Regular;18" />
+        <widget name="menu" position="35,100" size="930,390" itemHeight="44" font="Regular;21" />
+        <widget name="details" position="35,505" size="930,50" font="Regular;18" valign="top" />
+        <widget name="hint" position="35,575" size="930,30" font="Regular;18" />
     </screen>
     """
 
-    def __init__(self, session, categories, selected, callback):
+    def __init__(self, session):
         Screen.__init__(self, session)
-        self["title"] = Label("Plugin Categories")
-        self["summary"] = Label("Browse the library by category")
+        self["title"] = Label("Plugin Store")
+        self["summary"] = Label("Choose a category")
         self["menu"] = DebugMenuList([])
-        self["details"] = Label("Select a category.")
+        self["details"] = Label("Loading categories...")
         self["hint"] = Label("UP/DOWN: Select    OK: Open    EXIT: Back")
-        self.categories = categories or []
-        self.callback = callback
-        self.items = [{"id": "all", "name": "All Categories", "description": "Show every admitted plugin."}]
-        self.items.extend(
-            {
-                "id": item.get("id"),
-                "name": item.get("name") or str(item.get("id", "")).replace("_", " ").title(),
-                "description": item.get("description", ""),
-            }
-            for item in self.categories
-            if item.get("id")
-        )
-        self.selected = selected if any(item["id"] == selected for item in self.items) else "all"
-        self["menu"].setList([self._label(item) for item in self.items])
+        self.categories = []
+        self.counts = {}
         self["actions"] = DebugActionMap(
             ["OkCancelActions"],
-            {"ok": self.activate, "cancel": self._cancel},
+            {"ok": self.open_selected, "cancel": self.close},
             -2,
         )
         self["menu"].onSelectionChanged.append(self._selection_changed)
-        self._select_current()
+        self.onLayoutFinish.append(self.refresh)
 
-    @staticmethod
-    def _label(item):
-        return item["name"]
-
-    def _select_current(self):
-        index = next((i for i, item in enumerate(self.items) if item["id"] == self.selected), 0)
-        self["menu"].setIndex(index)
-        self._selection_changed()
+    def refresh(self):
+        try:
+            code, output = run_action("plugin.library")
+            if code != 0:
+                raise RuntimeError(output or "Plugin library unavailable")
+            data = json.loads(output)
+            entries = data.get("entries") or []
+            self.categories = [c for c in (data.get("categories") or []) if c.get("id")]
+            self.counts = {}
+            for entry in entries:
+                category = entry.get("category")
+                if category:
+                    self.counts[category] = self.counts.get(category, 0) + 1
+            labels = [
+                "%s  (%d)" % (c.get("name") or c["id"], self.counts.get(c["id"], 0))
+                for c in self.categories
+            ]
+            self["menu"].setList(labels)
+            self["summary"].setText("%d categories | %d store entries" % (len(self.categories), len(entries)))
+            self._selection_changed()
+        except Exception as exc:
+            self.categories = []
+            self["menu"].setList([])
+            self["summary"].setText("Store unavailable")
+            self["details"].setText(str(exc))
 
     def _selection_changed(self):
         index = self["menu"].getSelectionIndex()
-        if index is None or index < 0 or index >= len(self.items):
+        if index is None or index < 0 or index >= len(self.categories):
             return
-        item = self.items[index]
-        self["summary"].setText("%d category option(s)" % len(self.items))
+        category = self.categories[index]
         self["details"].setText(
-            "%s\n%s" % (item["name"], item["description"] or "No category description available.")
+            "%s\n%s" % (
+                category.get("name") or category.get("id"),
+                category.get("description") or "No category description available.",
+            )
         )
 
-    def activate(self):
+    def open_selected(self):
         index = self["menu"].getSelectionIndex()
-        if index is None or index < 0 or index >= len(self.items):
+        if index is None or index < 0 or index >= len(self.categories):
             return
-        self.callback(self.items[index]["id"])
-        self.close()
-
-    def _cancel(self):
-        self.close()
+        self.session.open(PluginLibrary, self.categories[index].get("id"))
 
 
 class PluginLibrary(Screen):
@@ -281,26 +284,27 @@ class PluginLibrary(Screen):
     </screen>
     """
 
-    def __init__(self, session):
+    def __init__(self, session, category_id):
         Screen.__init__(self, session)
+        self.category_id = category_id
         self["title"] = Label("Plugin Library")
         self["summary"] = Label("Loading library...")
         self["menu"] = DebugMenuList([])
         self["details"] = Label("Loading plugin library...")
-        self["key_red"] = Label("RED: Category")
+        self["key_red"] = Label("RED: Categories")
         self["key_green"] = Label("GREEN: Install")
         self["key_yellow"] = Label("YELLOW: Refresh")
         self["key_blue"] = Label("BLUE: Search")
         self["hint"] = Label("OK: Details  |  EXIT: Back")
         self["actions"] = ActionMap(
             ["OkCancelActions", "ColorActions"],
-            {"ok": self.show_details, "cancel": self.close, "green": self.install_selected, "yellow": self.refresh, "blue": self.search, "red": self.open_category_selector},
+            {"ok": self.show_details, "cancel": self.close, "green": self.install_selected, "yellow": self.refresh, "blue": self.search, "red": self.close},
             -2,
         )
         self.entries = []
         self.filtered_entries = []
         self.categories = []
-        self.category_filter = "all"
+        self.category_filter = category_id
         self.search_term = ""
         self.onLayoutFinish.append(self.refresh)
         self["menu"].onSelectionChanged.append(self._selection_changed)
@@ -377,7 +381,7 @@ class PluginLibrary(Screen):
                 "%s  [%s | %s]"
                 % (entry.get("name", "unknown"), source, availability)
             )
-        self["title"].setText("Plugin Library — %s" % self._category_name())
+        self["title"].setText("Plugin Store — %s" % self._category_name())
         self["summary"].setText(
             "%d result(s) | Category: %s%s"
             % (
@@ -1334,11 +1338,7 @@ class Enigma2UniversalPanel(Screen):
 
     SECTIONS = (
         ("Store", (
-            ("Plugin Library", "plugin.library"),
-            ("Community Sources", "community.catalog"),
-            ("Install Plugin", "plugin.install"),
-            ("Update Plugin", "plugin.update"),
-            ("Remove Plugin", "plugin.remove"),
+            ("Plugin Store", "plugin.library"),
         )),
         ("Receiver", (
             ("Dashboard", "dashboard"),
@@ -1365,7 +1365,7 @@ class Enigma2UniversalPanel(Screen):
 
     def __init__(self, session):
         Screen.__init__(self, session)
-        self["title"] = Label("Enigma2 Universal Panel v1.8.0")
+        self["title"] = Label("Enigma2 Universal Panel v1.10.0")
         self["subtitle"] = Label("Native receiver UI | Store-first workflow | No web dependency")
         self["hint"] = Label("UP/DOWN: Select    OK: Open    EXIT: Back")
         self["menu"] = MenuList([title for title, _entries in self.SECTIONS])
@@ -1631,7 +1631,7 @@ class Enigma2UniversalPanel(Screen):
             self.session.open(PackageBrowser)
             return
         if action_id == "plugin.library":
-            self.session.open(PluginLibrary)
+            self.session.open(StoreCategories)
             return
         if action_id == "community.catalog":
             self.session.open(CommunityInstallerCatalog)
