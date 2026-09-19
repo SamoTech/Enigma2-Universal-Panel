@@ -44,6 +44,7 @@ The existing shell/CLI runtime remains a receiver-side foundation and diagnostic
 - Source-driven receiver package/plugin management
 - Normalized runtime package state
 - Postcondition verification and audit foundations
+- Confirmed asynchronous install, update and removal flows
 - Mock receiver harness and policy tests
 - Master native-GUI roadmap
 
@@ -74,7 +75,7 @@ Run the bootstrap installer as root on the receiver:
 
     wget -O - https://raw.githubusercontent.com/SamoTech/Enigma2-Universal-Panel/main/install.sh | sh
 
-The current bootstrap installs the receiver-side runtime. Native GUI registration and the Phase 1.4 read-only browser plus confirmed asynchronous installation flow are implemented incrementally; real-receiver validation remains outstanding.
+The current bootstrap installs the receiver-side runtime. Native GUI registration and the Phase 1.4 browser plus confirmed asynchronous install/update/remove flows are implemented incrementally; real-receiver validation remains outstanding.
 
 ## Design principles
 
