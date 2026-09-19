@@ -7,6 +7,7 @@ BASE="/usr/lib/enigma2-universal-panel"
 . "$BASE/scripts/lib/plugin-resolver.sh"
 . "$BASE/scripts/lib/actions.sh"
 . "$BASE/scripts/lib/status.sh"
+. "$BASE/scripts/lib/telemetry.sh"
 . "$BASE/scripts/lib/diagnose.sh"
 
 usage() {
