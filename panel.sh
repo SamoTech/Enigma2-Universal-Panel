@@ -26,6 +26,7 @@ Usage:
   e2panel plugin-install-id <plugin-id>
   e2panel plugin-remove-preview <plugin-id>
   e2panel plugin-remove-id <plugin-id>
+  e2panel telemetry
   e2panel restart-enigma2 | restart-gui
   e2panel reboot --confirm
 EOF
@@ -54,6 +55,7 @@ cmd="$1"; shift 2>/dev/null || true
 case "$cmd" in
   status) print_status;; capabilities) print_capabilities;; diagnose) diagnose;;
   package-state) plugin_package_state;;
+  telemetry) print_telemetry;;
   plugin-source-status) plugin_source_status;; plugin-refresh) plugin_refresh_sources;;
   plugin-list) plugin_list "$1";; plugin-info) plugin_info "$1";;
   plugin-resolve) plugin_resolve "$1";;
