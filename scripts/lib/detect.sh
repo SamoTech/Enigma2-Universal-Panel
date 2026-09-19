@@ -218,10 +218,12 @@ detect_image() {
 }
 
 detect_enigma2() {
+  # Never execute the live Enigma2 process/binary during detection.
+  # On receivers the binary may be the active GUI process and may block
+  # or perform runtime initialization when invoked with unknown arguments.
   E2_VERSION=unknown
   if [ -x "$(_detect_path /usr/bin/enigma2)" ]; then
     E2_BIN="$(_detect_path /usr/bin/enigma2)"
-    E2_VERSION="$("$E2_BIN" --version 2>/dev/null | head -1 || true)"
   elif [ -x "$(_detect_path /usr/bin/enigma2.sh)" ]; then
     E2_BIN="$(_detect_path /usr/bin/enigma2.sh)"
   else
