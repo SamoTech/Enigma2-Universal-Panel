@@ -38,7 +38,8 @@ grep -Fq '/proc/meminfo' scripts/lib/telemetry.sh || fail "memory telemetry sour
 grep -Fq 'df -k /' scripts/lib/telemetry.sh || fail "filesystem telemetry source missing"
 
 grep -Fq 'audit_history()' scripts/lib/common.sh || fail "audit history function missing"
-grep -Fq 'grep.*AUDIT' scripts/lib/common.sh || fail "audit history is not restricted to audit records"
+ggrep_pattern='grep '\'' \\[AUDIT\\] '\'''
+grep -Fq "$grep_pattern" scripts/lib/common.sh || fail "audit history is not restricted to audit records"
 grep -Fq 'tail -n 20' scripts/lib/common.sh || fail "audit history is not bounded"
 
 grep -Fq 'name="Audit History"' Plugins/Extensions/Enigma2UniversalPanel/plugin.py || fail "audit history plugin entry missing"
