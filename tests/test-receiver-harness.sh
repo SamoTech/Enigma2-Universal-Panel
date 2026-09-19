@@ -147,6 +147,11 @@ assert d["schema_version"] == 1
 assert d["policy"]["repository_hosts_binaries"] is False
 assert d["policy"]["arbitrary_urls"] is False
 assert d["policy"]["arbitrary_shell"] is False
+assert d["health_audit"]["classification"].startswith("current-source audit")
+for x in d["entries"]:
+    assert "health" in x
+    assert x["health"]["hosting_status"]
+    assert x["health"]["network_reachability"]
 assert len(d["entries"]) == 21
 expected_new = {
     "dreamsatpanel","linuxsat-panel","jedi-maker-xtream","jedi-epg-xtream",
