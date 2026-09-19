@@ -34,11 +34,11 @@ def log(event, **fields):
 class DebugActionMap(ActionMap):
     """ActionMap that records every mapped remote-control action and result."""
 
-    def __init__(self, contexts, actions, prio=0, description=None):
+    def __init__(self, contexts, actions, prio=0, parent=None):
         wrapped = {}
         for key, callback in actions.items():
             wrapped[key] = self._wrap(key, callback)
-        ActionMap.__init__(self, contexts, wrapped, prio, description)
+        ActionMap.__init__(self, contexts, wrapped, prio, parent)
 
     @staticmethod
     def _wrap(key, callback):
