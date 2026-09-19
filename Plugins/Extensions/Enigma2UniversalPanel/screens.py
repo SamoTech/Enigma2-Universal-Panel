@@ -938,7 +938,7 @@ class PackageInstallProgress(Screen):
         self.requires_reboot = requires_reboot
         self.output = ""
         self.finished = False
-        self["title"] = Label("%s plugin: %s" % (operation, plugin_id))
+        self["title"] = Label("%s: %s" % (operation, plugin_id))
         self["state"] = Label("Starting native package operation...")
         self["hint"] = Label("Please wait — %s running" % operation.lower())
         self["actions"] = ActionMap(
