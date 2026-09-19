@@ -1,9 +1,6 @@
 """Receiver-local debug logging for native UI interaction tracing."""
 
-import os
 import time
-from Components.ActionMap import ActionMap
-from Components.MenuList import MenuList
 
 LOG_PATH = "/var/log/enigma2-universal-panel-ui.log"
 FALLBACK_LOG_PATH = "/tmp/enigma2-universal-panel-ui.log"
@@ -31,41 +28,63 @@ def log(event, **fields):
     _write(" ".join(parts))
 
 
-class DebugActionMap(ActionMap):
-    """ActionMap that records every mapped remote-control action and result."""
+try:
+    from Components.ActionMap import ActionMap
+    from Components.MenuList import MenuList
+except ImportError:
+    ActionMap = None
+    MenuList = None
 
-    def __init__(self, contexts, actions, prio=0, parent=None):
-        wrapped = {}
-        for key, callback in actions.items():
-            wrapped[key] = self._wrap(key, callback)
-        ActionMap.__init__(self, contexts, wrapped, prio, parent)
 
-    @staticmethod
-    def _wrap(key, callback):
-        def handler(*args, **kwargs):
-            log("key.press", key=key, callback=getattr(callback, "__name__", repr(callback)))
+if ActionMap is not None:
+    class DebugActionMap(ActionMap):
+        """ActionMap that records every mapped remote-control action and result."""
+
+        def __init__(self, contexts, actions, prio=0, parent=None):
+            wrapped = {}
+            for key, callback in actions.items():
+                wrapped[key] = self._wrap(key, callback)
+            ActionMap.__init__(self, contexts, wrapped, prio, parent)
+
+        @staticmethod
+        def _wrap(key, callback):
+            def handler(*args, **kwargs):
+                log("key.press", key=key, callback=getattr(callback, "__name__", repr(callback)))
+                try:
+                    result = callback(*args, **kwargs)
+                    log("key.result", key=key, result=result if result is not None else "None")
+                    return result
+                except Exception as exc:
+                    log("key.error", key=key, error=repr(exc))
+                    raise
+            handler.__name__ = getattr(callback, "__name__", "handler")
+            return handler
+else:
+    class DebugActionMap(object):
+        """Import-safe placeholder for non-Enigma2 test environments."""
+
+        def __init__(self, *args, **kwargs):
+            raise RuntimeError("DebugActionMap requires the Enigma2 runtime")
+
+
+if MenuList is not None:
+    class DebugMenuList(MenuList):
+        """MenuList that records every selection movement/change."""
+
+        def selectionChanged(self):
             try:
-                result = callback(*args, **kwargs)
-                log("key.result", key=key, result=result if result is not None else "None")
-                return result
-            except Exception as exc:
-                log("key.error", key=key, error=repr(exc))
-                raise
-        handler.__name__ = getattr(callback, "__name__", "handler")
-        return handler
+                index = self.getSelectionIndex()
+            except Exception:
+                index = "unknown"
+            try:
+                item = self.getCurrent()
+            except Exception:
+                item = None
+            log("selection.changed", index=index, item=item)
+            return MenuList.selectionChanged(self)
+else:
+    class DebugMenuList(object):
+        """Import-safe placeholder for non-Enigma2 test environments."""
 
-
-class DebugMenuList(MenuList):
-    """MenuList that records every selection movement/change."""
-
-    def selectionChanged(self):
-        try:
-            index = self.getSelectionIndex()
-        except Exception:
-            index = "unknown"
-        try:
-            item = self.getCurrent()
-        except Exception:
-            item = None
-        log("selection.changed", index=index, item=item)
-        return MenuList.selectionChanged(self)
+        def __init__(self, *args, **kwargs):
+            raise RuntimeError("DebugMenuList requires the Enigma2 runtime")
