@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "statuses": [
     "supported",
     "supported_with_conditions",
@@ -57,5 +57,103 @@
       "source": "multiple maintained Enigma2 source families",
       "confidence": "verified"
     }
+  ],
+  "model": {
+    "device_identity_separate_from_image_identity": true,
+    "runtime_first": true,
+    "unknown_is_not_supported": true,
+    "physical_validation_required_for_certification": true
+  },
+  "image_families": [
+    {
+      "id": "oe-alliance",
+      "images": [
+        "openatv",
+        "openvix",
+        "openhdf",
+        "opendroid",
+        "openeight",
+        "openld",
+        "oe-alliance"
+      ],
+      "package_manager": "opkg",
+      "confidence": "runtime-detected"
+    },
+    {
+      "id": "openpli",
+      "images": [
+        "openpli"
+      ],
+      "package_manager": "opkg",
+      "confidence": "runtime-detected"
+    },
+    {
+      "id": "dreamos",
+      "images": [
+        "dreamos"
+      ],
+      "package_manager": "apt",
+      "confidence": "runtime-detected"
+    },
+    {
+      "id": "dreambox-deb",
+      "images": [
+        "newnigma2",
+        "merlin",
+        "oozoon"
+      ],
+      "package_manager": "image-defined",
+      "confidence": "runtime-detected"
+    },
+    {
+      "id": "vti",
+      "images": [
+        "vti"
+      ],
+      "package_manager": "image-defined",
+      "confidence": "runtime-detected"
+    },
+    {
+      "id": "community-enigma2",
+      "images": [
+        "egami",
+        "hdmu",
+        "pure2",
+        "openvision"
+      ],
+      "package_manager": "image-defined",
+      "confidence": "runtime-detected"
+    },
+    {
+      "id": "generic-enigma2",
+      "images": [
+        "generic-enigma2"
+      ],
+      "package_manager": "detect",
+      "confidence": "runtime-detected"
+    }
+  ],
+  "device_families": [
+    "dreambox",
+    "vuplus",
+    "gigablue",
+    "zgemma",
+    "octagon",
+    "edision",
+    "mutant",
+    "amiko",
+    "formuler",
+    "abcom",
+    "axas",
+    "golden-interstar",
+    "maxytec",
+    "qviart",
+    "uclan",
+    "xsarius",
+    "xtrend",
+    "sab",
+    "miraclebox",
+    "wetek",
+    "generic-enigma2"
   ]
 }
