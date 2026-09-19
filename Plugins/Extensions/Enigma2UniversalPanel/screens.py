@@ -195,6 +195,59 @@ class PackageInstallProgress(Screen):
                 pass
 
 
+
+class PluginMetadata(Screen):
+    skin = """
+    <screen name="PluginMetadata" position="center,center" size="1000,650" title="Enigma2 Universal Panel">
+        <widget name="title" position="35,20" size="930,45" font="Regular;30" />
+        <widget name="state" position="35,80" size="930,450" font="Regular;20" valign="top" />
+        <widget name="hint" position="35,555" size="930,35" font="Regular;20" />
+    </screen>
+    """
+
+    def __init__(self, session, plugin_id):
+        Screen.__init__(self, session)
+        self.plugin_id = plugin_id
+        self["title"] = Label("Plugin Metadata — %s" % plugin_id)
+        self["state"] = Label("Loading metadata...")
+        self["hint"] = Label("OK / EXIT: Close")
+        self["actions"] = ActionMap(["OkCancelActions"], {"ok": self.close, "cancel": self.close}, -2)
+        self.onLayoutFinish.append(self.refresh)
+
+    def refresh(self):
+        try:
+            code, output = run_action("plugin.info", {"plugin_id": self.plugin_id})
+        except Exception as exc:
+            self["state"].setText("Metadata request rejected.\n\n%s" % exc)
+            return
+        if code != 0:
+            self["state"].setText("Metadata unavailable.\n\n%s" % (output or "unknown"))
+            return
+        try:
+            metadata = json.loads(output)
+        except (TypeError, ValueError):
+            self["state"].setText(output or "Invalid metadata response.")
+            return
+        lines = [
+            "Name: %s" % metadata.get("name", "unknown"),
+            "Category: %s" % metadata.get("category", "unknown"),
+            "Author: %s" % metadata.get("author", "unknown"),
+            "Package: %s" % metadata.get("package", "unknown"),
+            "Status: %s" % metadata.get("status", "unknown"),
+            "Installable: %s" % metadata.get("installable", "unknown"),
+            "Updatable: %s" % metadata.get("updatable", "unknown"),
+            "Removable: %s" % metadata.get("removable", "unknown"),
+            "Requires GUI restart: %s" % metadata.get("requires_gui_restart", "unknown"),
+            "Requires reboot: %s" % metadata.get("requires_reboot", "unknown"),
+            "Compatibility confidence: %s" % metadata.get("compatibility_confidence", "unknown"),
+            "Source type: %s" % metadata.get("source_type", "unknown"),
+            "",
+            "Native package metadata:",
+            metadata.get("native_metadata", "unknown"),
+        ]
+        self["state"].setText("\n".join(lines))
+
+
 class Enigma2UniversalPanel(Screen):
     skin = """
     <screen name="Enigma2UniversalPanel" position="center,center" size="900,600" title="Enigma2 Universal Panel">
@@ -209,6 +262,7 @@ class Enigma2UniversalPanel(Screen):
         ("Package Browser", "package-browser"),
         ("Resolve Plugin", "plugin.resolve"),
         ("Preview Plugin", "plugin.preview"),
+        ("Plugin Metadata", "plugin.info"),
         ("Install Plugin", "plugin.install"),
         ("Receiver Status", "receiver.status"),
         ("Capabilities", "receiver.capabilities"),
@@ -226,6 +280,14 @@ class Enigma2UniversalPanel(Screen):
     def _plugin_input(self, action_id):
         title = "Resolve plugin ID" if action_id == "plugin.resolve" else "Preview plugin ID"
         self.session.openWithCallback(lambda value: self._run_plugin_action(action_id, value), InputBox, title=title, text="")
+
+    def _plugin_metadata_input(self):
+        self.session.openWithCallback(lambda value: self._open_plugin_metadata(value), InputBox, title="Plugin metadata ID", text="")
+
+    def _open_plugin_metadata(self, value):
+        if value is None or value.strip() == "":
+            return
+        self.session.open(PluginMetadata, value.strip())
 
     def _plugin_install_input(self):
         self.session.openWithCallback(self._prepare_install, InputBox, title="Install plugin ID", text="")
@@ -313,8 +375,11 @@ class Enigma2UniversalPanel(Screen):
         if action_id == "package-browser":
             self.session.open(PackageBrowser)
             return
-        if action_id in ("plugin.resolve", "plugin.preview"):
-            self._plugin_input(action_id)
+        if action_id in ("plugin.resolve", "plugin.preview", "plugin.info"):
+            if action_id == "plugin.info":
+                self._plugin_metadata_input()
+            else:
+                self._plugin_input(action_id)
             return
         if action_id == "plugin.install":
             self._plugin_install_input()
