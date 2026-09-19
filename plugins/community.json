@@ -27,7 +27,15 @@
       "installer_blob_sha": "42a180ca0b0c2f0d3e87e198eaf6e8747ebf1569",
       "source_status": "verified",
       "execution_status": "blocked_pending_secondary_payload_verification",
-      "notes": "Installer downloads a versioned IPK/DEB from the repository and invokes the image package manager. The installer source is pinned; secondary payload integrity is not."
+      "notes": "Installer downloads a versioned IPK/DEB from the repository and invokes the image package manager. The installer source is pinned; secondary payload integrity is not.",
+      "health": {
+        "hosting_type": "github",
+        "hosting_status": "repository_reachable",
+        "maintenance_status": "active_evidence",
+        "network_reachability": "installer_endpoint_observed",
+        "verified_repository": "AMAJamry/AJPanel",
+        "notes": "Current repository is reachable. The current installer source observed in web retrieval still uses --no-check-certificate and resolves a versioned IPK/DEB before invoking the native package manager."
+      }
     },
     {
       "id": "e2iplayer",
@@ -42,7 +50,15 @@
       "installer_blob_sha": "89b8c4bf069c96e19b021c6ec7ac935735d3e3e8",
       "source_status": "verified",
       "execution_status": "blocked_pending_secondary_payload_verification",
-      "notes": "The installer downloads a master-branch archive and additional runtime components, and may request a GUI restart. Secondary payloads are not pinned."
+      "notes": "The installer downloads a master-branch archive and additional runtime components, and may request a GUI restart. Secondary payloads are not pinned.",
+      "health": {
+        "hosting_type": "github_mirror",
+        "hosting_status": "repository_reachable",
+        "maintenance_status": "active_evidence",
+        "network_reachability": "installer_endpoint_available_in_repository_evidence",
+        "verified_repository": "oe-mirrors/e2iplayer-zadmario",
+        "notes": "Current mirror is reachable and has a merge commit dated 2026-09-16. Treat as a mirror/fork rather than original upstream."
+      }
     },
     {
       "id": "multi-stalker",
@@ -59,7 +75,15 @@
       "installer_blob_sha": "9c5ea920d1e23ff3f9cff50409b5e098d57489be",
       "source_status": "verified",
       "execution_status": "blocked_pending_secondary_payload_verification",
-      "notes": "Installer selects architecture/Python payloads, downloads archives and may terminate Enigma2. The source script is pinned; secondary binaries and libraries are not."
+      "notes": "Installer selects architecture/Python payloads, downloads archives and may terminate Enigma2. The source script is pinned; secondary binaries and libraries are not.",
+      "health": {
+        "hosting_type": "github",
+        "hosting_status": "repository_reachable",
+        "maintenance_status": "repository_active_evidence",
+        "network_reachability": "installer_endpoint_not_independently_fetched",
+        "verified_repository": "zKhadiri/Multi-Stalker-install",
+        "notes": "Repository exists and is active; direct raw installer was not independently fetched by web due cache miss, so endpoint reachability is not asserted from that failure."
+      }
     },
     {
       "id": "footonsat",
@@ -76,7 +100,15 @@
       "installer_blob_sha": "09208348e9a699e1f011e6da6c7baa0b9cf41137",
       "source_status": "verified",
       "execution_status": "blocked_pending_secondary_payload_verification",
-      "notes": "Installer detects DreamOS versus OpenEmbedded packages, installs feed dependencies, downloads an IPK/DEB from the repository and terminates Enigma2. Secondary payload integrity is not pinned."
+      "notes": "Installer detects DreamOS versus OpenEmbedded packages, installs feed dependencies, downloads an IPK/DEB from the repository and terminates Enigma2. Secondary payload integrity is not pinned.",
+      "health": {
+        "hosting_type": "github",
+        "hosting_status": "repository_reachable",
+        "maintenance_status": "repository_active_evidence",
+        "network_reachability": "installer_endpoint_not_independently_fetched",
+        "verified_repository": "zKhadiri/FootOnsat",
+        "notes": "Repository exists and has maintained history. Raw installer reachability was not independently confirmed by the web fetch."
+      }
     },
     {
       "id": "xstreamity",
@@ -105,7 +137,15 @@
       "installer_blob_sha": "f868dd23445cc7d199c97827a2c3037bf4f021c7",
       "source_status": "verified",
       "execution_status": "blocked_pending_secondary_payload_verification",
-      "notes": "Online setup dynamically resolves the current package and restarts/stops Enigma2. The installer source is pinned; secondary package integrity is not."
+      "notes": "Online setup dynamically resolves the current package and restarts/stops Enigma2. The installer source is pinned; secondary package integrity is not.",
+      "health": {
+        "hosting_type": "github_script_plus_external_data",
+        "hosting_status": "repository_reachable",
+        "maintenance_status": "script_active_backend_freshness_unverified",
+        "network_reachability": "installer_endpoint_not_independently_fetched",
+        "verified_repository": "s3n0/e2plugins",
+        "notes": "The repository and online-setup source are known from repository evidence. The separate claim that upstream picon artwork is stale was not independently verified here."
+      }
     },
     {
       "id": "aio-panel",
@@ -116,7 +156,15 @@
       "delivery": "legacy_remote_installer",
       "source_status": "unresolved",
       "execution_status": "blocked_unverified_source",
-      "notes": "The supplied repository URL could not be resolved through the current GitHub source audit. Keep the entry for provenance only until an authoritative current repository is identified."
+      "notes": "The supplied repository URL could not be resolved through the current GitHub source audit. Keep the entry for provenance only until an authoritative current repository is identified.",
+      "health": {
+        "hosting_type": "unknown_legacy",
+        "hosting_status": "repository_unresolved",
+        "maintenance_status": "unverified",
+        "network_reachability": "not_verified",
+        "verified_repository": null,
+        "notes": "The supplied biko-73/AIO-Panel repository could not be resolved by the current GitHub connector. Do not classify it as active from the supplied claim alone."
+      }
     },
     {
       "id": "iptosat",
@@ -127,7 +175,15 @@
       "delivery": "legacy_remote_installer",
       "source_status": "unresolved",
       "execution_status": "blocked_unverified_source",
-      "notes": "The supplied repository URL could not be resolved through the current GitHub source audit. Keep the entry for provenance only until an authoritative current repository is identified."
+      "notes": "The supplied repository URL could not be resolved through the current GitHub source audit. Keep the entry for provenance only until an authoritative current repository is identified.",
+      "health": {
+        "hosting_type": "legacy_external",
+        "hosting_status": "repository_unresolved",
+        "maintenance_status": "unverified",
+        "network_reachability": "not_verified",
+        "verified_repository": null,
+        "notes": "The supplied MOHAMED19OS/Download repository could not be established in the current GitHub audit. Retain blocked provenance only."
+      }
     },
     {
       "id": "dreamsatpanel",
@@ -138,7 +194,15 @@
       "delivery": "legacy_remote_installer",
       "source_status": "unverified_current_repository",
       "execution_status": "blocked_unverified_source",
-      "notes": "The supplied HTTP installer endpoint and named repository could not be established from the current GitHub audit; retained only as blocked provenance."
+      "notes": "The supplied HTTP installer endpoint and named repository could not be established from the current GitHub audit; retained only as blocked provenance.",
+      "health": {
+        "hosting_type": "legacy_external_http",
+        "hosting_status": "not_verified",
+        "maintenance_status": "unverified",
+        "network_reachability": "not_verified",
+        "verified_repository": null,
+        "notes": "The supplied ipkinstall.ath.cx endpoint produced no fetchable evidence in the current web audit. A cache miss is not treated as proof of downtime."
+      }
     },
     {
       "id": "linuxsat-panel",
@@ -153,7 +217,15 @@
       "delivery": "remote_installer",
       "source_status": "verified",
       "execution_status": "blocked_pending_secondary_payload_verification",
-      "notes": "Current repository is active. Installer v3.0.6 explicitly removed --no-check-certificate from installation/update wget calls. Secondary payload integrity still requires independent admission."
+      "notes": "Current repository is active. Installer v3.0.6 explicitly removed --no-check-certificate from installation/update wget calls. Secondary payload integrity still requires independent admission.",
+      "health": {
+        "hosting_type": "github",
+        "hosting_status": "repository_reachable",
+        "maintenance_status": "active_evidence",
+        "network_reachability": "installer_endpoint_repository_verified",
+        "verified_repository": "OwnerPlugins/LinuxsatPanel",
+        "notes": "Current repository is reachable and has September 2026 maintenance history. Installer v3.0.6 notes removal of --no-check-certificate from install/update calls."
+      }
     },
     {
       "id": "jedi-maker-xtream",
@@ -167,7 +239,15 @@
       "delivery": "remote_installer",
       "source_status": "verified",
       "execution_status": "blocked_manual_source_audit_required",
-      "notes": "Installer exists but current script content is heavily obfuscated. Admission requires manual source review and secondary-payload verification."
+      "notes": "Installer exists but current script content is heavily obfuscated. Admission requires manual source review and secondary-payload verification.",
+      "health": {
+        "hosting_type": "github",
+        "hosting_status": "repository_reachable",
+        "maintenance_status": "repository_present",
+        "network_reachability": "installer_endpoint_repository_verified",
+        "verified_repository": "emil237/jedimakerxtream",
+        "notes": "Installer exists, but the current installer content is heavily obfuscated; execution remains blocked for manual source audit."
+      }
     },
     {
       "id": "jedi-epg-xtream",
@@ -181,7 +261,15 @@
       "delivery": "remote_installer",
       "source_status": "verified",
       "execution_status": "blocked_pending_secondary_payload_verification",
-      "notes": "Current installer is present. Secondary payloads and installation effects require independent admission before execution."
+      "notes": "Current installer is present. Secondary payloads and installation effects require independent admission before execution.",
+      "health": {
+        "hosting_type": "github",
+        "hosting_status": "repository_reachable",
+        "maintenance_status": "repository_present",
+        "network_reachability": "installer_endpoint_repository_verified",
+        "verified_repository": "biko-73/jediepgxtream",
+        "notes": "Installer exists and the repository has a 2025 version update commit. Secondary payloads remain unverified."
+      }
     },
     {
       "id": "epg-grabber",
@@ -196,7 +284,15 @@
       "delivery": "remote_installer",
       "source_status": "verified",
       "execution_status": "blocked_pending_secondary_payload_verification",
-      "notes": "Current repository and installer are resolvable; version 25.4 is current in the audited source. Installation modifies Enigma2 plugin state and dependencies."
+      "notes": "Current repository and installer are resolvable; version 25.4 is current in the audited source. Installation modifies Enigma2 plugin state and dependencies.",
+      "health": {
+        "hosting_type": "github",
+        "hosting_status": "repository_reachable",
+        "maintenance_status": "active_evidence",
+        "network_reachability": "installer_endpoint_repository_verified",
+        "verified_repository": "zKhadiri/Epg-plugin",
+        "notes": "Repository is reachable and current audited release is v25.4 with an August 2026 commit."
+      }
     },
     {
       "id": "ipaudio",
@@ -208,7 +304,15 @@
       "delivery": "community_repository",
       "source_status": "verified_repository_no_installer_confirmed",
       "execution_status": "blocked_no_canonical_installer_confirmed",
-      "notes": "Repository is resolvable and latest audited commit is from 2023-02-05, but the claimed installer.sh path was not established."
+      "notes": "Repository is resolvable and latest audited commit is from 2023-02-05, but the claimed installer.sh path was not established.",
+      "health": {
+        "hosting_type": "github_plus_legacy_external",
+        "hosting_status": "repository_reachable_external_installer_unverified",
+        "maintenance_status": "legacy_repository",
+        "network_reachability": "external_installer_not_verified",
+        "verified_repository": "zKhadiri/IPAudio",
+        "notes": "GitHub repository is reachable, but the supplied linuxsat5.webhop.info installer endpoint was not independently verified. The repository latest commit is from 2023-02-05."
+      }
     },
     {
       "id": "ipaudio-pro",
@@ -220,7 +324,15 @@
       "delivery": "community_repository",
       "source_status": "verified_repository_no_installer_confirmed",
       "execution_status": "blocked_no_canonical_installer_confirmed",
-      "notes": "Repository is resolvable with a June 2026 commit, but the claimed installer.sh path was not established in the current audit."
+      "notes": "Repository is resolvable with a June 2026 commit, but the claimed installer.sh path was not established in the current audit.",
+      "health": {
+        "hosting_type": "github_repository",
+        "hosting_status": "repository_reachable_installer_unverified",
+        "maintenance_status": "repository_present",
+        "network_reachability": "not_verified",
+        "verified_repository": "emilnabil/ipaudiopro",
+        "notes": "Repository is reachable with a June 2026 commit. The supplied installer.sh path was not established."
+      }
     },
     {
       "id": "subssupport",
@@ -234,7 +346,15 @@
       "delivery": "remote_installer",
       "source_status": "verified",
       "execution_status": "blocked_pending_secondary_payload_verification",
-      "notes": "Current installer source is resolvable. Version metadata and all secondary resources require independent verification before execution."
+      "notes": "Current installer source is resolvable. Version metadata and all secondary resources require independent verification before execution.",
+      "health": {
+        "hosting_type": "github",
+        "hosting_status": "repository_reachable",
+        "maintenance_status": "repository_active_evidence",
+        "network_reachability": "installer_endpoint_not_independently_fetched",
+        "verified_repository": "popking159/ssupport",
+        "notes": "Repository is reachable and current history is from June 2026. Web raw retrieval was unavailable in this audit, so endpoint reachability is left unverified."
+      }
     },
     {
       "id": "raedquicksignal",
@@ -249,7 +369,15 @@
       "delivery": "remote_installer",
       "source_status": "verified",
       "execution_status": "blocked_pending_secondary_payload_verification",
-      "notes": "Current installer is resolvable and contains image-dependent package/install logic. Secondary payload integrity requires independent admission."
+      "notes": "Current installer is resolvable and contains image-dependent package/install logic. Secondary payload integrity requires independent admission.",
+      "health": {
+        "hosting_type": "github",
+        "hosting_status": "repository_reachable",
+        "maintenance_status": "active_evidence",
+        "network_reachability": "installer_endpoint_observed",
+        "verified_repository": "fairbird/RaedQuickSignal",
+        "notes": "Repository is reachable and current history is maintained. Web-fetched installer endpoint is reachable; installer itself terminates Enigma2 after installation."
+      }
     },
     {
       "id": "keyadder",
@@ -264,7 +392,15 @@
       "delivery": "remote_installer",
       "source_status": "verified",
       "execution_status": "blocked_pending_secondary_payload_verification",
-      "notes": "Current source is active as of August 2026. This registry records metadata only; no key material is stored or distributed."
+      "notes": "Current source is active as of August 2026. This registry records metadata only; no key material is stored or distributed.",
+      "health": {
+        "hosting_type": "github",
+        "hosting_status": "repository_reachable",
+        "maintenance_status": "active_evidence",
+        "network_reachability": "installer_endpoint_observed",
+        "verified_repository": "fairbird/KeyAdder",
+        "notes": "Repository is reachable and current history includes an August 2026 v9.6 fix commit. Web-fetched installer is reachable but exposes older version metadata than the current repository state."
+      }
     },
     {
       "id": "levi45-multicam-manager",
@@ -278,7 +414,15 @@
       "delivery": "remote_installer",
       "source_status": "verified",
       "execution_status": "blocked_manual_source_audit_required",
-      "notes": "Installer exists but current script content is heavily obfuscated. Admission requires manual source review and secondary-payload verification."
+      "notes": "Installer exists but current script content is heavily obfuscated. Admission requires manual source review and secondary-payload verification.",
+      "health": {
+        "hosting_type": "github",
+        "hosting_status": "repository_reachable",
+        "maintenance_status": "repository_present",
+        "network_reachability": "installer_endpoint_repository_verified",
+        "verified_repository": "emil237/levi45multicammanager",
+        "notes": "Installer exists, but current script content is heavily obfuscated; execution remains blocked for manual source audit."
+      }
     },
     {
       "id": "arabicsavior",
@@ -293,7 +437,15 @@
       "delivery": "remote_installer",
       "source_status": "verified",
       "execution_status": "blocked_pending_secondary_payload_verification",
-      "notes": "Current source includes DreamOS fixes. The installer downloads a branch archive; secondary payload integrity requires independent admission."
+      "notes": "Current source includes DreamOS fixes. The installer downloads a branch archive; secondary payload integrity requires independent admission.",
+      "health": {
+        "hosting_type": "github",
+        "hosting_status": "repository_reachable",
+        "maintenance_status": "active_evidence",
+        "network_reachability": "installer_endpoint_observed",
+        "verified_repository": "fairbird/ArabicSavior",
+        "notes": "Repository is reachable and has a 2026 DreamOS fix commit. Web-fetched installer endpoint is reachable."
+      }
     },
     {
       "id": "neoboot",
@@ -305,8 +457,26 @@
       "delivery": "community_repository",
       "source_status": "verified_repository_no_installer_confirmed",
       "execution_status": "blocked_no_canonical_installer_confirmed",
-      "notes": "The supplied installer path iNB.sh was not found in the current emil237 repository audit. Retained as a blocked repository provenance entry."
+      "notes": "The supplied installer path iNB.sh was not found in the current emil237 repository audit. Retained as a blocked repository provenance entry.",
+      "health": {
+        "hosting_type": "github_repository",
+        "hosting_status": "repository_reachable_installer_unverified",
+        "maintenance_status": "legacy_repository",
+        "network_reachability": "not_verified",
+        "verified_repository": "emil237/neoboot",
+        "notes": "Repository exists, but the supplied iNB.sh installer path was not found in the current audit."
+      }
     }
   ],
-  "generated": "2026-09-19"
+  "generated": "2026-09-19",
+  "health_audit": {
+    "classification": "current-source audit; repository existence does not imply installer uptime; cache misses are not treated as outages",
+    "audited_hosts": [
+      "GitHub",
+      "GitLab",
+      "ipkinstall.ath.cx",
+      "linuxsat5.webhop.info"
+    ],
+    "audited_at": "2026-09-19"
+  }
 }
