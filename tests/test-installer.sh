@@ -15,7 +15,7 @@ grep -q '^# wget -qO- https://raw.githubusercontent.com/SamoTech/Enigma2-Univers
 grep -q '^# curl -fsSL https://raw.githubusercontent.com/SamoTech/Enigma2-Universal-Panel/main/install.sh | sh$' "$INSTALL" ||
   fail "curl install command missing"
 
-grep -q 'installer v1.8.0' "$INSTALL" || fail "installer version missing"
+grep -q 'installer v1.9.0' "$INSTALL" || fail "installer version missing"
 grep -q 'REPO="https://raw.githubusercontent.com/SamoTech/Enigma2-Universal-Panel/main"' "$INSTALL" ||
   fail "bootstrap source is not fixed"
 if grep -q 'E2PANEL_REPO' "$INSTALL"; then
@@ -30,6 +30,8 @@ grep -q 'sh -n "$file"' "$INSTALL" || fail "shell validation missing"
 grep -q 'py_compile' "$INSTALL" || fail "Python validation missing"
 grep -q 'json.load' "$INSTALL" || fail "JSON validation missing"
 grep -q 'scripts/lib/library.sh' "$INSTALL" || fail "plugin library runtime file missing"
+grep -q 'scripts/lib/community.sh' "$INSTALL" || fail "community installer runtime file missing"
+grep -q 'plugins/community-admitted.json' "$INSTALL" || fail "community admission registry missing"
 grep -q 'Plugins/Extensions/Enigma2UniversalPanel/debug.py' "$INSTALL" || fail "native UI debug logger missing"
 grep -q 'scripts/lib/validation.sh' "$INSTALL" || fail "receiver validation runtime file missing"
 grep -q 'scripts/lib/update.sh' "$INSTALL" || fail "panel self-update runtime file missing"
