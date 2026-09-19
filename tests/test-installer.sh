@@ -29,6 +29,7 @@ grep -q 'Validating downloaded release' "$INSTALL" || fail "pre-install validati
 grep -q 'sh -n "$file"' "$INSTALL" || fail "shell validation missing"
 grep -q 'py_compile' "$INSTALL" || fail "Python validation missing"
 grep -q 'json.load' "$INSTALL" || fail "JSON validation missing"
+grep -q 'scripts/lib/validation.sh' "$INSTALL" || fail "receiver validation runtime file missing"
 
 grep -q 'BACKUP_DEST=' "$INSTALL" || fail "runtime backup path missing"
 grep -q 'BACKUP_PLUGIN=' "$INSTALL" || fail "plugin backup path missing"
@@ -51,4 +52,11 @@ if grep -q 'rm -rf "$DEST"' "$INSTALL" && ! grep -q 'rollback()' "$INSTALL"; the
   fail "unprotected destructive destination removal detected"
 fi
 
-pass "installer syntax, source lock, transport hardening, validation, rollback and CLI modes"
+PANEL="$ROOT/panel.sh"
+sh -n "$PANEL" || fail "panel shell syntax"
+grep -q 'scripts/lib/validation.sh' "$PANEL" || fail "panel validation runtime source missing"
+grep -q 'validation-snapshot) print_validation_snapshot' "$PANEL" || fail "validation snapshot command missing"
+grep -q 'physical_validation=not_claimed' "$ROOT/scripts/lib/validation.sh" || fail "physical validation boundary missing"
+grep -q 'source=live_receiver_runtime' "$ROOT/scripts/lib/validation.sh" || fail "live receiver evidence marker missing"
+
+pass "installer syntax, source lock, transport hardening, validation, rollback, CLI modes and receiver evidence snapshot"
