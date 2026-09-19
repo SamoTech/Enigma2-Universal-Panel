@@ -142,7 +142,7 @@ Unknown values must be displayed as unknown, not inferred.
 
 ### 1.4 Plugin Library / Store
 
-Status: IN PROGRESS — categorized unified store, search, details, compatibility inspection and controlled feed installation implemented
+Status: IN PROGRESS — categorized unified store, search, details, controlled feed installation, community library and audit-history display implemented
 
 Current slice:
 
@@ -158,6 +158,7 @@ Current slice:
 - compatibility/dependency installation preview
 - strict GUI action parameter validation
 - evidence-backed receiver telemetry
+- native read-only audit-history display backed by the receiver audit log
 
 Acceptance for current slice:
 - GUI package inventory is backed by the existing normalized package schema.
@@ -182,8 +183,8 @@ Remaining Phase 1.4 work:
 - asynchronous remove flow with confirmation — implemented
 - community plugin library source registry and native inspection screen — implemented (49 unique entries; 21 previously audited + 28 inventory additions)
 - community source-health metadata and native health display — implemented
-- richer audit-history display — next target
-- GUI restart handling when required by verified metadata
+- richer audit-history display — implemented
+- GUI restart handling when required by verified metadata — next target
 
 ## Universal compatibility workstream
 
