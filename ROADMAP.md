@@ -4,7 +4,13 @@ Status date: 2026-09-19
 
 ## Product definition
 
-Enigma2 Universal Panel is primarily a **native Enigma2 receiver plugin**. The user-facing panel runs directly on the receiver, appears in the normal Enigma2 Plugins/Extensions menu, and is controlled with the receiver remote control.
+Enigma2 Universal Panel is primarily a **native Enigma2 Plugin Library / Store** that also provides receiver management capabilities. The user-facing application runs directly on the receiver, appears in the normal Enigma2 Plugins/Extensions menu, and is controlled with the receiver remote control.
+
+The central user journey is:
+
+**Open Panel → Browse Plugin Library → Search / Filter → Inspect Plugin → Check Compatibility → Install / Update → Verify**
+
+Dashboard, diagnostics, package state, channels, settings, maintenance, and recovery are supporting receiver-management capabilities around the plugin library.
 
 The project is not a web dashboard with a receiver agent attached to it.
 
@@ -13,7 +19,15 @@ The receiver plugin is the local management application. CLI remains a diagnosti
 ## Product architecture
 
 ```
-Native Enigma2 GUI Plugin
+Native Enigma2 Plugin Library / Store
+        |
+        +--> Catalogs
+        |     +--> receiver-configured package/plugin sources
+        |     +--> controlled community source registry
+        |
+        +--> Search / Categories / Details
+        |
+        +--> Compatibility / Dependency Preview
         |
         v
 GUI Controller / View Models
@@ -125,12 +139,16 @@ Expose evidence-backed runtime state:
 
 Unknown values must be displayed as unknown, not inferred.
 
-### 1.4 Plugin/package GUI
+### 1.4 Plugin Library / Store
 
-Status: IN PROGRESS — metadata browsing and async install/update/remove mutation implemented
+Status: IN PROGRESS — unified store projection, search, details, and controlled feed installation implemented
 
 Current slice:
 
+- unified Plugin Library projection across official receiver-feed metadata and community-source metadata
+- native store browsing with search, categories, availability and source state
+- selected-plugin details
+- controlled feed-plugin installation from the store
 - installed packages from normalized `package-state`
 - available packages from receiver-configured sources
 - plugin resolution by normalized plugin ID
@@ -155,6 +173,7 @@ Acceptance for current slice:
 
 Remaining Phase 1.4 work:
 
+- unified Plugin Library / Store screen — implemented
 - plugin metadata browsing — implemented
 - asynchronous update flow with confirmation — implemented
 - asynchronous remove flow with confirmation — implemented
@@ -281,15 +300,18 @@ Repository binary-hosting policy remains unchanged.
 
 1. Native Enigma2 plugin package and registration.
 2. Native screen/navigation framework.
-3. Dashboard backed by existing detection/capability functions.
-4. Read-only plugin/package browser and resolver screens.
-5. Native plugin metadata browsing.
+3. Plugin Library / Store shell and navigation.
+4. Unified catalog/search/category browsing.
+5. Dashboard backed by existing detection/capability functions.
+6. Read-only plugin details and resolver screens.
+7. Controlled store installation with compatibility preview.
+8. Native plugin metadata browsing.
 6. Native GUI test/harness coverage.
-7. Native asynchronous package mutation with confirmation/postcondition/audit.
-8. Native receiver-side real-device validation.
-9. Richer audit-history display.
-10. GUI restart handling when required by verified metadata.
-11. Core management screens.
+9. Native asynchronous package mutation with confirmation/postcondition/audit.
+10. Native receiver-side real-device validation.
+11. Richer audit-history display.
+12. GUI restart handling when required by verified metadata.
+13. Core management screens.
 12. Channels/bouquets/EPG.
 13. Settings and backup/recovery.
 14. Local automation.

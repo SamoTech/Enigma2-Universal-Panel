@@ -92,6 +92,7 @@ EOF
   . "$ROOT/scripts/lib/plugins.sh"
   . "$ROOT/scripts/lib/plugin-resolver.sh"
   . "$ROOT/scripts/lib/telemetry.sh"
+  . "$ROOT/scripts/lib/library.sh"
 
   require_root() { return 0; }
 
@@ -169,6 +170,26 @@ assert any(x["id"] == "ajpanel" and x["source_status"] == "verified" for x in d[
 assert any(x["id"] == "aio-panel" and x["execution_status"] == "blocked_unverified_source" for x in d["entries"])
 PY
   pass "community installer registry"
+
+  library_output="$TMP/library.json"
+  plugin_library >"$library_output"
+  python3 - "$library_output" <<'PY'
+import json,sys
+d=json.load(open(sys.argv[1]))
+assert d["schema_version"] == 1
+assert d["type"] == "plugin_library"
+assert d["counts"]["community"] == 21
+assert d["counts"]["feed_managed"] == len(d["entries"]) - 21
+assert d["counts"]["community_blocked"] == 21
+ids = [x["id"] for x in d["entries"]]
+assert "openwebif" in ids
+assert "ajpanel" in ids
+for item in d["entries"]:
+    assert item["source"] in {"receiver_feed", "community"}
+    assert item["availability"]
+PY
+  pass "unified plugin library projection"
+
 
   if ! plugin_preview openwebif >"$TMP/preview.json" 2>&1; then
     cat "$TMP/preview.json" >&2
