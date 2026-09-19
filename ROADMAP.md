@@ -282,12 +282,12 @@ Repository binary-hosting policy remains unchanged.
 6. Native GUI test/harness coverage.
 7. Native asynchronous package mutation with confirmation/postcondition/audit.
 8. Native receiver-side real-device validation.
-8. Core management screens.
-9. Channels/bouquets/EPG.
-10. Settings and backup/recovery.
-11. Local automation.
-12. Optional remote control plane.
-13. Optional web/fleet layer.
+9. Core management screens.
+10. Channels/bouquets/EPG.
+11. Settings and backup/recovery.
+12. Local automation.
+13. Optional remote control plane.
+14. Optional web/fleet layer.
 
 ## Definition of done for the native GUI milestone
 
