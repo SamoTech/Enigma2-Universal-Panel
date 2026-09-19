@@ -66,7 +66,7 @@ case "${1:-}" in
   print-architecture)
     printf '%s\n' 'arch all 1' 'arch cortexa15hf-neon-vfpv4 10' 'arch x86_64 10'
     ;;
-  update) exit 0 ;;
+  update) printf "update\n" >>"$STATE/feed-refreshes"; exit 0 ;;
   install)
     [ "$2" = "enigma2-plugin-extensions-openwebif" ] || exit 1
     grep -q "^$2 " "$STATE/installed" || printf '%s 2.0\n' "$2" >>"$STATE/installed"
@@ -290,8 +290,68 @@ PY
   pass "receiver architecture mapping and dependency alternatives"
 
   plugin_resolve_install openwebif >"$TMP/install.log"
-  grep -q '^enigma2-plugin-extensions-openwebif 2.0$' "$STATE/installed"
-  pass "mock receiver install and postcondition"
+  grep -q '^enigma2-plugin-extensions-openwebif 2.0
+
+  if ! plugin_remove_preview openwebif >"$TMP/remove-preview.json" 2>&1; then
+    cat "$TMP/remove-preview.json" >&2
+    fail "mock receiver plugin remove preflight returned blocked"
+  fi
+  python3 - "$TMP/remove-preview.json" <<'PY'
+import json,sys
+d=json.load(open(sys.argv[1]))
+assert d["status"] == "supported"
+assert d["action"] == "remove"
+assert d["removable"] is True
+assert d["installed_version"] == "2.0"
+assert d["compatibility"]["image"] is True
+assert d["compatibility"]["architecture"] is True
+assert d["compatibility"]["package_architecture"] is True
+PY
+  pass "mock receiver plugin remove preflight"
+
+  plugin_remove_id openwebif >"$TMP/remove.log"
+  if grep -q '^enigma2-plugin-extensions-openwebif ' "$STATE/installed"; then
+    fail "mock receiver remove postcondition"
+  fi
+  grep -q 'plugin-remove-id id=openwebif package=enigma2-plugin-extensions-openwebif verified=true installed_before=2.0 installed_after=removed' "$PANEL_LOG" ||
+    fail "remove audit record missing"
+  pass "mock receiver remove and postcondition/audit"
+
+  if action_reboot_for_plugin openwebif >/dev/null 2>&1; then
+    fail "reboot accepted for plugin without reboot metadata"
+  fi
+  pass "reboot blocked when plugin metadata does not require it"
+
+  action_reboot_for_plugin ofgwrite >"$TMP/reboot-request.log"
+  [ -r "$PANEL_ETC/pending-reboot" ] || fail "reboot verification intent missing"
+  grep -q "^mock reboot requested$" "$MOCK_REBOOT_LOG" || fail "mock reboot was not requested"
+
+  pending_status="$(reboot_status)"
+  printf "%s\n" "$pending_status" | grep -q '"status":"pending"' || fail "reboot remains pending before boot change"
+  printf "%s\n" "$pending_status" | grep -q '"boot_changed":false' || fail "unexpected boot change before reboot"
+
+  export E2_TEST_BOOT_ID=boot-2
+  verified_status="$(reboot_status)"
+  printf "%s\n" "$verified_status" | grep -q '"status":"verified"' || fail "reboot verification did not complete"
+  printf "%s\n" "$verified_status" | grep -q '"boot_changed":true' || fail "boot change was not detected"
+  printf "%s\n" "$verified_status" | grep -q '"package_verified":true' || fail "post-reboot package verification failed"
+  [ ! -r "$PANEL_ETC/pending-reboot" ] || fail "verified reboot intent was not cleared"
+  grep -q 'reboot-verify plugin=ofgwrite package=ofgwrite expected=1.0 verified=true' "$PANEL_LOG" || fail "reboot verification audit missing"
+  pass "persistent reboot request and post-boot verification"
+
+  if plugin_resolve_install openairplay >/dev/null 2>&1; then exit 1; fi
+  pass "unknown package mapping blocked"
+
+  if plugin_source_add_external https://attacker.invalid/feed >/dev/null 2>&1; then exit 1; fi
+  pass "arbitrary feed blocked"
+)
+
+sh "$ROOT/tests/test-platform-compatibility.sh"
+printf 'Mock receiver harness completed. No real receiver was contacted.\n'
+ "$STATE/installed"
+  [ -s "$STATE/feed-refreshes" ] || fail "Store installation did not refresh configured feeds"
+  [ "$(wc -l <"$STATE/feed-refreshes")" -ge 2 ] || fail "Store preview/install feed refresh count is insufficient"
+  pass "mock receiver Store install, feed refresh and postcondition"
 
   if ! plugin_remove_preview openwebif >"$TMP/remove-preview.json" 2>&1; then
     cat "$TMP/remove-preview.json" >&2
