@@ -65,9 +65,6 @@ def build_action_command(action_id, params=None):
         "plugin.update",
         "plugin.remove_preview",
         "plugin.remove",
-        "package.install",
-        "package.update",
-        "package.remove",
         "receiver.reboot_for_plugin",
     ):
         if set(params) != {"plugin_id"}:
