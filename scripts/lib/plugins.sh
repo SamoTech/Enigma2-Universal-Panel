@@ -169,6 +169,10 @@ plugin_package_state() {
       ipkg list_installed 2>/dev/null | awk -F ' - ' '{print $1"\t"$2"\tall"}' >"$packages_file"
       ipkg list 2>/dev/null | awk 'NF >= 3 {print $1"\t"$3"\tunknown"}' >"$available_file"
       ;;
+    dpkg)
+      dpkg-query -W -f='${Package}\t${Version}\t${Architecture}\n' 2>/dev/null >"$packages_file"
+      : >"$available_file"
+      ;;
     *)
       : >"$packages_file"
       : >"$available_file"
