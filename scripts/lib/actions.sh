@@ -51,14 +51,27 @@ action_package_install() {
   pkg="$1"
   [ -n "$pkg" ] || { error "package name required"; return 2; }
   plugin_validate_package "$pkg" || return 2
-  plugin_install "$pkg"
+  plugin_install "$pkg" || return 1
+  plugin_installed "$pkg" || { error "Post-install verification failed: $pkg"; return 1; }
+  audit "package-install package=$pkg verified=true"
+}
+action_package_update() {
+  require_capability package_manager || return 1
+  pkg="$1"
+  [ -n "$pkg" ] || { error "package name required"; return 2; }
+  plugin_validate_package "$pkg" || return 2
+  plugin_update "$pkg" || return 1
+  plugin_installed "$pkg" || { error "Post-update verification failed: $pkg"; return 1; }
+  audit "package-update package=$pkg verified=true"
 }
 action_package_remove() {
   require_capability package_manager || return 1
   pkg="$1"
   [ -n "$pkg" ] || return 2
   plugin_validate_package "$pkg" || return 2
-  plugin_remove "$pkg"
+  plugin_remove "$pkg" || return 1
+  plugin_installed "$pkg" && { error "Post-remove verification failed: $pkg"; return 1; }
+  audit "package-remove package=$pkg verified=true"
 }
 action_plugin_install() {
   require_capability package_manager || return 1
