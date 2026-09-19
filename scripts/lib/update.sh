@@ -53,10 +53,9 @@ panel_update() {
       ;;
   esac
 
+  same_version=0
   if [ "$version" = "$PANEL_VERSION" ]; then
-    rm -f "$tmp"
-    printf 'status=current\ncurrent_version=%s\nlatest_version=%s\n' "$PANEL_VERSION" "$version"
-    return 0
+    same_version=1
   fi
 
   if ! sh "$tmp" --no-restart; then
@@ -66,6 +65,10 @@ panel_update() {
   fi
 
   rm -f "$tmp"
-  printf 'status=updated\nprevious_version=%s\ntarget_version=%s\nrestart_required=1\n' "$PANEL_VERSION" "$version"
+  if [ "$same_version" -eq 1 ]; then
+    printf 'status=refreshed\nprevious_version=%s\ntarget_version=%s\nrestart_required=1\n' "$PANEL_VERSION" "$version"
+  else
+    printf 'status=updated\nprevious_version=%s\ntarget_version=%s\nrestart_required=1\n' "$PANEL_VERSION" "$version"
+  fi
   return 0
 }

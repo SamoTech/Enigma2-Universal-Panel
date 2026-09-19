@@ -1267,10 +1267,12 @@ class Enigma2UniversalPanel(Screen):
                 key, value = line.split("=", 1)
                 result[key] = value
         status = result.get("status", "unknown")
-        if status == "current":
-            message = "The panel is already up to date.\n\nInstalled: %s\nLatest: %s" % (result.get("current_version", "unknown"), result.get("latest_version", "unknown"))
+        if status == "refreshed":
+            message = "Panel refresh completed.\n\nVersion: %s\n\nThe official installer redeployed the current panel release. Use Receiver → Restart GUI to activate the refreshed Python modules." % result.get("target_version", result.get("previous_version", "unknown"))
         elif status == "updated":
             message = "Panel update completed.\n\nTarget version: %s\n\nUse Receiver → Restart GUI to activate the updated Python modules." % result.get("target_version", "unknown")
+        elif status == "current":
+            message = "The panel is already up to date.\n\nInstalled: %s\nLatest: %s" % (result.get("current_version", "unknown"), result.get("latest_version", "unknown"))
         else:
             message = "Unexpected panel update result.\n\n%s" % (output or "unknown")
         self.session.open(MessageBox, message, MessageBox.TYPE_INFO)
