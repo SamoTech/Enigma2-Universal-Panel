@@ -6,6 +6,7 @@ pass() { echo "PASS: $1"; }
 
 [ -f Plugins/Extensions/Enigma2UniversalPanel/plugin.py ] || fail "plugin.py missing"
 [ -f Plugins/Extensions/Enigma2UniversalPanel/screens.py ] || fail "screens.py missing"
+[ -f Plugins/Extensions/Enigma2UniversalPanel/audit_history.py ] || fail "audit_history.py missing"
 [ -f Plugins/Extensions/Enigma2UniversalPanel/actions.py ] || fail "actions.py missing"
 
 command -v python3 >/dev/null 2>&1 || fail "python3 unavailable"
@@ -13,6 +14,7 @@ python3 -m py_compile \
   Plugins/Extensions/Enigma2UniversalPanel/__init__.py \
   Plugins/Extensions/Enigma2UniversalPanel/plugin.py \
   Plugins/Extensions/Enigma2UniversalPanel/actions.py \
+  Plugins/Extensions/Enigma2UniversalPanel/audit_history.py \
   Plugins/Extensions/Enigma2UniversalPanel/screens.py
 
 if grep -R -nE 'shell[[:space:]]*=[[:space:]*]True|os\.system[[:space:]]*\(|subprocess\.(Popen|call|run).*shell[[:space:]]*=[[:space:]*]True' Plugins/Extensions/Enigma2UniversalPanel >/tmp/e2panel-native-gui-policy 2>/dev/null; then
@@ -25,6 +27,7 @@ if ! grep -Fq '. "$BASE/scripts/lib/telemetry.sh"' panel.sh; then
 fi
 
 grep -Fq 'telemetry) print_telemetry;;' panel.sh || fail "telemetry command is not wired"
+grep -Fq 'audit-history) audit_history;;' panel.sh || fail "audit history command is not wired"
 grep -Fq 'community-catalog) community_catalog;;' panel.sh || fail "community catalog command is not wired"
 grep -Fq 'plugin-library) plugin_library;;' panel.sh || fail "plugin library command is not wired"
 grep -Fq 'compatibility) print_compatibility;;' panel.sh || fail "compatibility command is not wired"
@@ -37,6 +40,12 @@ grep -Fq '/proc/loadavg' scripts/lib/telemetry.sh || fail "load telemetry source
 grep -Fq '/proc/meminfo' scripts/lib/telemetry.sh || fail "memory telemetry source missing"
 grep -Fq 'df -k /' scripts/lib/telemetry.sh || fail "filesystem telemetry source missing"
 
+grep -Fq 'audit_history()' scripts/lib/common.sh || fail "audit history function missing"
+grep -Fq 'tail -n 20' scripts/lib/common.sh || fail "audit history is not bounded"
+grep -Fq 'name="Audit History"' Plugins/Extensions/Enigma2UniversalPanel/plugin.py || fail "audit history plugin entry missing"
+grep -Fq 'class AuditHistory' Plugins/Extensions/Enigma2UniversalPanel/audit_history.py || fail "audit history screen missing"
+grep -Fq 'receiver.audit_history' Plugins/Extensions/Enigma2UniversalPanel/audit_history.py || fail "audit history action missing"
+
 python3 - <<'PY'
 from pathlib import Path
 import importlib.util
@@ -46,6 +55,7 @@ assert "ACTIONS =" in p
 assert '"receiver.status"' in p
 assert '"receiver.telemetry"' in p
 assert '"receiver.compatibility"' in p
+assert '"receiver.audit_history"' in p
 assert '"plugin.resolve"' in p
 assert '"plugin.preview"' in p
 assert '"plugin.install"' in p
@@ -95,6 +105,12 @@ assert 'unregistered action' in p
 assert "_PLUGIN_ID" in p
 assert 'subprocess.Popen' in p
 assert 'universal_newlines=True' in p
+assert 'class PanelSectionMenu' in screens
+assert '("STORE", (' in screens
+assert '("RECEIVER", (' in screens
+assert '("MANAGEMENT", (' in screens
+assert '("ADVANCED", (' in screens
+assert 'Audit History' in Path("Plugins/Extensions/Enigma2UniversalPanel/plugin.py").read_text()
 
 spec = importlib.util.spec_from_file_location("e2_actions", "Plugins/Extensions/Enigma2UniversalPanel/actions.py")
 mod = importlib.util.module_from_spec(spec)
