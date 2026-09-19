@@ -1603,10 +1603,10 @@ class Enigma2UniversalPanel(Screen):
         try:
             code, output = run_action("receiver.panel_update_check")
         except Exception as exc:
-            self.session.open(MessageBox, "Update check failed.\\n\\n%s" % exc, MessageBox.TYPE_ERROR)
+            self.session.open(MessageBox, "Update check failed.\n\n%s" % exc, MessageBox.TYPE_ERROR)
             return
         if code != 0:
-            self.session.open(MessageBox, "Update check failed.\\n\\n%s" % (output or "unknown error"), MessageBox.TYPE_ERROR)
+            self.session.open(MessageBox, "Update check failed.\n\n%s" % (output or "unknown error"), MessageBox.TYPE_ERROR)
             return
         result = {}
         for line in (output or "").splitlines():
@@ -1616,38 +1616,48 @@ class Enigma2UniversalPanel(Screen):
         status = result.get("status", "unknown")
         current = result.get("current_version", "unknown")
         latest = result.get("latest_version", "unknown")
+
         if status == "current":
             self.session.open(
                 MessageBox,
-                "Enigma2 Universal Panel\\n\\nCurrent: v%s\\nLatest: v%s\\n\\nThe panel is already up to date."
-                % (current, latest),
-                MessageBox.TYPE_INFO,
-            )
-            return
-        if status == "local_newer":
-            self.session.open(
-                MessageBox,
-                "%s\\n\\nInstalled: v%s\\nRemote release: v%s\\n\\nNo update was performed because the receiver already has a newer release."
+                "%s\n\nCurrent installed: v%s\nLatest available: v%s\n\nThe panel is already up to date."
                 % (PLUGIN_NAME, current, latest),
                 MessageBox.TYPE_INFO,
             )
             return
+
+        if status == "local_newer":
+            self.session.open(
+                MessageBox,
+                "%s\n\nCurrent installed: v%s\nRemote release: v%s\n\nNo downgrade is allowed."
+                % (PLUGIN_NAME, current, latest),
+                MessageBox.TYPE_INFO,
+            )
+            return
+
         if status == "available":
             summary = (
-                "%s\\n\\n"
-                "Current installed: v%s\\n"
-                "Latest available: v%s\\n\\n"
-                "The updater will validate the official installer and update only to the newer release shown above.\\n"
-                "No arbitrary URL or command is accepted.\\n\\n"
+                "%s\n\n"
+                "Current installed: v%s\n"
+                "Latest available: v%s\n\n"
+                "The updater will validate the official installer and update only to this newer release.\n"
+                "No arbitrary URL or command is accepted.\n\n"
                 "Update now?"
                 % (PLUGIN_NAME, current, latest)
             )
             self.session.openWithCallback(
                 lambda confirmed: self._prepare_panel_update() if confirmed else None,
-                MessageBox, summary, MessageBox.TYPE_YESNO,
+                MessageBox,
+                summary,
+                MessageBox.TYPE_YESNO,
             )
             return
-        self.session.open(MessageBox, "Unexpected update-check result.\\n\\n%s" % (output or "unknown"), MessageBox.TYPE_ERROR)
+
+        self.session.open(
+            MessageBox,
+            "Unexpected update-check result.\n\n%s" % (output or "unknown"),
+            MessageBox.TYPE_ERROR,
+        )
 
     def _prepare_panel_update(self):
         try:
@@ -1658,21 +1668,86 @@ class Enigma2UniversalPanel(Screen):
         if code != 0:
             self.session.open(MessageBox, "Panel update failed.\n\n%s" % (output or "unknown error"), MessageBox.TYPE_ERROR)
             return
+
         result = {}
         for line in (output or "").splitlines():
             if "=" in line:
                 key, value = line.split("=", 1)
                 result[key] = value
         status = result.get("status", "unknown")
+
+        if status == "updated":
+            message = (
+                "%s update completed.\n\n"
+                "Previous version: v%s\n"
+                "Installed version: v%s\n\n"
+                "Restart Enigma2 GUI now to activate the new version?"
+                % (
+                    PLUGIN_NAME,
+                    result.get("previous_version", "unknown"),
+                    result.get("target_version", "unknown"),
+                )
+            )
+            self.session.openWithCallback(
+                self._restart_after_panel_update,
+                MessageBox,
+                message,
+                MessageBox.TYPE_YESNO,
+            )
+            return
+
         if status == "refreshed":
-            message = "Panel refresh completed.\n\nInstalled version: v%s\nTarget release: v%s\n\nThe official installer redeployed the current panel release. Use Receiver → Restart GUI to activate the refreshed Python modules." % (result.get("previous_version", "unknown"), result.get("target_version", "unknown"))
-        elif status == "updated":
-            message = "Panel update completed.\n\nPrevious version: v%s\nInstalled version: v%s\n\nUse Receiver → Restart GUI to activate the updated Python modules." % (result.get("previous_version", "unknown"), result.get("target_version", "unknown"))
-        elif status == "current":
-            message = "The panel is already up to date.\n\nInstalled: %s\nLatest: %s" % (result.get("current_version", "unknown"), result.get("latest_version", "unknown"))
-        else:
-            message = "Unexpected panel update result.\n\n%s" % (output or "unknown")
-        self.session.open(MessageBox, message, MessageBox.TYPE_INFO)
+            message = (
+                "%s refresh completed.\n\n"
+                "Installed version: v%s\n"
+                "Target release: v%s\n\n"
+                "Restart Enigma2 GUI now to activate the refreshed modules?"
+                % (
+                    PLUGIN_NAME,
+                    result.get("previous_version", "unknown"),
+                    result.get("target_version", "unknown"),
+                )
+            )
+            self.session.openWithCallback(
+                self._restart_after_panel_update,
+                MessageBox,
+                message,
+                MessageBox.TYPE_YESNO,
+            )
+            return
+
+        if status == "current":
+            self.session.open(
+                MessageBox,
+                "%s\n\nInstalled: v%s\nLatest: v%s" % (
+                    PLUGIN_NAME,
+                    result.get("current_version", "unknown"),
+                    result.get("latest_version", "unknown"),
+                ),
+                MessageBox.TYPE_INFO,
+            )
+            return
+
+        self.session.open(
+            MessageBox,
+            "Unexpected panel update result.\n\n%s" % (output or "unknown"),
+            MessageBox.TYPE_ERROR,
+        )
+
+    def _restart_after_panel_update(self, confirmed):
+        if not confirmed:
+            return
+        try:
+            code, output = run_action("receiver.restart_gui")
+        except Exception as exc:
+            self.session.open(MessageBox, "GUI restart failed.\n\n%s" % exc, MessageBox.TYPE_ERROR)
+            return
+        if code != 0:
+            self.session.open(
+                MessageBox,
+                "GUI restart failed.\n\n%s" % (output or "unknown error"),
+                MessageBox.TYPE_ERROR,
+            )
 
     def _dispatch_action(self, action_id):
         if action_id == "dashboard":
