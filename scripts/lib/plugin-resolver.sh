@@ -162,23 +162,44 @@ plugin_dependency_status() {
   deps="$1"
   [ -n "$deps" ] || { printf 'none'; return 0; }
   unresolved=""
-  for dep in $(printf '%s' "$deps" | tr ',|' '  '); do
-    dep="$(plugin_dep_clean "$dep")"
-    [ -n "$dep" ] || continue
-    installed=false
-    case "$E2_PKG" in
-      opkg) opkg status "$dep" 2>/dev/null | grep -q '^Status:.*installed' && installed=true ;;
-      apt) dpkg-query -W -f='\${Status}' "$dep" 2>/dev/null | grep -q 'install ok installed' && installed=true ;;
-      ipkg) ipkg status "$dep" 2>/dev/null | grep -q '^Status:.*installed' && installed=true ;;
-      dpkg) dpkg-query -W -f='\${Status}' "$dep" 2>/dev/null | grep -q 'install ok installed' && installed=true ;;
-    esac
-    [ "$installed" = true ] && continue
-    candidate="$(plugin_native_candidate "$dep")"
-    if [ -z "$candidate" ] || [ "$candidate" = "(none)" ]; then
-      unresolved="$unresolved missing:$dep"
-    fi
+  # Dependencies are comma-separated groups; a group may contain alternatives
+  # separated by "|". At least one alternative must be installed or available.
+  old_ifs="$IFS"
+  IFS=","
+  set -- $deps
+  IFS="$old_ifs"
+  for group in "$@"; do
+    group="$(printf "%s" "$group" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')"
+    [ -n "$group" ] || continue
+    resolved=false
+    old_ifs="$IFS"
+    IFS="|"
+    set -- $group
+    IFS="$old_ifs"
+    for dep in "$@"; do
+      dep="$(plugin_dep_clean "$dep")"
+      dep="$(printf "%s" "$dep" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')"
+      [ -n "$dep" ] || continue
+      installed=false
+      case "$E2_PKG" in
+        opkg) opkg status "$dep" 2>/dev/null | grep -q '^Status:.*installed' && installed=true ;;
+        apt) dpkg-query -W -f='${Status}' "$dep" 2>/dev/null | grep -q 'install ok installed' && installed=true ;;
+        ipkg) ipkg status "$dep" 2>/dev/null | grep -q '^Status:.*installed' && installed=true ;;
+        dpkg) dpkg-query -W -f='${Status}' "$dep" 2>/dev/null | grep -q 'install ok installed' && installed=true ;;
+      esac
+      if [ "$installed" = true ]; then
+        resolved=true
+        break
+      fi
+      candidate="$(plugin_native_candidate "$dep")"
+      if [ -n "$candidate" ] && [ "$candidate" != "(none)" ]; then
+        resolved=true
+        break
+      fi
+    done
+    [ "$resolved" = true ] || unresolved="$unresolved missing:$group"
   done
-  [ -n "$unresolved" ] && printf '%s' "$unresolved" || printf 'resolvable'
+  [ -n "$unresolved" ] && printf "%s" "$unresolved" || printf "resolvable"
 }
 
 plugin_conflict_status() {
