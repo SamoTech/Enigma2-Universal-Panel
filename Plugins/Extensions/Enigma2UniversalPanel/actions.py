@@ -10,6 +10,7 @@ ACTIONS = {
     "receiver.diagnose": {"command": ("/usr/local/bin/e2panel", "diagnose"), "risk": "low", "confirmation": False},
     "receiver.package_state": {"command": ("/usr/local/bin/e2panel", "package-state"), "risk": "low", "confirmation": False},
     "receiver.telemetry": {"command": ("/usr/local/bin/e2panel", "telemetry"), "risk": "low", "confirmation": False},
+    "community.catalog": {"command": ("/usr/local/bin/e2panel", "community-catalog"), "risk": "low", "confirmation": False},
     "plugin.resolve": {"command": ("/usr/local/bin/e2panel", "plugin-resolve"), "risk": "low", "confirmation": False},
     "plugin.preview": {"command": ("/usr/local/bin/e2panel", "plugin-preview"), "risk": "low", "confirmation": False},
     "plugin.info": {"command": ("/usr/local/bin/e2panel", "plugin-info-id"), "risk": "low", "confirmation": False},
