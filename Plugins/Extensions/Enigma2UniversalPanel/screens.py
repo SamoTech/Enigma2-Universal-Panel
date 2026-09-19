@@ -9,6 +9,7 @@ from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 
 from .actions import build_action_command, run_action
+from .audit_history import AuditHistory
 
 
 class ActionResult(Screen):
@@ -794,6 +795,7 @@ class Enigma2UniversalPanel(Screen):
             ("Package Browser", "package-browser"),
             ("Diagnostics", "receiver.diagnose"),
             ("Package State", "receiver.package_state"),
+            ("Audit History", "receiver.audit_history"),
         )),
         ("ADVANCED", (
             ("Resolve Plugin", "plugin.resolve"),
@@ -1031,6 +1033,9 @@ class Enigma2UniversalPanel(Screen):
             return
         if action_id == "receiver.compatibility":
             self.session.open(ReceiverCompatibility)
+            return
+        if action_id == "receiver.audit_history":
+            self.session.open(AuditHistory)
             return
         if action_id == "receiver.telemetry":
             self.session.open(ReceiverTelemetry)
