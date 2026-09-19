@@ -108,8 +108,28 @@ plugin_native_arch_compatibility() {
   native_arch="$1"
   receiver_arch="$2"
   case "$native_arch" in
-    all|"$receiver_arch") printf 'true\n' ;;
-    ""|unknown) printf 'unknown\n' ;;
+    all|noarch|"$receiver_arch") printf 'true\n'; return 0 ;;
+    ""|unknown) printf 'unknown\n'; return 0 ;;
+  esac
+
+  # opkg exposes the architectures actually accepted by the installed image.
+  # Do not compare a package's OE machine architecture directly with uname -m:
+  # e.g. VU+ ARM receivers can report armv7l while OpenATV feeds use a tuned
+  # architecture such as cortexa15hf-neon-vfpv4.
+  if [ "$E2_PKG" = opkg ] && command -v opkg >/dev/null 2>&1; then
+    if opkg print-architecture 2>/dev/null |
+      awk -v wanted="$native_arch" '
+        $1 == "arch" && $2 == wanted { found=1 }
+        END { exit(found ? 0 : 1) }
+      '
+    then
+      printf 'true\n'
+      return 0
+    fi
+  fi
+
+  case "$E2_PKG:$native_arch:$receiver_arch" in
+    apt:all:*|ipkg:all:*) printf 'true\n' ;;
     *) printf 'false\n' ;;
   esac
 }
@@ -142,23 +162,44 @@ plugin_dependency_status() {
   deps="$1"
   [ -n "$deps" ] || { printf 'none'; return 0; }
   unresolved=""
-  for dep in $(printf '%s' "$deps" | tr ',|' '  '); do
-    dep="$(plugin_dep_clean "$dep")"
-    [ -n "$dep" ] || continue
-    installed=false
-    case "$E2_PKG" in
-      opkg) opkg status "$dep" 2>/dev/null | grep -q '^Status:.*installed' && installed=true ;;
-      apt) dpkg-query -W -f='\${Status}' "$dep" 2>/dev/null | grep -q 'install ok installed' && installed=true ;;
-      ipkg) ipkg status "$dep" 2>/dev/null | grep -q '^Status:.*installed' && installed=true ;;
-      dpkg) dpkg-query -W -f='\${Status}' "$dep" 2>/dev/null | grep -q 'install ok installed' && installed=true ;;
-    esac
-    [ "$installed" = true ] && continue
-    candidate="$(plugin_native_candidate "$dep")"
-    if [ -z "$candidate" ] || [ "$candidate" = "(none)" ]; then
-      unresolved="$unresolved missing:$dep"
-    fi
+  # Dependencies are comma-separated groups; a group may contain alternatives
+  # separated by "|". At least one alternative must be installed or available.
+  old_ifs="$IFS"
+  IFS=","
+  set -- $deps
+  IFS="$old_ifs"
+  for group in "$@"; do
+    group="$(printf "%s" "$group" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')"
+    [ -n "$group" ] || continue
+    resolved=false
+    old_ifs="$IFS"
+    IFS="|"
+    set -- $group
+    IFS="$old_ifs"
+    for dep in "$@"; do
+      dep="$(plugin_dep_clean "$dep")"
+      dep="$(printf "%s" "$dep" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//')"
+      [ -n "$dep" ] || continue
+      installed=false
+      case "$E2_PKG" in
+        opkg) opkg status "$dep" 2>/dev/null | grep -q '^Status:.*installed' && installed=true ;;
+        apt) dpkg-query -W -f='${Status}' "$dep" 2>/dev/null | grep -q 'install ok installed' && installed=true ;;
+        ipkg) ipkg status "$dep" 2>/dev/null | grep -q '^Status:.*installed' && installed=true ;;
+        dpkg) dpkg-query -W -f='${Status}' "$dep" 2>/dev/null | grep -q 'install ok installed' && installed=true ;;
+      esac
+      if [ "$installed" = true ]; then
+        resolved=true
+        break
+      fi
+      candidate="$(plugin_native_candidate "$dep")"
+      if [ -n "$candidate" ] && [ "$candidate" != "(none)" ]; then
+        resolved=true
+        break
+      fi
+    done
+    [ "$resolved" = true ] || unresolved="$unresolved missing:$group"
   done
-  [ -n "$unresolved" ] && printf '%s' "$unresolved" || printf 'resolvable'
+  [ -n "$unresolved" ] && printf "%s" "$unresolved" || printf "resolvable"
 }
 
 plugin_conflict_status() {

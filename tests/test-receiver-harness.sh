@@ -63,6 +63,9 @@ case "${1:-}" in
     printf 'Package: enigma2-plugin-extensions-openwebif\nVersion: 2.0\nArchitecture: all\nDepends: python3\nConflicts: old-openwebif\n'
     ;;
   list) printf '%s\n' 'enigma2-plugin-extensions-openwebif - 2.0' 'python3 - 3.12' ;;
+  print-architecture)
+    printf '%s\n' 'arch all 1' 'arch cortexa15hf-neon-vfpv4 10' 'arch x86_64 10'
+    ;;
   update) exit 0 ;;
   install)
     [ "$2" = "enigma2-plugin-extensions-openwebif" ] || exit 1
@@ -281,6 +284,10 @@ assert d["compatibility"]["architecture"] is True
 assert d["compatibility"]["package_architecture"] is True
 PY
   pass "mock receiver plugin preflight"
+
+  [ "$(plugin_native_arch_compatibility cortexa15hf-neon-vfpv4 armv7l)" = true ] || fail "configured opkg architecture mapping rejected tuned ARM package"
+  [ "$(plugin_dependency_status "python3 | missing-provider")" = resolvable ] || fail "dependency alternative resolution failed"
+  pass "receiver architecture mapping and dependency alternatives"
 
   plugin_resolve_install openwebif >"$TMP/install.log"
   grep -q '^enigma2-plugin-extensions-openwebif 2.0$' "$STATE/installed"

@@ -76,6 +76,12 @@ plugin_install() {
   plugin_validate_package "$1" || return 2
   plugin_package_manager || return 1
   require_root || return 1
+  # Refresh only the receiver's already-configured feeds. Never add an
+  # arbitrary source from the control plane.
+  plugin_refresh_sources || {
+    error "Configured receiver package feeds could not be refreshed"
+    return 1
+  }
   info "Installing package from configured receiver feeds: $1"
   case "$E2_PKG" in
     opkg) opkg install "$1";;
