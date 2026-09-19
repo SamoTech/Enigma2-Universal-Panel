@@ -37,7 +37,7 @@
     {
       "id": "aio-panel",
       "name": "AIO Panel",
-      "category": "system_administration",
+      "category": "system",
       "developer": "WaRp",
       "repository": "https://github.com/biko-73/AIO-Panel",
       "delivery": "legacy_remote_installer",
@@ -56,7 +56,7 @@
     {
       "id": "ajpanel",
       "name": "AJPanel",
-      "category": "system_administration",
+      "category": "system",
       "developer": "AMAJamry",
       "repository": "https://github.com/AMAJamry/AJPanel",
       "source_ref": "d38af503a359dd9e1b6b4e0b7a8f9af9577b86c5",
@@ -75,7 +75,8 @@
         "network_reachability": "installer_endpoint_observed",
         "verified_repository": "AMAJamry/AJPanel",
         "notes": "Current repository is reachable. The current installer source observed in web retrieval still uses --no-check-certificate and resolves a versioned IPK/DEB before invoking the native package manager."
-      }
+      },
+      "latest_version": "10.8.6"
     },
     {
       "id": "arabicsavior",
@@ -103,7 +104,7 @@
     {
       "id": "backupflash",
       "name": "BackupFlash",
-      "category": "backup_flash",
+      "category": "multiboot",
       "developer": "fairman / RAED",
       "item_type": "tool",
       "delivery": "forum_release",
@@ -124,7 +125,7 @@
     {
       "id": "barryallen",
       "name": "BarryAllen",
-      "category": "multi_boot",
+      "category": "multiboot",
       "developer": "gutemine / community",
       "item_type": "plugin",
       "delivery": "forum_release",
@@ -145,7 +146,7 @@
     {
       "id": "chkroot-multiboot",
       "name": "chkroot MultiBoot",
-      "category": "multi_boot",
+      "category": "multiboot",
       "developer": "-MAHDI- DZ",
       "item_type": "plugin",
       "delivery": "forum_release",
@@ -166,7 +167,7 @@
     {
       "id": "chocholousek-picons",
       "name": "Chocholousek Picons",
-      "category": "picons",
+      "category": "skins",
       "developer": "s3n0 / Chocholoušek",
       "repository": "https://github.com/s3n0/e2plugins",
       "source_ref": "84a40ed6b01f8dc7d49b632f886525b9c51773c7",
@@ -232,7 +233,7 @@
     {
       "id": "dreamsatpanel",
       "name": "DreamSatPanel",
-      "category": "third_party_catalog",
+      "category": "utilities",
       "developer": "linuxsat25 / teak-won-do",
       "repository": "http://ipkinstall.ath.cx/ipk-install/DreamSatPanel",
       "delivery": "legacy_remote_installer",
@@ -251,7 +252,7 @@
     {
       "id": "e2bisskeyeditor",
       "name": "E2BissKeyEditor",
-      "category": "conditional_access_configuration",
+      "category": "security",
       "developer": "IsmailE2",
       "item_type": "plugin",
       "delivery": "forum_release",
@@ -272,7 +273,7 @@
     {
       "id": "e2iplayer",
       "name": "E2iPlayer",
-      "category": "media_streaming",
+      "category": "media",
       "developer": "community / oe-mirrors mirror",
       "repository": "https://github.com/oe-mirrors/e2iplayer-zadmario",
       "source_ref": "d0b5b6a8c6b016c20519f868012e03f9584602aa",
@@ -290,7 +291,8 @@
         "network_reachability": "installer_endpoint_available_in_repository_evidence",
         "verified_repository": "oe-mirrors/e2iplayer-zadmario",
         "notes": "Current mirror is reachable and has a merge commit dated 2026-09-16. Treat as a mirror/fork rather than original upstream."
-      }
+      },
+      "latest_version": "2026.08.24.01"
     },
     {
       "id": "epg-grabber",
@@ -339,7 +341,7 @@
     {
       "id": "estalker",
       "name": "EStalker",
-      "category": "iptv_stalker",
+      "category": "iptv",
       "developer": "KiddaC",
       "item_type": "plugin",
       "delivery": "repository_release",
@@ -360,7 +362,7 @@
     {
       "id": "footonsat",
       "name": "FootOnSat",
-      "category": "sports_and_satellite",
+      "category": "media",
       "developer": "zKhadiri / ziko-ZR1",
       "repository": "https://github.com/zKhadiri/FootOnsat",
       "source_ref": "11efadc4cc46fb392999d9064983a996e586247c",
@@ -385,7 +387,7 @@
     {
       "id": "gt-iptv-player-pro",
       "name": "GT IPTV Player Pro",
-      "category": "iptv_streaming",
+      "category": "iptv",
       "developer": "isah2 / VicTuS59",
       "item_type": "plugin",
       "delivery": "forum_release",
@@ -427,7 +429,7 @@
     {
       "id": "hybridiptv",
       "name": "HybridIPTV",
-      "category": "iptv_streaming",
+      "category": "iptv",
       "developer": "ostende / Warder",
       "item_type": "plugin",
       "delivery": "forum_release",
@@ -448,7 +450,7 @@
     {
       "id": "ipaudio",
       "name": "IPAudio",
-      "category": "audio_commentary",
+      "category": "audio",
       "developer": "zKhadiri / ziko-ZR1",
       "repository": "https://github.com/zKhadiri/IPAudio",
       "source_ref": "0ada7e95039289776a6b94cd20c852a069f7750d",
@@ -468,7 +470,7 @@
     {
       "id": "ipaudio-pro",
       "name": "IPAudioPro",
-      "category": "audio_commentary",
+      "category": "audio",
       "developer": "emilnabil / community",
       "repository": "https://github.com/emilnabil/ipaudiopro",
       "source_ref": "9883382dcda2633a33ec8804c862117418fa6790",
@@ -550,7 +552,7 @@
     {
       "id": "jedi-maker-xtream",
       "name": "JediMakerXtream",
-      "category": "iptv_bouquet_generation",
+      "category": "iptv",
       "developer": "emil237 / community",
       "repository": "https://github.com/emil237/jedimakerxtream",
       "source_ref": "ca17f6c8236429da43cf602da2472f25006679ea",
@@ -572,7 +574,7 @@
     {
       "id": "keyadder",
       "name": "KeyAdder",
-      "category": "conditional_access_configuration",
+      "category": "security",
       "developer": "fairbird",
       "repository": "https://github.com/fairbird/KeyAdder",
       "source_ref": "53775ff232125d7347b7988830912176893f6c65",
@@ -638,7 +640,7 @@
     {
       "id": "linuxsat-panel",
       "name": "LinuxSat Panel",
-      "category": "system_administration",
+      "category": "system",
       "developer": "Belfagor2005 / current repository organization OwnerPlugins",
       "repository": "https://github.com/OwnerPlugins/LinuxsatPanel",
       "source_ref": "f4c1ea8fc6512647db00a786c3a0f40a90e6b358",
@@ -703,7 +705,7 @@
     {
       "id": "multi-stalker",
       "name": "Multi-Stalker",
-      "category": "stalker_portal",
+      "category": "iptv",
       "developer": "zKhadiri / ziko-ZR1",
       "repository": "https://github.com/zKhadiri/Multi-Stalker-install",
       "source_ref": "9dde40a9fd5729b0bf24c0a55a58a78186400f30",
@@ -728,7 +730,7 @@
     {
       "id": "multiboot-links",
       "name": "Multiboot Links Index",
-      "category": "multi_boot",
+      "category": "multiboot",
       "developer": "fairman",
       "item_type": "resource",
       "delivery": "forum_reference",
@@ -749,7 +751,7 @@
     {
       "id": "my-translator",
       "name": "my translator",
-      "category": "translation",
+      "category": "localization",
       "developer": "ismail72",
       "item_type": "plugin",
       "delivery": "forum_release",
@@ -770,7 +772,7 @@
     {
       "id": "ncam-emu",
       "name": "Ncam EMU",
-      "category": "conditional_access_software",
+      "category": "security",
       "developer": "marouan / fairman / community",
       "item_type": "tool",
       "delivery": "forum_release",
@@ -791,7 +793,7 @@
     {
       "id": "neoboot",
       "name": "NeoBoot",
-      "category": "multi_boot",
+      "category": "multiboot",
       "developer": "gutemine / community ports",
       "repository": "https://github.com/emil237/neoboot",
       "source_ref": "8d54a03435aefcdd8b2f52ed1687b7c6528ca58e",
@@ -811,7 +813,7 @@
     {
       "id": "oscam-emu",
       "name": "Oscam EMU",
-      "category": "conditional_access_software",
+      "category": "security",
       "developer": "fairman / community",
       "item_type": "tool",
       "delivery": "mixed_distribution",
@@ -832,7 +834,7 @@
     {
       "id": "raedquicksignal",
       "name": "RaedQuickSignal",
-      "category": "signal_diagnostics",
+      "category": "monitoring",
       "developer": "fairbird",
       "repository": "https://github.com/fairbird/RaedQuickSignal",
       "source_ref": "79f1804be9ee3e8aae57795dac8ba4be4132a8e6",
@@ -855,7 +857,7 @@
     {
       "id": "subextractor",
       "name": "SubExtractor",
-      "category": "subtitles",
+      "category": "localization",
       "developer": "Arian_7 / youssef511",
       "item_type": "plugin",
       "delivery": "forum_release",
@@ -876,7 +878,7 @@
     {
       "id": "subssupport",
       "name": "SubsSupport",
-      "category": "subtitles",
+      "category": "localization",
       "developer": "mx3L / popking159 / community",
       "repository": "https://github.com/popking159/ssupport",
       "source_ref": "4f94690b92377b36542df33038f15df892dbdc7b",
@@ -898,7 +900,7 @@
     {
       "id": "timeshift-delay",
       "name": "TimeShift Delay",
-      "category": "timeshift",
+      "category": "recording",
       "developer": "biko_73",
       "item_type": "plugin",
       "delivery": "forum_release",
@@ -919,7 +921,7 @@
     {
       "id": "tivimate-iptv",
       "name": "TiviMate to IPTV",
-      "category": "iptv_interface",
+      "category": "iptv",
       "developer": "opesboy / sifo22",
       "item_type": "plugin",
       "delivery": "forum_release",
@@ -940,7 +942,7 @@
     {
       "id": "ts-sateditor",
       "name": "TS-sateditor",
-      "category": "satellite_configuration",
+      "category": "channels",
       "developer": "mfaraj57 / iet5",
       "item_type": "tool",
       "delivery": "forum_release",
@@ -961,7 +963,7 @@
     {
       "id": "ultra-stalker",
       "name": "Ultra Stalker",
-      "category": "iptv_stalker",
+      "category": "iptv",
       "developer": "Ahmed L-HadarY",
       "item_type": "plugin",
       "delivery": "forum_release",
@@ -982,7 +984,7 @@
     {
       "id": "xportal",
       "name": "Xportal",
-      "category": "iptv_stalker",
+      "category": "iptv",
       "developer": "karimSATPRO / community",
       "item_type": "plugin",
       "delivery": "mixed_distribution",
@@ -1003,7 +1005,7 @@
     {
       "id": "xstreamity",
       "name": "XStreamity",
-      "category": "iptv_streaming",
+      "category": "iptv",
       "developer": "KiddaC",
       "repository": "https://github.com/kiddac/XStreamity",
       "source_ref": "ff81296bf5decb603c18a8b3a8905a1759f12239",
@@ -1019,12 +1021,13 @@
         "network_reachability": "repository_reachable_installer_not_canonical",
         "verified_repository": "kiddac/XStreamity",
         "notes": "Current canonical repository is reachable and has September 2026 maintenance history. The older biko-73 wrapper from the supplied list is not treated as canonical."
-      }
+      },
+      "latest_version": "5.58-20260720"
     },
     {
       "id": "xtream2audio",
       "name": "Xtream2Audio",
-      "category": "audio_commentary",
+      "category": "audio",
       "developer": "Emil Nabil Ragheb",
       "item_type": "plugin",
       "delivery": "mixed_distribution",
@@ -1045,7 +1048,7 @@
     {
       "id": "xtreamnew",
       "name": "XtreamNew",
-      "category": "iptv_streaming",
+      "category": "iptv",
       "developer": "Ahmed hussein12",
       "item_type": "plugin",
       "delivery": "forum_release",
@@ -1081,5 +1084,13 @@
         "kiddac/EStalker"
       ]
     }
+  },
+  "store_policy": {
+    "user_facing_only": [
+      "verified",
+      "current_verified"
+    ],
+    "metadata_only_hidden": true,
+    "latest_version_required": true
   }
 }
