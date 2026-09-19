@@ -306,17 +306,17 @@ Repository binary-hosting policy remains unchanged.
 6. Read-only plugin details and resolver screens.
 7. Controlled store installation with compatibility preview.
 8. Native plugin metadata browsing.
-6. Native GUI test/harness coverage.
-9. Native asynchronous package mutation with confirmation/postcondition/audit.
-10. Native receiver-side real-device validation.
-11. Richer audit-history display.
-12. GUI restart handling when required by verified metadata.
-13. Core management screens.
-12. Channels/bouquets/EPG.
-13. Settings and backup/recovery.
-14. Local automation.
-15. Optional remote control plane.
-16. Optional web/fleet layer.
+9. Native GUI test/harness coverage.
+10. Native asynchronous package mutation with confirmation/postcondition/audit.
+11. Native receiver-side real-device validation.
+12. Richer audit-history display.
+13. GUI restart handling when required by verified metadata.
+14. Core management screens.
+15. Channels/bouquets/EPG.
+16. Settings and backup/recovery.
+17. Local automation.
+18. Optional remote control plane.
+19. Optional web/fleet layer.
 
 ## Definition of done for the native GUI milestone
 
