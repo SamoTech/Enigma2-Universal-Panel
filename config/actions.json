@@ -22,6 +22,7 @@
     {"id":"plugin.source_refresh","domain":"plugin","name":"Refresh receiver plugin sources","risk":"medium","requires_confirmation":false},
     {"id":"plugin.discover","domain":"plugin","name":"Discover packages from receiver feeds","risk":"low","requires_confirmation":false},
     {"id":"plugin.info","domain":"plugin","name":"Read package metadata from receiver feeds","risk":"low","requires_confirmation":false},
+    {"id":"community.catalog","domain":"community","name":"Read admitted community installer metadata","risk":"low","requires_confirmation":false},
     {"id":"plugin.resolve","domain":"plugin","name":"Resolve normalized plugin ID to receiver package","risk":"low","requires_confirmation":false},
     {"id":"plugin.preview","domain":"plugin","name":"Preflight plugin compatibility and dependencies","risk":"low","requires_confirmation":false},
     {"id":"plugin.install","domain":"plugin","name":"Install compatible plugin package","risk":"medium","requires_confirmation":false},
