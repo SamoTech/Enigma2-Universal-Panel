@@ -172,10 +172,9 @@ class PackageInstallProgress(Screen):
         self.finished = True
         if retval == 0:
             text = (
-                "%s completed.\n\n" % self.operation
-                "Postcondition verification: PASS\n"
+                "%s completed.\n\nPostcondition verification: PASS\n"
                 "Audit record: written by receiver action\n\n"
-                "Plugin: %s" % self.plugin_id
+                "Plugin: %s" % (self.operation, self.plugin_id)
             )
             self["state"].setText(text)
             if self.requires_gui_restart:
@@ -184,10 +183,10 @@ class PackageInstallProgress(Screen):
                 self["hint"].setText("OK / EXIT: Close")
         else:
             text = (
-                "%s failed or was blocked.\n\n" % self.operation
+                "%s failed or was blocked.\n\n"
                 "Exit code: %s\n"
                 "Postcondition: NOT VERIFIED\n\n%s"
-                % (retval, self.output[-2200:].strip())
+                % (self.operation, retval, self.output[-2200:].strip())
             )
             self["state"].setText(text)
             self["hint"].setText("OK / EXIT: Close")
