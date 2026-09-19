@@ -11,7 +11,7 @@ pass "all shell scripts parse"
 
 python3 - <<'PY'
 import json, pathlib
-root=pathlib.Path(__file__).resolve().parents[1]
+root=pathlib.Path.cwd()
 for p in root.rglob("*.json"):
     json.loads(p.read_text())
 print("PASS: all repository JSON files parse")
