@@ -81,6 +81,8 @@ assert 'Receiver Telemetry' in Path("Plugins/Extensions/Enigma2UniversalPanel/sc
 assert 'class ReceiverTelemetry' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'class RestartGuiProgress' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'class RebootProgress' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'def _offer_reboot(self):' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'receiver.reboot_for_plugin' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'requires_reboot' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'receiver.reboot_for_plugin' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'receiver.reboot_status' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
