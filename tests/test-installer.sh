@@ -34,6 +34,11 @@ grep -q 'Plugins/Extensions/Enigma2UniversalPanel/debug.py' "$INSTALL" || fail "
 grep -q 'scripts/lib/validation.sh' "$INSTALL" || fail "receiver validation runtime file missing"
 grep -q 'scripts/lib/update.sh' "$INSTALL" || fail "panel self-update runtime file missing"
 
+UPDATE="$ROOT/scripts/lib/update.sh"
+sh -n "$UPDATE" || fail "panel self-update shell syntax"
+grep -q 'status=refreshed' "$UPDATE" || fail "same-version panel refresh status missing"
+grep -q 'same_version=1' "$UPDATE" || fail "same-version refresh path missing"
+
 grep -q 'BACKUP_DEST=' "$INSTALL" || fail "runtime backup path missing"
 grep -q 'BACKUP_PLUGIN=' "$INSTALL" || fail "plugin backup path missing"
 grep -q 'rollback()' "$INSTALL" || fail "rollback function missing"
