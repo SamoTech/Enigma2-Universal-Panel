@@ -219,6 +219,140 @@ EOF
   [ "$status" = supported ]
 }
 
+
+plugin_info_id() {
+  id="$1"
+  plugin_validate_package "$id" || return 2
+  [ -r "$PANEL_ROOT/plugins/catalog.json" ] || { error "plugin catalog unavailable"; return 1; }
+
+  block="$(plugin_catalog_block "$id")"
+  [ -n "$block" ] || { error "unknown plugin ID: $id"; return 3; }
+
+  pkg="$(plugin_catalog_field "$id" package_name)"
+  installed=""
+  candidate=""
+  if [ -n "$pkg" ] && [ "$pkg" != unknown ] && [ "$pkg" != "image/feed dependent" ]; then
+    plugin_package_manager || return 1
+    installed="$(plugin_native_installed_version "$pkg")"
+    candidate="$(plugin_native_candidate "$pkg")"
+  fi
+
+  images="$(plugin_catalog_list "$id" images | paste -sd ',' -)"
+  architectures="$(plugin_catalog_list "$id" architectures | paste -sd ',' -)"
+  dependencies="$(plugin_catalog_list "$id" dependencies | paste -sd ',' -)"
+  conflicts="$(plugin_catalog_list "$id" conflicts | paste -sd ',' -)"
+
+  printf '{\n'
+  printf '  "plugin_id":"%s",\n' "$(plugin_json_escape "$id")"
+  printf '  "name":"%s",\n' "$(plugin_json_escape "$(plugin_catalog_field "$id" name)")"
+  printf '  "display_name":"%s",\n' "$(plugin_json_escape "$(plugin_catalog_field "$id" display_name)")"
+  printf '  "category":"%s",\n' "$(plugin_json_escape "$(plugin_catalog_field "$id" category)")"
+  printf '  "subcategory":"%s",\n' "$(plugin_json_escape "$(plugin_catalog_field "$id" subcategory)")"
+  printf '  "author":"%s",\n' "$(plugin_json_escape "$(plugin_catalog_field "$id" author)")"
+  printf '  "source_type":"%s",\n' "$(plugin_json_escape "$(plugin_catalog_field "$id" source_type)")"
+  printf '  "repository":"%s",\n' "$(plugin_json_escape "$(plugin_catalog_field "$id" repository)")"
+  printf '  "package":"%s",\n' "$(plugin_json_escape "$pkg")"
+  printf '  "images":"%s",\n' "$(plugin_json_escape "$images")"
+  printf '  "architectures":"%s",\n' "$(plugin_json_escape "$architectures")"
+  printf '  "dependencies":"%s",\n' "$(plugin_json_escape "$dependencies")"
+  printf '  "conflicts":"%s",\n' "$(plugin_json_escape "$conflicts")"
+  printf '  "installable":%s,\n' "$(plugin_catalog_field "$id" installable | grep -q '^true
+  id="$1"
+  preview_file="/tmp/e2panel-plugin-preview.$$"
+  if plugin_preview "$id" >"$preview_file" 2>&1; then
+    rc=0
+  else
+    rc=$?
+  fi
+  cat "$preview_file"
+  rm -f "$preview_file"
+  [ "$rc" -eq 0 ] || { error "Plugin install blocked by preflight policy"; return "$rc"; }
+
+  resolved="$(plugin_resolve "$id")" || return $?
+  plugin_install "$resolved" || return 1
+  plugin_installed "$resolved" || { error "Post-install verification failed: $resolved"; return 1; }
+  audit "plugin-install-id id=$id package=$resolved verified=true"
+}
+ && printf true || printf false)"
+  printf '  "updatable":%s,\n' "$(plugin_catalog_field "$id" updatable | grep -q '^true
+  id="$1"
+  preview_file="/tmp/e2panel-plugin-preview.$$"
+  if plugin_preview "$id" >"$preview_file" 2>&1; then
+    rc=0
+  else
+    rc=$?
+  fi
+  cat "$preview_file"
+  rm -f "$preview_file"
+  [ "$rc" -eq 0 ] || { error "Plugin install blocked by preflight policy"; return "$rc"; }
+
+  resolved="$(plugin_resolve "$id")" || return $?
+  plugin_install "$resolved" || return 1
+  plugin_installed "$resolved" || { error "Post-install verification failed: $resolved"; return 1; }
+  audit "plugin-install-id id=$id package=$resolved verified=true"
+}
+ && printf true || printf false)"
+  printf '  "removable":%s,\n' "$(plugin_catalog_field "$id" removable | grep -q '^true
+  id="$1"
+  preview_file="/tmp/e2panel-plugin-preview.$$"
+  if plugin_preview "$id" >"$preview_file" 2>&1; then
+    rc=0
+  else
+    rc=$?
+  fi
+  cat "$preview_file"
+  rm -f "$preview_file"
+  [ "$rc" -eq 0 ] || { error "Plugin install blocked by preflight policy"; return "$rc"; }
+
+  resolved="$(plugin_resolve "$id")" || return $?
+  plugin_install "$resolved" || return 1
+  plugin_installed "$resolved" || { error "Post-install verification failed: $resolved"; return 1; }
+  audit "plugin-install-id id=$id package=$resolved verified=true"
+}
+ && printf true || printf false)"
+  printf '  "requires_gui_restart":%s,\n' "$(plugin_catalog_field "$id" requires_gui_restart | grep -q '^true
+  id="$1"
+  preview_file="/tmp/e2panel-plugin-preview.$$"
+  if plugin_preview "$id" >"$preview_file" 2>&1; then
+    rc=0
+  else
+    rc=$?
+  fi
+  cat "$preview_file"
+  rm -f "$preview_file"
+  [ "$rc" -eq 0 ] || { error "Plugin install blocked by preflight policy"; return "$rc"; }
+
+  resolved="$(plugin_resolve "$id")" || return $?
+  plugin_install "$resolved" || return 1
+  plugin_installed "$resolved" || { error "Post-install verification failed: $resolved"; return 1; }
+  audit "plugin-install-id id=$id package=$resolved verified=true"
+}
+ && printf true || printf false)"
+  printf '  "requires_reboot":%s,\n' "$(plugin_catalog_field "$id" requires_reboot | grep -q '^true
+  id="$1"
+  preview_file="/tmp/e2panel-plugin-preview.$$"
+  if plugin_preview "$id" >"$preview_file" 2>&1; then
+    rc=0
+  else
+    rc=$?
+  fi
+  cat "$preview_file"
+  rm -f "$preview_file"
+  [ "$rc" -eq 0 ] || { error "Plugin install blocked by preflight policy"; return "$rc"; }
+
+  resolved="$(plugin_resolve "$id")" || return $?
+  plugin_install "$resolved" || return 1
+  plugin_installed "$resolved" || { error "Post-install verification failed: $resolved"; return 1; }
+  audit "plugin-install-id id=$id package=$resolved verified=true"
+}
+ && printf true || printf false)"
+  printf '  "compatibility_confidence":"%s",\n' "$(plugin_json_escape "$(plugin_catalog_field "$id" compatibility_confidence)")"
+  printf '  "status":"%s",\n' "$(plugin_json_escape "$(plugin_catalog_field "$id" status)")"
+  printf '  "installed_version":"%s",\n' "$(plugin_json_escape "$installed")"
+  printf '  "candidate_version":"%s"\n' "$(plugin_json_escape "$candidate")"
+  printf '}\n'
+}
+
 plugin_resolve_install() {
   id="$1"
   preview_file="/tmp/e2panel-plugin-preview.$$"
