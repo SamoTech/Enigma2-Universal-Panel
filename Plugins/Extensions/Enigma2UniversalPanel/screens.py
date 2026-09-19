@@ -684,49 +684,240 @@ class PackageBrowser(Screen):
     <screen name="PackageBrowser" position="center,center" size="1000,650" title="Enigma2 Universal Panel">
         <widget name="title" position="35,20" size="930,42" font="Regular;30" />
         <widget name="summary" position="35,62" size="930,30" font="Regular;18" />
-        <widget name="state" position="35,102" size="930,428" font="Regular;20" valign="top" />
-        <widget name="hint" position="35,565" size="930,28" font="Regular;18" />
+        <widget name="menu" position="35,100" size="930,340" itemHeight="44" font="Regular;21" />
+        <widget name="details" position="35,455" size="930,82" font="Regular;18" valign="top" />
+        <widget name="key_red" position="35,565" size="175,30" font="Regular;17" foregroundColor="#f24b4b" />
+        <widget name="key_green" position="210,565" size="175,30" font="Regular;17" foregroundColor="#4bd66f" />
+        <widget name="key_yellow" position="385,565" size="175,30" font="Regular;17" foregroundColor="#f3d45c" />
+        <widget name="key_blue" position="560,565" size="175,30" font="Regular;17" foregroundColor="#4da6ff" />
+        <widget name="hint" position="735,565" size="230,30" font="Regular;17" halign="right" />
     </screen>
     """
 
     def __init__(self, session):
         Screen.__init__(self, session)
         self["title"] = Label("Package Browser")
-        self["summary"] = Label("Receiver-configured package sources")
-        self["state"] = Label("Loading package state...")
-        self["hint"] = Label("GREEN: Refresh    EXIT: Back")
-        self["actions"] = ActionMap(["OkCancelActions", "ColorActions"], {"cancel": self.close, "green": self.refresh}, -2)
+        self["summary"] = Label("Receiver-local package manager")
+        self["menu"] = DebugMenuList([])
+        self["details"] = Label("Loading receiver package inventory...")
+        self["key_red"] = Label("RED: Remove")
+        self["key_green"] = Label("GREEN: Install/Update")
+        self["key_yellow"] = Label("YELLOW: Refresh")
+        self["key_blue"] = Label("BLUE: Search")
+        self["hint"] = Label("OK: Info  |  EXIT: Back")
+        self["actions"] = DebugActionMap(
+            ["OkCancelActions", "ColorActions"],
+            {
+                "ok": self.show_info,
+                "cancel": self.close,
+                "green": self.install_or_update,
+                "red": self.remove_selected,
+                "yellow": self.refresh,
+                "blue": self.search,
+            },
+            -2,
+        )
+        self.entries = []
+        self.search_term = ""
         self.onLayoutFinish.append(self.refresh)
+        self["menu"].onSelectionChanged.append(self._selection_changed)
 
     def refresh(self):
-        code, output = run_action("receiver.package_state")
+        try:
+            code, output = run_action("receiver.package_state")
+        except Exception as exc:
+            self.entries = []
+            self["menu"].setList([])
+            self["details"].setText("Package state request rejected.\n\n%s" % exc)
+            return
         if code != 0:
-            self["state"].setText("Package state unavailable.\n\n" + (output or "unknown"))
+            self.entries = []
+            self["menu"].setList([])
+            self["details"].setText("Package state unavailable.\n\n%s" % (output or "unknown"))
             return
         try:
             state = json.loads(output)
         except (TypeError, ValueError):
-            self["state"].setText("Invalid package-state response.\n\n" + (output or "unknown"))
+            self.entries = []
+            self["menu"].setList([])
+            self["details"].setText("Invalid receiver package-state response.")
             return
         installed = state.get("installed_packages") or []
         available = state.get("available_packages") or []
-        feeds = state.get("feeds") or []
-        lines = [
-            "Package manager: %s" % state.get("package_manager", "unknown"),
-            "Image: %s" % state.get("image", "unknown"),
-            "Architecture: %s" % state.get("architecture", "unknown"),
-            "Network: %s" % state.get("network", "unknown"),
-            "Configured sources: %d" % len(feeds),
-            "Installed packages: %d" % len(installed),
-            "Available packages: %d" % len(available),
-            "",
-            "Installed (first 20):",
+        installed_map = {item.get("name"): item for item in installed if item.get("name")}
+        available_map = {item.get("name"): item for item in available if item.get("name")}
+        names = sorted(set(installed_map) | set(available_map), key=lambda x: x.lower())
+        self.entries = []
+        for name in names:
+            ins = installed_map.get(name)
+            avail = available_map.get(name)
+            if ins and avail:
+                status = "installed+available"
+                version = avail.get("version") or ins.get("version") or "unknown"
+            elif ins:
+                status = "installed"
+                version = ins.get("version") or "unknown"
+            else:
+                status = "available"
+                version = avail.get("version") or "unknown"
+            self.entries.append({
+                "name": name,
+                "installed": ins is not None,
+                "installed_version": (ins or {}).get("version", ""),
+                "available_version": version,
+                "architecture": (avail or ins or {}).get("architecture", "unknown"),
+                "status": status,
+            })
+        self._apply_filter(state)
+
+    def _filtered(self):
+        term = self.search_term.lower().strip()
+        if not term:
+            return self.entries
+        return [entry for entry in self.entries if term in entry["name"].lower()]
+
+    def _apply_filter(self, state=None):
+        filtered = self._filtered()
+        choices = [
+            "%s  [%s | %s]"
+            % (entry["name"], entry["status"], entry["available_version"])
+            for entry in filtered
         ]
-        lines.extend("  - %s %s" % (item.get("name", "unknown"), item.get("version", "unknown")) for item in installed[:20])
-        lines.append("")
-        lines.append("Available (first 20):")
-        lines.extend("  - %s %s" % (item.get("name", "unknown"), item.get("version", "unknown")) for item in available[:20])
-        self["state"].setText("\n".join(lines))
+        self["menu"].setList(choices)
+        self["summary"].setText(
+            "%d package(s) | %s | Search: %s"
+            % (
+                len(filtered),
+                state.get("package_manager", "unknown") if state else "receiver package manager",
+                self.search_term or "all",
+            )
+        )
+        self._selection_changed()
+
+    def _selected_entry(self):
+        index = self["menu"].getSelectionIndex()
+        filtered = self._filtered()
+        if index is None or index < 0 or index >= len(filtered):
+            return None
+        return filtered[index]
+
+    def _selection_changed(self):
+        entry = self._selected_entry()
+        if not entry:
+            self["details"].setText("No package selected.")
+            return
+        self["details"].setText(
+            "Installed: %s (%s)  |  Candidate: %s\nArchitecture: %s | State: %s"
+            % (
+                entry["installed"],
+                entry["installed_version"] or "none",
+                entry["available_version"],
+                entry["architecture"],
+                entry["status"],
+            )
+        )
+
+    def search(self):
+        self.session.openWithCallback(
+            self._search_done,
+            InputBox,
+            title="Search Receiver Packages",
+            text=self.search_term,
+        )
+
+    def _search_done(self, value):
+        if value is None:
+            return
+        self.search_term = value.strip()
+        self._apply_filter()
+
+    def show_info(self):
+        entry = self._selected_entry()
+        if not entry:
+            return
+        try:
+            code, output = run_action("receiver.package_info", {"package": entry["name"]})
+        except ValueError:
+            self.session.open(
+                ActionResult,
+                "Package Information",
+                "Package information action is unavailable in this panel release.\n\n"
+                "Selected: %s" % entry["name"],
+            )
+            return
+        except Exception as exc:
+            self.session.open(MessageBox, "Package information failed: %s" % exc, MessageBox.TYPE_ERROR)
+            return
+        if code != 0:
+            output = "Command failed with exit code %s.\n\n%s" % (code, output)
+        self.session.open(ActionResult, "Package Information — %s" % entry["name"], output)
+
+    def install_or_update(self):
+        entry = self._selected_entry()
+        if not entry:
+            return
+        if entry["installed"]:
+            operation = "update"
+            action_id = "package.update"
+            message = (
+                "Update package: %s\n\nInstalled: %s\nCandidate: %s\n\n"
+                "The operation uses only receiver-configured package sources.\n"
+                "Continue?"
+                % (entry["name"], entry["installed_version"] or "unknown", entry["available_version"])
+            )
+        else:
+            operation = "install"
+            action_id = "package.install"
+            message = (
+                "Install package: %s\n\nCandidate: %s\nArchitecture: %s\n\n"
+                "The operation uses only receiver-configured package sources.\n"
+                "Continue?"
+                % (entry["name"], entry["available_version"], entry["architecture"])
+            )
+        self.session.openWithCallback(
+            lambda confirmed: self._start_package_operation(confirmed, action_id, operation, entry["name"]),
+            MessageBox,
+            message,
+            MessageBox.TYPE_YESNO,
+        )
+
+    def remove_selected(self):
+        entry = self._selected_entry()
+        if not entry or not entry["installed"]:
+            self.session.open(MessageBox, "Only installed packages can be removed.", MessageBox.TYPE_ERROR)
+            return
+        message = (
+            "Remove package: %s\n\nInstalled version: %s\n\n"
+            "This changes the receiver package state.\n"
+            "Continue?"
+            % (entry["name"], entry["installed_version"] or "unknown")
+        )
+        self.session.openWithCallback(
+            lambda confirmed: self._start_package_operation(
+                confirmed, "package.remove", "remove", entry["name"]
+            ),
+            MessageBox,
+            message,
+            MessageBox.TYPE_YESNO,
+        )
+
+    def _start_package_operation(self, confirmed, action_id, operation, package):
+        if not confirmed:
+            return
+        try:
+            command = build_action_command(action_id, {"package": package})
+        except Exception as exc:
+            self.session.open(MessageBox, "Package action rejected: %s" % exc, MessageBox.TYPE_ERROR)
+            return
+        self.session.open(
+            PackageInstallProgress,
+            package,
+            command,
+            operation.capitalize(),
+            False,
+            False,
+        )
+
 
 
 class PackageInstallProgress(Screen):
