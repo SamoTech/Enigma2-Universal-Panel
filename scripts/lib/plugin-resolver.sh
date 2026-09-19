@@ -214,7 +214,7 @@ plugin_preview() {
   [ -n "$candidate" ] && [ "$candidate" != "(none)" ] && candidate_ok=true
 
   dep_status="$(plugin_dependency_status "$deps")"
-  [ -z "$dep_status" ] || [ "$dep_status" = none ] || deps_ok=false
+  [ -z "$dep_status" ] || [ "$dep_status" = none ] || [ "$dep_status" = resolvable ] || deps_ok=false
   conflict_status="$(plugin_conflict_status "$conflicts")"
   [ -z "$conflict_status" ] || [ "$conflict_status" = none ] || conflicts_ok=false
 
