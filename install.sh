@@ -8,8 +8,9 @@
 # Enigma2 plugin plus its receiver-side runtime. No browser or PC is required.
 # Enigma2 Universal Panel installer v1.6.0
 set -eu
+umask 022
 
-REPO="${E2PANEL_REPO:-https://raw.githubusercontent.com/SamoTech/Enigma2-Universal-Panel/main}"
+REPO="https://raw.githubusercontent.com/SamoTech/Enigma2-Universal-Panel/main"
 DEST="/usr/lib/enigma2-universal-panel"
 BIN="/usr/local/bin/e2panel"
 PLUGIN_ROOT="/usr/lib/enigma2/python/Plugins/Extensions"
