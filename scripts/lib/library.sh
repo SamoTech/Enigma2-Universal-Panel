@@ -30,6 +30,7 @@ items = []
 for entry in catalog.get("plugins") or []:
     items.append({
         "id": entry.get("id"),
+        "item_type": "plugin",
         "name": entry.get("display_name") or entry.get("name") or entry.get("id"),
         "category": entry.get("category", "unknown"),
         "subcategory": entry.get("subcategory", "unknown"),
@@ -43,12 +44,14 @@ for entry in catalog.get("plugins") or []:
         "removable": bool(entry.get("removable", False)),
         "compatibility_confidence": entry.get("compatibility_confidence", "unknown"),
         "repository": entry.get("repository"),
+        "source_reference": entry.get("repository"),
     })
 
 for entry in community.get("entries") or []:
     health = entry.get("health") or {}
     items.append({
         "id": entry.get("id"),
+        "item_type": entry.get("item_type", "plugin"),
         "name": entry.get("name") or entry.get("id"),
         "category": entry.get("category", "unknown"),
         "subcategory": "community",
@@ -62,6 +65,7 @@ for entry in community.get("entries") or []:
         "removable": False,
         "compatibility_confidence": "unknown",
         "repository": entry.get("repository"),
+        "source_reference": entry.get("source_reference") or entry.get("repository"),
         "network_reachability": health.get("network_reachability", "unknown"),
         "maintenance_status": health.get("maintenance_status", "unknown"),
     })
