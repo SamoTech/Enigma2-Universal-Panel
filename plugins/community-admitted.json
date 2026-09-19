@@ -8,6 +8,7 @@
     "arbitrary_shell": false,
     "direct_remote_installer": true,
     "tls_certificate_verification_required": true,
+    "allow_admitted_insecure_transport": true,
     "restart_environment": "SKIP_REBOOT=1",
     "compatibility_fail_closed": true
   },
