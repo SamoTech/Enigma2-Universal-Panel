@@ -170,17 +170,20 @@ class PluginLibrary(Screen):
 
     def __init__(self, session):
         Screen.__init__(self, session)
-        self["title"] = Label("Plugin Library")
+        self["title"] = Label("Plugin Library — All Categories")
         self["menu"] = MenuList([])
         self["details"] = Label("Loading plugin library...")
-        self["hint"] = Label("OK: Details    GREEN: Install    YELLOW: Refresh    BLUE: Search    EXIT: Close")
+        self["hint"] = Label("OK: Details    GREEN: Install    RED: Category    BLUE: Search    YELLOW: Refresh    EXIT: Close")
         self["actions"] = ActionMap(
             ["OkCancelActions", "ColorActions"],
-            {"ok": self.show_details, "cancel": self.close, "green": self.install_selected, "yellow": self.refresh, "blue": self.search},
+            {"ok": self.show_details, "cancel": self.close, "green": self.install_selected, "yellow": self.refresh, "blue": self.search, "red": self.cycle_category},
             -2,
         )
         self.entries = []
         self.filtered_entries = []
+        self.categories = []
+        self.category_index = 0
+        self.category_filter = "all"
         self.search_term = ""
         self.onLayoutFinish.append(self.refresh)
         self["menu"].onSelectionChanged.append(self._selection_changed)
@@ -203,6 +206,7 @@ class PluginLibrary(Screen):
         try:
             data = json.loads(output)
             self.entries = data.get("entries") or []
+            self.categories = data.get("categories") or []
         except (TypeError, ValueError, AttributeError):
             self.entries = []
             self.filtered_entries = []
@@ -211,18 +215,38 @@ class PluginLibrary(Screen):
             return
         self._apply_filter()
 
+    def _category_name(self):
+        if self.category_filter == "all":
+            return "All Categories"
+        for category in self.categories:
+            if category.get("id") == self.category_filter:
+                return category.get("name") or self.category_filter
+        return self.category_filter.replace("_", " ").title()
+
+    def cycle_category(self):
+        category_ids = ["all"] + [x.get("id") for x in self.categories if x.get("id")]
+        if not category_ids:
+            return
+        self.category_index = (self.category_index + 1) % len(category_ids)
+        self.category_filter = category_ids[self.category_index]
+        self["title"].setText("Plugin Library — %s" % self._category_name())
+        self._apply_filter()
+
     def _apply_filter(self):
         term = self.search_term.lower().strip()
-        if term:
-            self.filtered_entries = [
-                entry for entry in self.entries
-                if term in str(entry.get("name", "")).lower()
+        category = self.category_filter
+        self.filtered_entries = [
+            entry for entry in self.entries
+            if (category == "all" or entry.get("category") == category)
+            and (
+                not term
+                or term in str(entry.get("name", "")).lower()
                 or term in str(entry.get("id", "")).lower()
                 or term in str(entry.get("category", "")).lower()
+                or term in str(entry.get("category_name", "")).lower()
                 or term in str(entry.get("author", "")).lower()
-            ]
-        else:
-            self.filtered_entries = list(self.entries)
+            )
+        ]
         choices = []
         for entry in self.filtered_entries:
             source = "Feed" if entry.get("source") == "receiver_feed" else "Community"
@@ -259,7 +283,7 @@ class PluginLibrary(Screen):
         self["details"].setText(
             "%s | %s | %s\n%s | %s"
             % (
-                entry.get("category", "unknown"),
+                entry.get("category_name", entry.get("category", "unknown")),
                 entry.get("author", "unknown"),
                 source,
                 entry.get("status", "unknown"),
@@ -372,6 +396,78 @@ class PluginLibrary(Screen):
             return
 
         self.session.open(PluginMetadata, entry.get("id", ""))
+
+class ReceiverCompatibility(Screen):
+    skin = """
+    <screen name="ReceiverCompatibility" position="center,center" size="1000,650" title="Receiver Compatibility">
+        <widget name="title" position="35,20" size="930,45" font="Regular;30" />
+        <widget name="state" position="35,80" size="930,440" font="Regular;20" valign="top" />
+        <widget name="hint" position="35,555" size="930,35" font="Regular;20" />
+    </screen>
+    """
+
+    def __init__(self, session):
+        Screen.__init__(self, session)
+        self["title"] = Label("Receiver Compatibility")
+        self["state"] = Label("Detecting device and image...")
+        self["hint"] = Label("GREEN: Refresh    EXIT: Close")
+        self["actions"] = ActionMap(
+            ["OkCancelActions", "ColorActions"],
+            {"ok": self.close, "cancel": self.close, "green": self.refresh},
+            -2,
+        )
+        self.onLayoutFinish.append(self.refresh)
+
+    def refresh(self):
+        try:
+            code, output = run_action("receiver.compatibility")
+        except Exception as exc:
+            self["state"].setText("Compatibility request rejected.\n\n%s" % exc)
+            return
+        if code != 0:
+            self["state"].setText("Compatibility unavailable.\n\n%s" % (output or "unknown"))
+            return
+        try:
+            data = json.loads(output)
+        except (TypeError, ValueError):
+            self["state"].setText("Invalid compatibility response.\n\n%s" % (output or "unknown"))
+            return
+
+        device = data.get("device") or {}
+        image = data.get("image") or {}
+        runtime = data.get("runtime") or {}
+        package = data.get("package") or {}
+        architecture = data.get("architecture") or {}
+
+        lines = [
+            "Overall: %s" % data.get("overall", "unknown"),
+            "Reason: %s" % data.get("reason", "unknown"),
+            "",
+            "DEVICE",
+            "Vendor: %s" % device.get("vendor", "unknown"),
+            "Family: %s" % device.get("family", "unknown"),
+            "Model: %s" % device.get("model", "unknown"),
+            "Machine: %s" % device.get("machine", "unknown"),
+            "Chipset: %s" % device.get("chipset", "unknown"),
+            "",
+            "IMAGE",
+            "Image: %s" % image.get("id", "unknown"),
+            "Family: %s" % image.get("family", "unknown"),
+            "Version: %s" % image.get("version", "unknown"),
+            "Adapter: %s" % data.get("adapter", "unknown"),
+            "",
+            "RUNTIME",
+            "Enigma2: %s" % runtime.get("enigma2_version", "unknown"),
+            "Python: %s" % runtime.get("python_version", "unknown"),
+            "Native GUI: %s" % runtime.get("native_gui", "unknown"),
+            "Architecture: %s (%s)" % (architecture.get("raw", "unknown"), architecture.get("family", "unknown")),
+            "Package backend: %s (%s)" % (package.get("manager", "unknown"), package.get("family", "unknown")),
+            "Package install capability: %s" % package.get("install_capability", "unknown"),
+            "",
+            "Physical receiver validation: %s" % data.get("real_receiver_validation", False),
+        ]
+        self["state"].setText("\n".join(lines))
+
 
 class CommunityInstallerCatalog(Screen):
     skin = """
@@ -654,21 +750,22 @@ class Enigma2UniversalPanel(Screen):
     """
 
     ENTRIES = (
-        ("Dashboard", "dashboard"),
-        ("Plugin Library", "plugin.library"),
-        ("Package Browser", "package-browser"),
-        ("Community Sources", "community.catalog"),
-        ("Receiver Telemetry", "receiver.telemetry"),
-        ("Resolve Plugin", "plugin.resolve"),
-        ("Preview Plugin", "plugin.preview"),
-        ("Plugin Metadata", "plugin.info"),
-        ("Install Plugin", "plugin.install"),
-        ("Update Plugin", "plugin.update"),
-        ("Remove Plugin", "plugin.remove"),
-        ("Receiver Status", "receiver.status"),
-        ("Capabilities", "receiver.capabilities"),
-        ("Diagnostics", "receiver.diagnose"),
-        ("Package State", "receiver.package_state"),
+        ("STORE — Plugin Library", "plugin.library"),
+        ("RECEIVER — Dashboard", "dashboard"),
+        ("RECEIVER — Compatibility", "receiver.compatibility"),
+        ("MANAGE — Package Browser", "package-browser"),
+        ("STORE — Community Sources", "community.catalog"),
+        ("RECEIVER — Telemetry", "receiver.telemetry"),
+        ("ADVANCED — Resolve Plugin", "plugin.resolve"),
+        ("ADVANCED — Preview Plugin", "plugin.preview"),
+        ("ADVANCED — Plugin Metadata", "plugin.info"),
+        ("STORE — Install Plugin", "plugin.install"),
+        ("STORE — Update Plugin", "plugin.update"),
+        ("STORE — Remove Plugin", "plugin.remove"),
+        ("RECEIVER — Status", "receiver.status"),
+        ("RECEIVER — Capabilities", "receiver.capabilities"),
+        ("MANAGE — Diagnostics", "receiver.diagnose"),
+        ("MANAGE — Package State", "receiver.package_state"),
     )
 
     def __init__(self, session):
@@ -894,6 +991,9 @@ class Enigma2UniversalPanel(Screen):
             return
         if action_id == "community.catalog":
             self.session.open(CommunityInstallerCatalog)
+            return
+        if action_id == "receiver.compatibility":
+            self.session.open(ReceiverCompatibility)
             return
         if action_id == "receiver.telemetry":
             self.session.open(ReceiverTelemetry)
