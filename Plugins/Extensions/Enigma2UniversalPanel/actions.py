@@ -15,6 +15,9 @@ ACTIONS = {
     "receiver.compatibility": {"command": ("/usr/local/bin/e2panel", "compatibility"), "risk": "low", "confirmation": False},
     "receiver.diagnose": {"command": ("/usr/local/bin/e2panel", "diagnose"), "risk": "low", "confirmation": False},
     "receiver.package_state": {"command": ("/usr/local/bin/e2panel", "package-state"), "risk": "low", "confirmation": False},
+    "package.install": {"command": ("/usr/local/bin/e2panel", "plugin-install"), "risk": "high", "confirmation": True},
+    "package.update": {"command": ("/usr/local/bin/e2panel", "plugin-update"), "risk": "high", "confirmation": True},
+    "package.remove": {"command": ("/usr/local/bin/e2panel", "plugin-remove"), "risk": "critical", "confirmation": True},
     "receiver.telemetry": {"command": ("/usr/local/bin/e2panel", "telemetry"), "risk": "low", "confirmation": False},
     "receiver.audit_history": {"command": ("/usr/local/bin/e2panel", "audit-history"), "risk": "low", "confirmation": False},
     "receiver.panel_update": {"command": ("/usr/local/bin/e2panel", "update"), "risk": "critical", "confirmation": True},
@@ -61,11 +64,23 @@ def build_action_command(action_id, params=None):
         "plugin.update",
         "plugin.remove_preview",
         "plugin.remove",
+        "package.install",
+        "package.update",
+        "package.remove",
         "receiver.reboot_for_plugin",
     ):
         if set(params) != {"plugin_id"}:
             raise ValueError("plugin_id is required")
         command.append(_validate_plugin_id(params["plugin_id"]))
+    elif action_id in ("package.install", "package.update", "package.remove"):
+        if set(params) != {"package"}:
+            raise ValueError("package is required")
+        package = params["package"]
+        if not isinstance(package, str) or not re.match(r"^[A-Za-z0-9][A-Za-z0-9._+:@%/-]{0,127}$", package):
+            raise ValueError("invalid package")
+        command.append(package)
+        if action_id == "package.remove":
+            command.append("--confirm")
     elif params:
         raise ValueError("action does not accept parameters")
     return tuple(command)
