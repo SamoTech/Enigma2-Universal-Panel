@@ -55,6 +55,7 @@ The existing shell/CLI runtime remains a receiver-side foundation and diagnostic
 - Postcondition verification and audit foundations
 - Read-only native audit-history display backed by the receiver audit log
 - Verified metadata-driven GUI restart handling with explicit confirmation
+- Persistent post-boot reboot verification for metadata-required reboots
 - Confirmed asynchronous install, update and removal flows
 - Mock receiver harness and policy tests
 - Master native-GUI roadmap
