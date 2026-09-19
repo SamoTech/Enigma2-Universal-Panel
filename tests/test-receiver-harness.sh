@@ -106,6 +106,9 @@ import json,sys
 d=json.load(open(sys.argv[1]))
 assert d["package_manager"] == "opkg"
 assert any(x["name"] == "python3" for x in d["installed_packages"])
+assert any(x["name"] == "enigma2-plugin-extensions-openwebif" and x["version"] == "2.0" for x in d["available_packages"])
+for feed in d["feeds"]:
+    assert set(("id","uri","enabled","source","evidence")) <= set(feed)
 PY
   pass "mock receiver package-state"
 
