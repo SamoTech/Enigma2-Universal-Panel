@@ -32,6 +32,10 @@ grep -Fq 'community-catalog) community_catalog;;' panel.sh || fail "community ca
 grep -Fq 'plugin-library) plugin_library;;' panel.sh || fail "plugin library command is not wired"
 grep -Fq 'compatibility) print_compatibility;;' panel.sh || fail "compatibility command is not wired"
 grep -Fq 'reboot-status) reboot_status;;' panel.sh || fail "reboot-status command is not wired"
+grep -Fq '_restart_enigma2_detached()' scripts/lib/actions.sh || fail "detached Enigma2 restart helper missing"
+grep -Fq 'setsid sh -c' scripts/lib/actions.sh || fail "setsid restart path missing"
+grep -Fq 'nohup sh -c' scripts/lib/actions.sh || fail "nohup restart fallback missing"
+grep -Fq 'method=detached-init' scripts/lib/actions.sh || fail "detached restart audit marker missing"
 grep -Fq '*vuuno4kse*)' scripts/lib/detect.sh || fail "VU+ Uno 4K SE hostname detection missing"
 grep -Fq 'E2_MODEL="VU+ Uno 4K SE"' scripts/lib/detect.sh || fail "VU+ Uno 4K SE canonical model mapping missing"
 
