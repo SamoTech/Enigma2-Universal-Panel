@@ -278,8 +278,9 @@ Repository binary-hosting policy remains unchanged.
 2. Native screen/navigation framework.
 3. Dashboard backed by existing detection/capability functions.
 4. Read-only plugin/package browser and resolver screens.
-5. Native GUI test/harness coverage.
-6. Native asynchronous package mutation with confirmation/postcondition/audit.
+5. Native plugin metadata browsing.
+6. Native GUI test/harness coverage.
+7. Native asynchronous package mutation with confirmation/postcondition/audit.
 7. Native receiver-side real-device validation.
 8. Core management screens.
 9. Channels/bouquets/EPG.

@@ -242,8 +242,9 @@ class PluginMetadata(Screen):
             "Compatibility confidence: %s" % metadata.get("compatibility_confidence", "unknown"),
             "Source type: %s" % metadata.get("source_type", "unknown"),
             "",
-            "Native package metadata:",
-            metadata.get("native_metadata", "unknown"),
+            "Receiver package state:",
+            "Installed version: %s" % metadata.get("installed_version", "unknown"),
+            "Candidate version: %s" % metadata.get("candidate_version", "unknown"),
         ]
         self["state"].setText("\n".join(lines))
 
