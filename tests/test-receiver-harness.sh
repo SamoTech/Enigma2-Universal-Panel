@@ -9,9 +9,9 @@ for f in "$ROOT/panel.sh" "$ROOT/scripts/lib/"*.sh "$ROOT/install.sh"; do
 done
 pass "all shell scripts parse"
 
-python3 - <<'PY'
-import json, pathlib
-root=pathlib.Path.cwd()
+python3 - "$ROOT" <<'PY'
+import json, pathlib, sys
+root=pathlib.Path(sys.argv[1])
 for p in root.rglob("*.json"):
     json.loads(p.read_text())
 print("PASS: all repository JSON files parse")
@@ -27,7 +27,6 @@ grep -q 'Arbitrary external feed registration is disabled by policy' "$ROOT/scri
 grep -q 'plugin-preview' "$ROOT/panel.sh" || fail "preview command"
 pass "security policy gates"
 
-# Command-level mock receiver fixtures. No real receiver is contacted.
 TMP="$(mktemp -d)"
 BIN="$TMP/bin"
 STATE="$TMP/state"
@@ -74,9 +73,6 @@ cat >"$BIN/ip" <<'EOF'
 printf '%s\n' 'default via 192.0.2.1 dev eth0'
 EOF
 
-mkdir -p "$TMP/etc/opkg"
-printf '%s\n' 'src/gz openatv-mock https://feeds.example.invalid/openatv' >"$TMP/etc/opkg/openatv.conf"
-
 (
   export PATH="$BIN:$PATH"
   export MOCK_STATE="$STATE"
@@ -85,10 +81,9 @@ printf '%s\n' 'src/gz openatv-mock https://feeds.example.invalid/openatv' >"$TMP
   export PANEL_LOG="$TMP/panel.log"
   export E2_IMAGE=openatv E2_ARCH=x86_64 E2_PKG=opkg E2_NETWORK=online
   printf 'python3 3.12\n' >"$STATE/installed"
+
   . "$ROOT/scripts/lib/common.sh"
   . "$ROOT/scripts/lib/detect.sh"
-  # The production feed inventory reads /etc/opkg; fixture validation is
-  # performed independently while package commands are fully intercepted.
   . "$ROOT/scripts/lib/plugins.sh"
   . "$ROOT/scripts/lib/plugin-resolver.sh"
 
@@ -101,7 +96,7 @@ assert any(x["name"] == "python3" for x in d["installed_packages"])
 PY
   pass "mock receiver package-state"
 
-  plugin_preview openwebif >"$TMP/preview.json" || true
+  plugin_preview openwebif >"$TMP/preview.json"
   python3 - "$TMP/preview.json" <<'PY'
 import json,sys
 d=json.load(open(sys.argv[1]))
@@ -113,17 +108,7 @@ PY
   pass "mock receiver plugin preflight"
 
   plugin_resolve_install openwebif >"$TMP/install.log"
-  grep -q '^enigma2-plugin-extensions-openwebif 2.0
-
-  if plugin_resolve_install openairplay >/dev/null 2>&1; then exit 1; fi
-  pass "unknown package mapping blocked"
-
-  if plugin_source_add_external https://attacker.invalid/feed >/dev/null 2>&1; then exit 1; fi
-  pass "arbitrary feed blocked"
-)
-
-printf 'Mock receiver harness completed. No real receiver was contacted.\n'
- "$STATE/installed"
+  grep -q '^enigma2-plugin-extensions-openwebif 2.0$' "$STATE/installed"
   pass "mock receiver install and postcondition"
 
   if plugin_resolve_install openairplay >/dev/null 2>&1; then exit 1; fi
