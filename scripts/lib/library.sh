@@ -27,7 +27,8 @@ import io
 import json
 import sys
 
-catalog_path, community_path, categories_path = sys.argv[1:4]\nadmitted_path = catalog_path.rsplit('/', 1)[0] + '/community-admitted.json'
+catalog_path, community_path, categories_path = sys.argv[1:4]
+admitted_path = catalog_path.rsplit('/', 1)[0] + '/community-admitted.json'
 
 def read_json(path):
     with io.open(path, "r", encoding="utf-8") as fh:
@@ -35,7 +36,8 @@ def read_json(path):
 
 catalog = read_json(catalog_path)
 community = read_json(community_path)
-taxonomy = read_json(categories_path)\nadmitted = read_json(admitted_path)\nadmitted_map = {e.get('id'): e for e in admitted.get('entries') or []}
+taxonomy = read_json(categories_path)
+admitted = read_json(admitted_path)\nadmitted_map = {e.get('id'): e for e in admitted.get('entries') or []}
 
 category_titles = {}
 for category in taxonomy.get("categories") or []:
