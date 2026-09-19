@@ -35,3 +35,8 @@ The GUI does not accept shell commands, feed URLs, package-manager arguments, or
 5. No GUI path uses `shell=True`, `os.system`, or arbitrary executable/argument input.
 6. Mock/CI validation does not claim real-receiver support.
 7. Package mutation runs asynchronously so the GUI thread is not blocked by the package manager.
+
+
+### Native update flow
+
+The native Update Plugin entry performs a read-only compatibility preflight and requires `status=supported` plus an installed package before confirmation. The mutation runs through the registered high-risk `plugin.update` action using `eConsoleAppContainer`. The receiver-side action re-runs preflight, updates only the catalog-resolved package through the receiver-configured package source, verifies that the package remains installed, and writes an audit record. GUI-restart requirements are displayed from verified catalog metadata; restart execution remains a separate controlled action.

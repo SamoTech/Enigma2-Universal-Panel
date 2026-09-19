@@ -298,6 +298,40 @@ plugin_info_id() {
 '
 }
 
+plugin_update_id() {
+  id="$1"
+  plugin_validate_package "$id" || return 2
+  plugin_package_manager || return 1
+  [ -r "$PANEL_ROOT/plugins/catalog.json" ] || { error "plugin catalog unavailable"; return 1; }
+
+  pkg="$(plugin_catalog_field "$id" package_name)"
+  case "$pkg" in
+    ""|unknown|"image/feed dependent")
+      error "No authoritative package mapping for plugin: $id"
+      return 3
+      ;;
+  esac
+
+  installed="$(plugin_native_installed_version "$pkg")"
+  [ -n "$installed" ] || { error "Plugin is not installed: $id"; return 4; }
+
+  preview_file="/tmp/e2panel-plugin-update-preview.$"
+  if plugin_preview "$id" >"$preview_file" 2>&1; then
+    rc=0
+  else
+    rc=$?
+  fi
+  cat "$preview_file"
+  rm -f "$preview_file"
+  [ "$rc" -eq 0 ] || { error "Plugin update blocked by preflight policy"; return "$rc"; }
+
+  resolved="$(plugin_resolve "$id")" || return $?
+  plugin_update "$resolved" || return 1
+  verified="$(plugin_native_installed_version "$resolved")"
+  [ -n "$verified" ] || { error "Post-update verification failed: $resolved"; return 1; }
+  audit "plugin-update-id id=$id package=$resolved verified=true installed_before=$installed installed_after=$verified"
+}
+
 plugin_resolve_install() {
   id="$1"
   preview_file="/tmp/e2panel-plugin-preview.$$"
