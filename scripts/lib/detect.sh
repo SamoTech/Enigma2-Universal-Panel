@@ -83,7 +83,7 @@ detect_device() {
   low="$(printf '%s' "$raw" | tr '[:upper:]' '[:lower:]')"
 
   case "$low" in
-    *dreambox*|*dm500*|*dm520*|*dm525*|*dm820*|*dm900*|*dm920*|*dmone*|*dmtwo*|*one ultra*)
+    *dreambox*|*dm500*|*dm520*|*dm525*|*dm820*|*dm900*|*dm920*|*dmone*|*dmtwo*|*"one ultra"*)
       E2_DEVICE_FAMILY=dreambox
       E2_VENDOR="Dream Multimedia"
       ;;
