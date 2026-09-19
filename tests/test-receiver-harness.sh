@@ -350,7 +350,8 @@ sh "$ROOT/tests/test-platform-compatibility.sh"
 printf 'Mock receiver harness completed. No real receiver was contacted.\n'
  "$STATE/installed"
   [ -s "$STATE/feed-refreshes" ] || fail "Store installation did not refresh configured feeds"
-  [ "$(wc -l <"$STATE/feed-refreshes")" -ge 2 ] || fail "Store preview/install feed refresh count is insufficient"
+  refresh_count="$(wc -l < "$STATE/feed-refreshes")"
+  [ "$refresh_count" -ge 2 ] || fail "Store preview/install feed refresh count is insufficient"
   pass "mock receiver Store install, feed refresh and postcondition"
 
   if ! plugin_remove_preview openwebif >"$TMP/remove-preview.json" 2>&1; then
