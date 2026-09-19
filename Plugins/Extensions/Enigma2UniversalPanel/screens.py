@@ -377,7 +377,8 @@ class PluginLibrary(Screen):
         choices = []
         for entry in self.filtered_entries:
             source = "Feed" if entry.get("source") == "receiver_feed" else "Community"
-            availability = entry.get("availability", "unknown")
+            installable = bool(entry.get("installable"))
+            availability = "INSTALLABLE" if installable else "BLOCKED"
             choices.append(
                 "%s  [%s | %s]"
                 % (entry.get("name", "unknown"), source, availability)
@@ -415,14 +416,18 @@ class PluginLibrary(Screen):
             self["details"].setText("No plugin selected.")
             return
         source = "Receiver feed" if entry.get("source") == "receiver_feed" else "Community source"
+        installable = bool(entry.get("installable"))
+        state = "INSTALLABLE" if installable else "BLOCKED"
+        reason = entry.get("execution_status") or entry.get("status") or entry.get("availability") or "unknown"
         self["details"].setText(
-            "%s | %s | %s\n%s | %s"
+            "%s | %s | %s\nStatus: %s | Installable: %s\n%s"
             % (
                 entry.get("category_name", entry.get("category", "unknown")),
                 entry.get("author", "unknown"),
                 source,
-                entry.get("status", "unknown"),
-                entry.get("compatibility_confidence", "unknown"),
+                state,
+                "Yes" if installable else "No",
+                reason,
             )
         )
 
@@ -435,8 +440,8 @@ class PluginLibrary(Screen):
             if not entry.get("community_admitted") or not entry.get("installable"):
                 self.session.open(
                     MessageBox,
-                    "This community installer is not admitted for execution.\n\n"
-                    "Only pinned, explicitly confirmed community sources can run.",
+                    "Installation is blocked for this community entry.\n\n"
+                    "The source is visible for discovery, but it has not passed the admission and payload-verification gate.",
                     MessageBox.TYPE_ERROR,
                 )
                 return
