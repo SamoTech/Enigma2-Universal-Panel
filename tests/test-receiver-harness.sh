@@ -125,6 +125,18 @@ for feed in d["feeds"]:
 PY
   pass "mock receiver package-state"
 
+  telemetry_output="$TMP/telemetry.txt"
+  print_telemetry >"$telemetry_output"
+  grep -q '^load_1=' "$telemetry_output"
+  grep -q '^load_5=' "$telemetry_output"
+  grep -q '^load_15=' "$telemetry_output"
+  grep -q '^ram_total_mb=' "$telemetry_output"
+  grep -q '^ram_available_mb=' "$telemetry_output"
+  grep -q '^root_total_kb=' "$telemetry_output"
+  grep -q '^root_available_kb=' "$telemetry_output"
+  grep -q '^python_version=' "$telemetry_output"
+  pass "mock receiver telemetry output"
+
   if ! plugin_preview openwebif >"$TMP/preview.json" 2>&1; then
     cat "$TMP/preview.json" >&2
     fail "mock receiver plugin preflight returned blocked"
