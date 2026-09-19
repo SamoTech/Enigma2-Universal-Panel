@@ -1,60 +1,100 @@
 # Architecture
 
-## 1. Control-plane model
+## Product boundary
 
-The panel has two execution domains.
+The primary product is a **native Enigma2 plugin**.
 
-Receiver plane: a small POSIX shell runtime installed on the Enigma2 receiver. It performs detection, local operations, validation and controlled module execution.
+It runs inside the Enigma2 receiver environment, is registered through the normal Enigma2 plugin system, appears in the Plugins/Extensions menu, and uses native Enigma2 GUI screens controlled by the receiver remote.
 
-Control plane: a future web service that stores receiver profiles, credentials/keys, jobs, module metadata and audit events. It communicates through a receiver agent or SSH adapter.
+A web UI is not the primary interface and is not a runtime dependency.
 
-## 2. Detection pipeline
+## Runtime layers
+
+Native Enigma2 GUI Plugin
+        |
+        v
+GUI Controllers / View Models
+        |
+        v
+Registered Action + Policy Layer
+        |
+        v
+Capability / Compatibility Engine
+        |
+        v
+Receiver Adapters
+        |
+        +--> Package manager
+        +--> Enigma2 configuration/services
+        +--> Channels / bouquets / EPG
+        +--> Settings
+        +--> Backup / restore
+        +--> Diagnostics
+
+The existing POSIX shell runtime remains useful for bootstrap, low-level receiver operations, CLI diagnostics and recovery. It is not a replacement for the native GUI.
+
+## GUI contract
+
+The GUI must:
+
+- use native Enigma2 Screen/List/Config/MessageBox mechanisms;
+- support standard remote-control navigation;
+- expose only registered capabilities/actions;
+- validate all parameters before mutation;
+- require confirmation for destructive operations;
+- display preflight results before risky mutations;
+- display postcondition verification;
+- surface unknown/unsupported capabilities explicitly;
+- never execute arbitrary command strings.
+
+The GUI should call shared action/controller functions rather than duplicate package or compatibility logic.
+
+## Detection and compatibility
+
+The common detection pipeline remains:
 
 boot -> root check -> OS/image detection -> Enigma2 detection -> architecture -> package manager -> storage/network -> capabilities -> adapter selection.
 
-Detection output is stored as a normalized fingerprint. No module should independently reinvent receiver detection.
+Detection produces normalized state. GUI screens consume that state rather than implementing independent detection.
 
-## 3. Adapter contract
+An operation is unavailable when its required capability is absent or compatibility evidence is insufficient.
 
-Every image adapter should expose:
+## Package/plugin path
 
-- id
-- image families
-- supported architectures
-- required commands
-- capabilities
-- install package
-- remove package
-- update package
-- restart enigma2
-- restart gui
-- reboot
-- read logs
-- backup
-- restore
+GUI
+ -> plugin/package discovery
+ -> compatibility
+ -> dependency/conflict checks
+ -> preview
+ -> confirmation
+ -> native package manager
+ -> postcondition verification
+ -> audit
 
-An operation is rejected if its required capability is absent.
+The receiver remains the installation authority. The repository contains metadata and policy, never plugin/package binaries.
 
-## 4. Security boundary
+## Optional remote control plane
 
-The web application must not accept an arbitrary command string and send it to a receiver. It sends an action identifier plus validated parameters. The receiver resolves that action through a fixed allowlist.
+Remote management is a separate future layer:
 
-Examples: system.restart_enigma2, system.reboot, package.install, package.remove, backup.create.
+Remote client
+     |
+ SSH / receiver API
+     |
+Registered Actions
+     |
+same policy + compatibility engine
+     |
+native receiver operations
 
-## 5. State
+The remote layer must not introduce arbitrary shell execution or bypass the native action policy.
 
-Receiver state is ephemeral and can be re-detected. Desired state belongs in the control plane. This enables idempotent jobs and drift detection.
+## Optional web/fleet layer
 
-## 6. Future web API
+A web dashboard may eventually provide multi-receiver inventory, jobs and centralized audit. It is an optional management surface after the receiver-side product is mature.
 
-GET /api/receivers
-POST /api/receivers
-POST /api/receivers/:id/detect
-GET /api/receivers/:id/capabilities
-POST /api/receivers/:id/actions
-GET /api/receivers/:id/logs
-POST /api/receivers/:id/backups
-POST /api/receivers/:id/restores
-GET /api/plugins
-GET /api/jobs
-GET /api/audit
+It must never be required to open or operate the local panel.
+
+## Authoritative planning
+
+See ROADMAP.md for the execution order and acceptance criteria.

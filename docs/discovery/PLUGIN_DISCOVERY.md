@@ -2,15 +2,24 @@
 
 Enigma2 plugins span core image plugins, OE-Alliance plugins, image-specific feeds, binary plugins, third-party packages, skins, picons, display packages and external repositories.
 
-OpenATV exposes package categories including drivers, extensions, Kodi add-ons, system plugins, softcams, skins, skin components, plugin skins, display packages and picons. Source: https://github.com/openatv/enigma2/blob/master/data/setup.xml
+The Universal Panel does not assume that repository existence means receiver compatibility. Discovery metadata is evidence for the native GUI and resolver; compatibility remains receiver/image dependent.
 
-OE-Alliance sources: https://github.com/oe-alliance and https://github.com/oe-alliance/3rdparty-plugins
+## Native GUI relationship
 
-OpenPLi sources: https://github.com/OpenPLi/enigma2-plugins and https://github.com/OpenPLi/enigma2-binary-plugins
+The plugin catalog is displayed by the native Enigma2 GUI only after compatibility and package-source checks.
 
-E2 OpenPlugins: https://github.com/e2openplugins
+The GUI should distinguish:
+
+- known supported mapping;
+- known package but unsupported image/architecture;
+- package/source available but compatibility incomplete;
+- unknown mapping;
+- feed-dependent package.
+
+An unknown state is not an installation permission.
 
 ## Verified seed catalog
+
 | ID | Name | Category | Source | Status | Confidence |
 |---|---|---|---|---|---|
 | openwebif | OpenWebif | Remote Control / Administration | https://github.com/E2OpenPlugins/e2openplugin-OpenWebif | active | verified |
@@ -29,6 +38,7 @@ E2 OpenPlugins: https://github.com/e2openplugins
 | remote-stream-convert | RemoteStreamConvert | Channels / Streaming | https://github.com/OpenLD/enigma2 | image/source component | high |
 
 ## Package families
+
 - enigma2-plugin-extensions-*
 - enigma2-plugin-systemplugins-*
 - enigma2-plugin-skins-*
@@ -41,6 +51,7 @@ E2 OpenPlugins: https://github.com/e2openplugins
 - supporting Python/native packages
 
 ## Catalog states
+
 active, maintenance, legacy, deprecated, abandoned, unknown.
 
-The panel must never infer active compatibility merely because a repository exists. The next crawler should enumerate repository trees and feed indexes, extract package names from recipes/IPKs, parse dependencies and architectures, then deduplicate by normalized project identity.
+The next discovery expansion should enumerate repository trees and receiver feed indexes, extract package names from recipes/package metadata, parse dependencies and architectures, and deduplicate by normalized project identity.
