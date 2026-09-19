@@ -38,6 +38,7 @@ grep -q 'plugin-remove-id' "$ROOT/panel.sh" || fail "plugin ID remove command mi
 grep -q 'telemetry) print_telemetry' "$ROOT/panel.sh" || fail "telemetry command missing"
 [ -f "$ROOT/scripts/lib/telemetry.sh" ] || fail "telemetry module missing"
 [ -f "$ROOT/plugins/community.json" ] || fail "community registry missing"
+grep -q '"health_audit"' "$ROOT/plugins/community.json" || fail "community health audit metadata missing"
 grep -q '"pipe_to_shell": false' "$ROOT/plugins/community.json" || fail "community shell-pipe policy changed"
 grep -q '"default_execution": "blocked_until_explicitly_admitted"' "$ROOT/plugins/community.json" || fail "community admission policy changed"
 pass "source/install policy gates"
