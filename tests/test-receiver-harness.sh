@@ -107,7 +107,10 @@ assert any(x["name"] == "python3" for x in d["installed_packages"])
 PY
   pass "mock receiver package-state"
 
-  plugin_preview openwebif >"$TMP/preview.json"
+  if ! plugin_preview openwebif >"$TMP/preview.json" 2>&1; then
+    cat "$TMP/preview.json" >&2
+    fail "mock receiver plugin preflight returned blocked"
+  fi
   python3 - "$TMP/preview.json" <<'PY'
 import json,sys
 d=json.load(open(sys.argv[1]))
