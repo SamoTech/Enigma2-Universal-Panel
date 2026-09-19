@@ -3,7 +3,10 @@
 import re
 import subprocess
 
-from .debug import log
+try:
+    from .debug import log
+except ImportError:
+    from debug import log
 
 
 ACTIONS = {
