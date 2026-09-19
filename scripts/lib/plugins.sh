@@ -35,7 +35,8 @@ plugin_feed_inventory() {
       grep -E '^[[:space:]]*src[[:space:]]+' /etc/ipkg.conf 2>/dev/null |
         while IFS= read -r line; do
           set -- $line; [ "$#" -ge 3 ] && printf '%s\t%s\n' "$1" "$3"
-        done ;;
+        done
+      ;;
   esac
 }
 plugin_feed_urls() {
@@ -113,14 +114,15 @@ plugin_source_status() {
   done
 }
 plugin_json_escape() {
-  printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
+  printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g; s/	/\\t/g; s/\r/\\r/g; s/\n/\\n/g'
 }
 plugin_package_state() {
   detect_all
   feeds_file="/tmp/e2panel-feeds.$$"
   packages_file="/tmp/e2panel-packages.$$"
   available_file="/tmp/e2panel-available.$$"
-  trap 'rm -f "$feeds_file" "$packages_file" "$available_file"' EXIT HUP INT TERM
+  tab="	"
+  trap 'rm -f "$feeds_file" "$packages_file" "$available_file" "$feeds_file.dedup"' EXIT HUP INT TERM
 
   : >"$feeds_file"
   if [ -r /proc/getFeedsUrl ]; then
@@ -128,7 +130,7 @@ plugin_package_state() {
       [ -n "$uri" ] && printf 'native\t%s\t/proc/getFeedsUrl\n' "$uri" >>"$feeds_file"
     done < /proc/getFeedsUrl
   fi
-  plugin_feed_inventory | while IFS='\t' read -r kind uri; do
+  plugin_feed_inventory | while IFS="$tab" read -r kind uri; do
     [ -n "$uri" ] && printf 'configured\t%s\t/etc package-manager source configuration\n' "$uri" >>"$feeds_file"
   done
   awk -F '\t' 'NF >= 2 && !seen[$2]++' "$feeds_file" >"$feeds_file.dedup"
@@ -165,30 +167,34 @@ plugin_package_state() {
 
   printf '  "feeds": ['
   first=1
-  while IFS='\t' read -r source uri evidence; do
+  while IFS="$tab" read -r source uri evidence; do
     [ -n "$uri" ] || continue
     [ "$first" -eq 0 ] && printf ','
-    printf '\n    {"id":"%s","uri":"%s","enabled":true,"source":"%s","evidence":"%s"}'       "$(plugin_json_escape "$source-$uri")" "$(plugin_json_escape "$uri")"       "$(plugin_json_escape "$source")" "$(plugin_json_escape "$evidence")"
+    printf '\n    {"id":"%s","uri":"%s","enabled":true,"source":"%s","evidence":"%s"}' \
+      "$(plugin_json_escape "$source-$uri")" "$(plugin_json_escape "$uri")" \
+      "$(plugin_json_escape "$source")" "$(plugin_json_escape "$evidence")"
     first=0
   done <"$feeds_file"
   printf '\n  ],\n'
 
   printf '  "installed_packages": ['
   first=1
-  while IFS='\t' read -r name version arch; do
+  while IFS="$tab" read -r name version arch; do
     [ -n "$name" ] || continue
     [ "$first" -eq 0 ] && printf ','
-    printf '\n    {"name":"%s","version":"%s","architecture":"%s","status":"installed","source":null}'       "$(plugin_json_escape "$name")" "$(plugin_json_escape "$version")" "$(plugin_json_escape "$arch")"
+    printf '\n    {"name":"%s","version":"%s","architecture":"%s","status":"installed","source":null}' \
+      "$(plugin_json_escape "$name")" "$(plugin_json_escape "$version")" "$(plugin_json_escape "$arch")"
     first=0
   done <"$packages_file"
   printf '\n  ],\n'
 
   printf '  "available_packages": ['
   first=1
-  while IFS='\t' read -r name version arch; do
+  while IFS="$tab" read -r name version arch; do
     [ -n "$name" ] || continue
     [ "$first" -eq 0 ] && printf ','
-    printf '\n    {"name":"%s","version":"%s","architecture":"%s","source":null}'       "$(plugin_json_escape "$name")" "$(plugin_json_escape "$version")" "$(plugin_json_escape "$arch")"
+    printf '\n    {"name":"%s","version":"%s","architecture":"%s","source":null}' \
+      "$(plugin_json_escape "$name")" "$(plugin_json_escape "$version")" "$(plugin_json_escape "$arch")"
     first=0
   done <"$available_file"
   printf '\n  ],\n'
