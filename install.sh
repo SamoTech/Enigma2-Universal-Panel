@@ -1,5 +1,5 @@
 #!/bin/sh
-# Enigma2 Universal Panel installer v1.4.0
+# Enigma2 Universal Panel installer v1.5.0
 set -e
 REPO="https://raw.githubusercontent.com/SamoTech/Enigma2-Universal-Panel/main"
 DEST="/usr/lib/enigma2-universal-panel"
@@ -60,5 +60,5 @@ fetch_plugin screens.py
 chmod 755 "$DEST/panel.sh" "$DEST/scripts/lib/"*.sh
 chmod 644 "$PLUGIN_DEST/"*.py
 ln -sf "$DEST/panel.sh" "$BIN"
-echo "Enigma2 Universal Panel 1.4.0 installed."
+echo "Enigma2 Universal Panel 1.5.0 installed."
 "$BIN" status
