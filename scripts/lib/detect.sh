@@ -2,6 +2,14 @@
 # Runtime-first Enigma2 platform detection.
 # Device identity and image identity are intentionally separate.
 
+_detect_path() {
+  if [ "${E2_TEST_MODE:-0}" = 1 ] && [ -n "${E2_TEST_ROOT:-}" ]; then
+    printf '%s%s' "$E2_TEST_ROOT" "$1"
+  else
+    printf '%s' "$1"
+  fi
+}
+
 detect_arch() {
   E2_ARCH="$(uname -m 2>/dev/null || echo unknown)"
   case "$E2_ARCH" in
@@ -58,8 +66,8 @@ detect_device() {
   E2_CHIPSET=unknown
 
   for f in /proc/stb/info/model /proc/stb/info/boxtype /proc/stb/info/machine /proc/stb/info/board; do
-    [ -r "$f" ] || continue
-    value="$(tr '\r\n' '  ' < "$f" 2>/dev/null | sed 's/[[:space:]][[:space:]]*/ /g; s/^ //; s/ $//')"
+    [ -r "$(_detect_path "$f")" ] || continue
+    value="$(tr '\r\n' '  ' < "$(_detect_path "$f")" 2>/dev/null | sed 's/[[:space:]][[:space:]]*/ /g; s/^ //; s/ $//')"
     [ -n "$value" ] || continue
     case "$f" in
       */model) [ "$E2_MODEL" = unknown ] && E2_MODEL="$value" ;;
@@ -68,7 +76,7 @@ detect_device() {
     esac
   done
 
-  [ -r /proc/stb/info/chipset ] && E2_CHIPSET="$(tr '\r\n' '  ' < /proc/stb/info/chipset 2>/dev/null | sed 's/[[:space:]][[:space:]]*/ /g; s/^ //; s/ $//')"
+  [ -r "$(_detect_path /proc/stb/info/chipset)" ] && E2_CHIPSET="$(tr '\r\n' '  ' < "$(_detect_path /proc/stb/info/chipset)" 2>/dev/null | sed 's/[[:space:]][[:space:]]*/ /g; s/^ //; s/ $//')"
   [ -n "$E2_CHIPSET" ] || E2_CHIPSET=unknown
 
   raw="$(printf '%s %s %s %s' "$E2_MODEL" "$E2_MACHINE" "$E2_CHIPSET" "$(hostname 2>/dev/null || true)")"
@@ -171,8 +179,8 @@ detect_image() {
 
   text=""
   for f in /etc/image-version /etc/enigma2/image-version /etc/os-release /etc/issue /etc/hostname; do
-    [ -r "$f" ] || continue
-    text="$text $(cat "$f" 2>/dev/null)"
+    [ -r "$(_detect_path "$f")" ] || continue
+    text="$text $(cat "$(_detect_path "$f")" 2>/dev/null)"
   done
   low="$(printf '%s' "$text" | tr '[:upper:]' '[:lower:]')"
 
@@ -204,18 +212,18 @@ detect_image() {
 
   for f in /etc/image-version /etc/enigma2/image-version; do
     [ -r "$f" ] || continue
-    version="$(sed -n 's/.*[Vv]ersion[[:space:]]*[:=][[:space:]]*\([^[:space:]]*\).*/\1/p' "$f" 2>/dev/null | head -1)"
+    version="$(sed -n 's/.*[Vv]ersion[[:space:]]*[:=][[:space:]]*\([^[:space:]]*\).*/\1/p' "$(_detect_path "$f")" 2>/dev/null | head -1)"
     [ -n "$version" ] && { E2_IMAGE_VERSION="$version"; break; }
   done
 }
 
 detect_enigma2() {
   E2_VERSION=unknown
-  if [ -x /usr/bin/enigma2 ]; then
-    E2_BIN=/usr/bin/enigma2
-    E2_VERSION="$(/usr/bin/enigma2 --version 2>/dev/null | head -1 || true)"
-  elif [ -x /usr/bin/enigma2.sh ]; then
-    E2_BIN=/usr/bin/enigma2.sh
+  if [ -x "$(_detect_path /usr/bin/enigma2)" ]; then
+    E2_BIN="$(_detect_path /usr/bin/enigma2)"
+    E2_VERSION="$("$E2_BIN" --version 2>/dev/null | head -1 || true)"
+  elif [ -x "$(_detect_path /usr/bin/enigma2.sh)" ]; then
+    E2_BIN="$(_detect_path /usr/bin/enigma2.sh)"
   else
     E2_BIN=unknown
   fi
@@ -223,8 +231,8 @@ detect_enigma2() {
 
 detect_storage() {
   E2_STORAGE_AVAILABLE=unknown
-  df -k /tmp >/tmp/e2panel_df.$$ 2>/dev/null && E2_STORAGE_AVAILABLE="$(awk 'NR==2 {print $4}' /tmp/e2panel_df.$$ 2>/dev/null)"
-  rm -f /tmp/e2panel_df.$$ 2>/dev/null
+  df -k "$(_detect_path /tmp)" >"$(_detect_path /tmp)/e2panel_df.$" 2>/dev/null && E2_STORAGE_AVAILABLE="$(awk 'NR==2 {print $4}' "$(_detect_path /tmp)/e2panel_df.$" 2>/dev/null)"
+  rm -f "$(_detect_path /tmp)/e2panel_df.$" 2>/dev/null
   [ -n "$E2_STORAGE_AVAILABLE" ] || E2_STORAGE_AVAILABLE=unknown
 }
 
