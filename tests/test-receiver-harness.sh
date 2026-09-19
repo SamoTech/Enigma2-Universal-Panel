@@ -91,6 +91,7 @@ EOF
   . "$ROOT/scripts/lib/detect.sh"
   . "$ROOT/scripts/lib/plugins.sh"
   . "$ROOT/scripts/lib/plugin-resolver.sh"
+  . "$ROOT/scripts/lib/telemetry.sh"
 
   require_root() { return 0; }
 
