@@ -80,12 +80,24 @@ EOF
   export PANEL_ETC="$TMP/etc"
   export PANEL_LOG="$TMP/panel.log"
   export E2_IMAGE=openatv E2_ARCH=x86_64 E2_PKG=opkg E2_NETWORK=online
-  printf 'python3 3.12\n' >"$STATE/installed"
+  printf 'python3 - 3.12\n' >"$STATE/installed"
 
   . "$ROOT/scripts/lib/common.sh"
   . "$ROOT/scripts/lib/detect.sh"
   . "$ROOT/scripts/lib/plugins.sh"
   . "$ROOT/scripts/lib/plugin-resolver.sh"
+
+  # Override hardware detection with deterministic mock-receiver facts.
+  detect_all() {
+    E2_ARCH=x86_64
+    E2_ARCH_FAMILY=x86_64
+    E2_PKG=opkg
+    E2_IMAGE=openatv
+    E2_BIN=/usr/bin/enigma2
+    E2_VERSION=mock
+    E2_STORAGE_AVAILABLE=99000
+    E2_NETWORK=online
+  }
 
   plugin_package_state >"$TMP/state.json"
   python3 - "$TMP/state.json" <<'PY'
