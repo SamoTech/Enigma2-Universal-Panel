@@ -82,6 +82,16 @@ plugin_native_field() {
   plugin_native_metadata "$pkg" | sed -n 's/^'"$field"'[[:space:]]*:[[:space:]]*//p' | head -1
 }
 
+plugin_native_arch_compatibility() {
+  native_arch="$1"
+  receiver_arch="$2"
+  case "$native_arch" in
+    all|"$receiver_arch") return 0 ;;
+    ""|unknown) return 2 ;;
+    *) return 1 ;;
+  esac
+}
+
 plugin_native_candidate() {
   pkg="$1"
   case "$E2_PKG" in
@@ -160,9 +170,14 @@ plugin_preview() {
   deps="$(plugin_native_field "$pkg" Depends)"
   conflicts="$(plugin_native_field "$pkg" Conflicts)"
 
-  image_ok=false; arch_ok=false; candidate_ok=false; deps_ok=true; conflicts_ok=true
+  image_ok=false; arch_ok=false; native_arch_ok=unknown; candidate_ok=false; deps_ok=true; conflicts_ok=true
   plugin_catalog_match_image "$id" "$E2_IMAGE" && image_ok=true
   plugin_catalog_match_arch "$id" "$E2_ARCH" && arch_ok=true
+  plugin_native_arch_compatibility "$native_arch" "$E2_ARCH"
+  case "$?" in
+    0) native_arch_ok=true ;;
+    1) native_arch_ok=false ;;
+  esac
   [ -n "$candidate" ] && [ "$candidate" != "(none)" ] && candidate_ok=true
 
   dep_status="$(plugin_dependency_status "$deps")"
@@ -171,12 +186,12 @@ plugin_preview() {
   [ -z "$conflict_status" ] || [ "$conflict_status" = none ] || conflicts_ok=false
 
   status=unknown; risk=unknown; action=blocked
-  if [ "$image_ok" = true ] && [ "$arch_ok" = true ] && [ "$candidate_ok" = true ] && [ "$deps_ok" = true ] && [ "$conflicts_ok" = true ]; then
+  if [ "$image_ok" = true ] && [ "$arch_ok" = true ] && [ "$native_arch_ok" = true ] && [ "$candidate_ok" = true ] && [ "$deps_ok" = true ] && [ "$conflicts_ok" = true ]; then
     status=supported; risk=normal
     if [ -n "$installed" ]; then action=update_or_reinstall; else action=install; fi
-  elif [ "$image_ok" = false ] || [ "$arch_ok" = false ]; then
+  elif [ "$image_ok" = false ] || [ "$arch_ok" = false ] || [ "$native_arch_ok" = false ]; then
     status=unsupported; risk=high
-  elif [ "$candidate_ok" = false ]; then
+  elif [ "$candidate_ok" = false ] || [ "$native_arch_ok" = unknown ]; then
     status=unknown
   else
     status=partial; risk=high
@@ -197,7 +212,7 @@ plugin_preview() {
   "dependency_status":"$(plugin_json_escape "$dep_status")",
   "conflicts":"$(plugin_json_escape "$conflicts")",
   "conflict_status":"$(plugin_json_escape "$conflict_status")",
-  "compatibility":{"image":$image_ok,"architecture":$arch_ok},
+  "compatibility":{"image":$image_ok,"architecture":$arch_ok,"package_architecture":$native_arch_ok},
   "status":"$status",
   "risk":"$risk",
   "action":"$action",
