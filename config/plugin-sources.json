@@ -10,30 +10,9 @@
     "require_root_for_mutation": true
   },
   "sources": [
-    {
-      "id": "native-image-feed",
-      "kind": "native",
-      "scope": "detected-image",
-      "mechanism": "package-manager",
-      "url": null,
-      "trust": "image-controlled"
-    },
-    {
-      "id": "oe-alliance-feed",
-      "kind": "external",
-      "scope": "oe-alliance-compatible-images",
-      "mechanism": "adapter-approved-feed",
-      "url": "https://github.com/oe-alliance/3rdparty-feed",
-      "trust": "external-source-review-required"
-    },
-    {
-      "id": "openvision-3rdparty-feed",
-      "kind": "external",
-      "scope": "openvision",
-      "mechanism": "adapter-approved-feed",
-      "url": "https://github.com/OpenVisionE2/3rdparty-feed",
-      "trust": "external-source-review-required"
-    }
+    {"id":"native-image-feed","kind":"native","scope":"detected-image","mechanism":"package-manager","url":null,"trust":"image-controlled"},
+    {"id":"oe-alliance-feed","kind":"external","scope":"oe-alliance-compatible-images","mechanism":"adapter-approved-feed","url":"https://github.com/oe-alliance/3rdparty-feed","trust":"external-source-review-required"},
+    {"id":"openvision-3rdparty-feed","kind":"external","scope":"openvision","mechanism":"adapter-approved-feed","url":"https://github.com/OpenVisionE2/3rdparty-feed","trust":"external-source-review-required"}
   ],
-  "rule": "The control plane may reference source metadata, but the repository must never vendor .ipk/.deb/plugin binaries."
+  "rule":"The control plane may reference source metadata, but the repository must never vendor .ipk/.deb/plugin binaries."
 }
