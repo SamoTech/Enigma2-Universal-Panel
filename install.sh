@@ -31,10 +31,10 @@ command -v wget >/dev/null 2>&1 || command -v curl >/dev/null 2>&1 || fail "wget
 [ -d "$PLUGIN_ROOT" ] || fail "Supported Enigma2 plugin path not found: $PLUGIN_ROOT"
 
 case "$FETCH_TIMEOUT" in
-  ''|*[!0-9]*) fail "E2PANEL_FETCH_TIMEOUT must be an integer." ;;
+  ''|*[!0-9]*|0) fail "E2PANEL_FETCH_TIMEOUT must be a positive integer." ;;
 esac
 case "$FETCH_RETRIES" in
-  ''|*[!0-9]*) fail "E2PANEL_FETCH_RETRIES must be an integer." ;;
+  ''|*[!0-9]*|0) fail "E2PANEL_FETCH_RETRIES must be a positive integer." ;;
 esac
 
 STAGE="$(mktemp -d /tmp/e2panel-install.XXXXXX)" || fail "Unable to create staging directory."
@@ -50,9 +50,15 @@ fetch() {
   mkdir -p "$(dirname "$out")"
 
   if command -v wget >/dev/null 2>&1; then
-    if wget -q --timeout="$FETCH_TIMEOUT" --tries="$FETCH_RETRIES" -O "$out" "$src"; then
-      return 0
-    fi
+    attempt=1
+    while [ "$attempt" -le "$FETCH_RETRIES" ]; do
+      if wget -q -T "$FETCH_TIMEOUT" -O "$out" "$src"; then
+        return 0
+      fi
+      rm -f "$out"
+      [ "$attempt" -lt "$FETCH_RETRIES" ] && sleep 1
+      attempt=$((attempt + 1))
+    done
   fi
 
   if command -v curl >/dev/null 2>&1; then
