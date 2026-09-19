@@ -36,6 +36,8 @@ assert 'shell=False' in p
 assert 'eConsoleAppContainer' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'PackageInstallProgress' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'MessageBox.TYPE_YESNO' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert '"ok": self._close_when_finished' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert '"cancel": self._close_when_finished' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'unregistered action' in p
 assert "_PLUGIN_ID" in p
 
