@@ -137,9 +137,15 @@ plugin_native_arch_compatibility() {
 plugin_native_candidate() {
   pkg="$1"
   case "$E2_PKG" in
-    opkg) opkg list 2>/dev/null | awk -v p="$pkg" '$1 == p {print $3; exit}' ;;
+    opkg)
+      opkg list "$pkg" 2>/dev/null |
+        awk -v p="$pkg" '$1 == p && $3 != "" {print $3; exit}'
+      ;;
     apt) apt-cache policy "$pkg" 2>/dev/null | awk '/Candidate:/ {print $2; exit}' ;;
-    ipkg) ipkg list 2>/dev/null | awk -v p="$pkg" '$1 == p {print $3; exit}' ;;
+    ipkg)
+      ipkg list 2>/dev/null |
+        awk -v p="$pkg" '$1 == p && $3 != "" {print $3; exit}'
+      ;;
     dpkg) printf '' ;;
   esac
 }
@@ -239,11 +245,12 @@ plugin_preview() {
   case "$pkg" in unknown|"image/feed dependent") error "No authoritative package mapping for plugin: $id"; return 3;; esac
 
   installed="$(plugin_native_installed_version "$pkg")"
-  candidate="$(plugin_native_candidate "$pkg")"
-  if [ -z "$candidate" ] || [ "$candidate" = "(none)" ]; then
-    plugin_refresh_sources >/dev/null 2>&1 || true
-    candidate="$(plugin_native_candidate "$pkg")"
+
+  if ! plugin_refresh_sources >/dev/null 2>&1; then
+    candidate=""
   fi
+  candidate="$(plugin_native_candidate "$pkg")"
+
   native_arch="$(plugin_native_field "$pkg" Architecture)"
   deps="$(plugin_native_field "$pkg" Depends)"
   conflicts="$(plugin_native_field "$pkg" Conflicts)"
