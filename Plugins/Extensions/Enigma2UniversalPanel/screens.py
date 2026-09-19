@@ -57,6 +57,10 @@ class Dashboard(Screen):
             self["state"].setText("Status unavailable.\n\n" + (output or "unknown"))
             return
         state = self._kv(output)
+        telemetry = {}
+        telemetry_code, telemetry_output = run_action("receiver.telemetry")
+        if telemetry_code == 0:
+            telemetry = self._kv(telemetry_output)
         cap_code, cap_output = run_action("receiver.capabilities")
         capabilities = []
         if cap_code == 0:
@@ -71,6 +75,20 @@ class Dashboard(Screen):
             "Package manager: %s" % state.get("package_manager", "unknown"),
             "Network: %s" % state.get("network", "unknown"),
             "Storage available: %s KB" % state.get("available_storage_kb", "unknown"),
+            "CPU load: %s / %s / %s" % (
+                telemetry.get("load_1", "unknown"),
+                telemetry.get("load_5", "unknown"),
+                telemetry.get("load_15", "unknown"),
+            ),
+            "RAM: %s MB used / %s MB total (%s%%)" % (
+                telemetry.get("ram_used_mb", "unknown"),
+                telemetry.get("ram_total_mb", "unknown"),
+                telemetry.get("ram_used_percent", "unknown"),
+            ),
+            "Root filesystem: %s KB available (%s%% used)" % (
+                telemetry.get("root_available_kb", "unknown"),
+                telemetry.get("root_used_percent", "unknown"),
+            ),
             "",
             "Capabilities:",
         ]
