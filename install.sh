@@ -1,12 +1,12 @@
 #!/bin/sh
-# Enigma2 Universal Panel installer v1.3.0
+# Enigma2 Universal Panel installer v1.4.0
 set -e
 REPO="https://raw.githubusercontent.com/SamoTech/Enigma2-Universal-Panel/main"
 DEST="/usr/lib/enigma2-universal-panel"
 BIN="/usr/local/bin/e2panel"
 [ "$(id -u)" = 0 ] || { echo "Run as root."; exit 1; }
 command -v wget >/dev/null 2>&1 || command -v curl >/dev/null 2>&1 || { echo "wget or curl is required."; exit 1; }
-mkdir -p "$DEST/scripts/lib" "$DEST/config" "$DEST/plugins" "$DEST/docs/discovery" "$DEST/docs/api" "$DEST/channels" "$DEST/settings" "$DEST/packages"
+mkdir -p "$DEST/scripts/lib" "$DEST/config" "$DEST/plugins" "$DEST/docs/discovery" "$DEST/docs/api" "$DEST/docs/native-gui" "$DEST/channels" "$DEST/settings" "$DEST/packages"
 fetch() {
   url="$REPO/$1"; out="$DEST/$1"; mkdir -p "$(dirname "$out")"
   if command -v wget >/dev/null 2>&1; then wget -q -O "$out" "$url"; else curl -fsSL "$url" -o "$out"; fi
@@ -37,7 +37,21 @@ fetch settings/categories.json
 fetch packages/schema.json
 fetch docs/discovery/PLUGIN_INSTALLATION.md
 fetch docs/discovery/PACKAGE_INTELLIGENCE.md
+fetch docs/native-gui/PLUGIN_PACKAGE.md
+PLUGIN_ROOT="/usr/lib/enigma2/python/Plugins/Extensions"
+[ -d "$PLUGIN_ROOT" ] || { echo "Supported Enigma2 plugin path not found: $PLUGIN_ROOT"; exit 1; }
+PLUGIN_DEST="$PLUGIN_ROOT/Enigma2UniversalPanel"
+mkdir -p "$PLUGIN_DEST"
+fetch_plugin() {
+  url="$REPO/Plugins/Extensions/Enigma2UniversalPanel/$1"; out="$PLUGIN_DEST/$1"
+  if command -v wget >/dev/null 2>&1; then wget -q -O "$out" "$url"; else curl -fsSL "$url" -o "$out"; fi
+}
+fetch_plugin __init__.py
+fetch_plugin plugin.py
+fetch_plugin actions.py
+fetch_plugin screens.py
 chmod 755 "$DEST/panel.sh" "$DEST/scripts/lib/"*.sh
+chmod 644 "$PLUGIN_DEST/"*.py
 ln -sf "$DEST/panel.sh" "$BIN"
-echo "Enigma2 Universal Panel 1.3.0 installed."
+echo "Enigma2 Universal Panel 1.4.0 installed."
 "$BIN" status

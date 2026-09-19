@@ -1,0 +1,13 @@
+name: native-gui-tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  native-gui:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run native GUI package tests
+        run: sh tests/test-native-gui.sh
