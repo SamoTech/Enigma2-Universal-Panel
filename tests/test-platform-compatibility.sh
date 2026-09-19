@@ -37,6 +37,7 @@ exit 0
 EOF
 cat >"$MOCK/usr/bin/enigma2" <<'EOF'
 #!/bin/sh
+touch "$TMP/enigma2-invoked"
 printf '%s\n' 'Enigma2 mock 9.0'
 EOF
 chmod +x "$BIN/"* "$MOCK/usr/bin/enigma2"
@@ -85,6 +86,7 @@ EOF
   [ "$E2_PACKAGE_FAMILY" = opkg ] || fail "OpenATV package backend"
   [ "$ADAPTER" = openatv ] || fail "OpenATV adapter"
   [ "$E2_ARCH_FAMILY" = arm64 ] || fail "ARM64 detection"
+  [ ! -e "$TMP/enigma2-invoked" ] || fail "detection must not execute the Enigma2 binary"
   pass "Dreambox + OpenATV profile"
 }
 
