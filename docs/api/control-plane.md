@@ -1,23 +1,79 @@
 # Control Plane API Contract
 
-Target API only; not implemented by this discovery commit.
+This document describes a **future optional remote control plane**. It is not the primary user interface and is not required for the native receiver panel to operate.
 
-Receiver: GET /api/receivers; POST /api/receivers; GET /api/receivers/:id; POST /api/receivers/:id/detect; GET /api/receivers/:id/status; GET /api/receivers/:id/capabilities
+## Boundary
 
-Actions: POST /api/receivers/:id/actions. Payload contains action, validated parameters, dry_run, confirmation and request_id. Arbitrary command strings are prohibited.
+The native Enigma2 GUI and any future remote client use the same registered action model.
 
-Plugins: GET /api/plugins; GET /api/plugins/:id; POST /api/receivers/:id/plugins/install; POST /api/receivers/:id/plugins/update; DELETE /api/receivers/:id/plugins/:id
+Remote payloads contain:
 
-Channels: GET /api/receivers/:id/channels; POST /api/receivers/:id/channels/scan; POST /api/receivers/:id/channels/import; POST /api/receivers/:id/channels/export
+- action identifier
+- validated parameters
+- dry-run flag
+- confirmation state where required
+- request ID
 
-Bouquets: GET/POST/PATCH/DELETE /api/receivers/:id/bouquets and /api/receivers/:id/bouquets/:id
+Arbitrary command strings are prohibited.
 
-Settings: GET /api/receivers/:id/settings; GET/PUT /api/receivers/:id/settings/:key
+## Future API
 
-Backup: GET/POST /api/receivers/:id/backups; POST /api/receivers/:id/backups/:id/restore
+Receiver:
 
-Diagnostics: GET /api/receivers/:id/diagnostics; POST /api/receivers/:id/diagnostics/run
+- GET /api/receivers
+- POST /api/receivers
+- GET /api/receivers/:id
+- POST /api/receivers/:id/detect
+- GET /api/receivers/:id/status
+- GET /api/receivers/:id/capabilities
 
-Jobs: GET/POST /api/jobs; GET /api/jobs/:id; POST /api/jobs/:id/run
+Actions:
 
-Audit: GET /api/audit. Every mutation emits an audit event.
+- POST /api/receivers/:id/actions
+
+Plugins:
+
+- GET /api/plugins
+- GET /api/plugins/:id
+- POST /api/receivers/:id/plugins/install
+- POST /api/receivers/:id/plugins/update
+- DELETE /api/receivers/:id/plugins/:id
+
+Channels:
+
+- GET /api/receivers/:id/channels
+- POST /api/receivers/:id/channels/scan
+- POST /api/receivers/:id/channels/import
+- POST /api/receivers/:id/channels/export
+
+Settings:
+
+- GET /api/receivers/:id/settings
+- GET /api/receivers/:id/settings/:key
+- PUT /api/receivers/:id/settings/:key
+
+Backup:
+
+- GET/POST /api/receivers/:id/backups
+- POST /api/receivers/:id/backups/:id/restore
+
+Diagnostics:
+
+- GET /api/receivers/:id/diagnostics
+- POST /api/receivers/:id/diagnostics/run
+
+Jobs:
+
+- GET/POST /api/jobs
+- GET /api/jobs/:id
+- POST /api/jobs/:id/run
+
+Audit:
+
+- GET /api/audit
+
+Every mutation emits an audit event.
+
+## Non-goal
+
+The API must never become a second implementation of the receiver business logic. It dispatches registered actions to the receiver.
