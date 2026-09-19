@@ -68,6 +68,27 @@ _panel_validate_version() {
   '
 }
 
+_panel_installed_version() {
+  candidates="
+/usr/lib/enigma2/python/Plugins/Extensions/Enigma2UniversalPanel/version.py
+/usr/lib/enigma2/python2.7/Plugins/Extensions/Enigma2UniversalPanel/version.py
+/usr/lib/enigma2/python3/Plugins/Extensions/Enigma2UniversalPanel/version.py
+"
+  for file in $candidates; do
+    [ -r "$file" ] || continue
+    value="$(_panel_extract_panel_version "$file")"
+    if _panel_validate_version "$value"; then
+      printf '%s\n' "$value"
+      return 0
+    fi
+  done
+  if _panel_validate_version "${PANEL_VERSION:-}"; then
+    printf '%s\n' "$PANEL_VERSION"
+    return 0
+  fi
+  return 1
+}
+
 _update_fetch() {
   url="$1"
   out="$2"
@@ -139,14 +160,15 @@ panel_update_check() {
 
   latest_version="$metadata_version"
 
-  if _panel_version_compare "$latest_version" "$PANEL_VERSION"; then
-    printf 'status=available\ncurrent_version=%s\nlatest_version=%s\nupdate_available=1\n' "$PANEL_VERSION" "$latest_version"
+  current_version="$(_panel_installed_version 2>/dev/null || printf '%s' "$PANEL_VERSION")"
+  if _panel_version_compare "$latest_version" "$current_version"; then
+    printf 'status=available\ncurrent_version=%s\nlatest_version=%s\nupdate_available=1\n' "$current_version" "$latest_version"
   else
     compare_rc=$?
     if [ "$compare_rc" -eq 1 ]; then
-      printf 'status=current\ncurrent_version=%s\nlatest_version=%s\nupdate_available=0\n' "$PANEL_VERSION" "$latest_version"
+      printf 'status=current\ncurrent_version=%s\nlatest_version=%s\nupdate_available=0\n' "$current_version" "$latest_version"
     else
-      printf 'status=local_newer\ncurrent_version=%s\nlatest_version=%s\nupdate_available=0\n' "$PANEL_VERSION" "$latest_version"
+      printf 'status=local_newer\ncurrent_version=%s\nlatest_version=%s\nupdate_available=0\n' "$current_version" "$latest_version"
     fi
   fi
   return 0
@@ -201,21 +223,30 @@ panel_update() {
   fi
   version="$metadata_version"
 
-  if _panel_version_compare "$version" "$PANEL_VERSION"; then
-    :
-  else
-    compare_rc=$?
-    rm -f "$tmp"
-    if [ "$compare_rc" -eq 1 ]; then
-      printf 'status=current\ncurrent_version=%s\nlatest_version=%s\nupdate_available=0\n' "$PANEL_VERSION" "$version"
-    else
-      printf 'status=blocked\ncurrent_version=%s\ntarget_version=%s\nreason=remote_release_is_not_newer\n' "$PANEL_VERSION" "$version"
-    fi
-    return 1
-  fi
+  current_version="$(_panel_installed_version 2>/dev/null || printf '%s' "$PANEL_VERSION")"
+  compare_rc=0
+  _panel_version_compare "$version" "$current_version" || compare_rc=$?
+  case "$compare_rc" in
+    0)
+      same_version=0
+      ;;
+    1)
+      # Explicit self-update is also the repair/refresh path for the installed
+      # release. The GUI only reaches this branch after user confirmation.
+      same_version=1
+      ;;
+    2)
+      rm -f "$tmp"
+      printf 'status=blocked\ncurrent_version=%s\ntarget_version=%s\nreason=remote_release_is_not_newer\n' "$current_version" "$version"
+      return 1
+      ;;
+    *)
+      rm -f "$tmp"
+      printf 'status=failed\ncurrent_version=%s\ntarget_version=%s\nreason=version_comparison_failed\n' "$current_version" "$version"
+      return 1
+      ;;
+  esac
 
-  same_version=0
-  [ "$version" = "$PANEL_VERSION" ] && same_version=1
 
   if ! sh "$tmp" --no-restart; then
     rm -f "$tmp"
@@ -225,9 +256,9 @@ panel_update() {
 
   rm -f "$tmp"
   if [ "$same_version" -eq 1 ]; then
-    printf 'status=refreshed\nprevious_version=%s\ntarget_version=%s\nrestart_required=1\n' "$PANEL_VERSION" "$version"
+    printf 'status=refreshed\nprevious_version=%s\ntarget_version=%s\nrestart_required=1\n' "$current_version" "$version"
   else
-    printf 'status=updated\nprevious_version=%s\ntarget_version=%s\nrestart_required=1\n' "$PANEL_VERSION" "$version"
+    printf 'status=updated\nprevious_version=%s\ntarget_version=%s\nrestart_required=1\n' "$current_version" "$version"
   fi
   return 0
 }
