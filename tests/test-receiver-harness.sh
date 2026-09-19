@@ -28,6 +28,17 @@ grep -q 'plugin-preview' "$ROOT/panel.sh" || fail "preview command"
 grep -q 'compatibility) print_compatibility;;' "$ROOT/panel.sh" || fail "compatibility command"
 pass "security policy gates"
 
+. "$ROOT/scripts/lib/common.sh"
+. "$ROOT/scripts/lib/detect.sh"
+. "$ROOT/scripts/lib/compatibility.sh"
+. "$ROOT/scripts/lib/actions.sh"
+. "$ROOT/scripts/lib/library.sh"
+. "$ROOT/scripts/lib/community.sh"
+if community_contains_unsafe_transport "$ROOT/tests/test-receiver-harness.sh"; then
+  fail "community transport compatibility unexpectedly rejects installer"
+fi
+pass "admitted community installer transport flags accepted"
+
 TMP="$(mktemp -d)"
 BIN="$TMP/bin"
 STATE="$TMP/state"
