@@ -46,11 +46,32 @@ plugin_json_escape() {
 
 plugin_catalog_match_image() {
   id="$1"; image="$2"
+  image_family="${E2_IMAGE_FAMILY:-unknown}"
   while IFS= read -r allowed; do
     case "$allowed" in
-      "$image"|compatible-enigma2) return 0 ;;
+      "$image") return 0 ;;
+      compatible-enigma2)
+        [ "$image_family" != unknown ] && [ "$image_family" != "legacy-unknown" ] && return 0
+        ;;
       oe-alliance-family)
-        case "$image" in openatv|openvix|openpli|openhdf|opendroid|openeight|openld) return 0;; esac ;;
+        case "$image_family:$image" in
+          oe-alliance:*|*:openatv|*:openvix|*:openhdf|*:opendroid|*:openeight|*:openld) return 0 ;;
+        esac
+        ;;
+      dreamos-family)
+        case "$image_family" in dreamos|dreambox-deb) return 0;; esac
+        ;;
+      openpli-family)
+        [ "$image_family" = openpli ] && return 0
+        ;;
+      generic-enigma2)
+        [ "$image_family" = generic-enigma2 ] && return 0
+        ;;
+      *)
+        case "$allowed:$image_family" in
+          "$image_family:$image_family") return 0 ;;
+        esac
+        ;;
     esac
   done <<EOF
 $(plugin_catalog_list "$id" images)
@@ -74,6 +95,7 @@ plugin_native_metadata() {
     opkg) opkg info "$pkg" 2>/dev/null ;;
     apt) apt-cache show "$pkg" 2>/dev/null ;;
     ipkg) ipkg info "$pkg" 2>/dev/null ;;
+    dpkg) dpkg-query -s "$pkg" 2>/dev/null ;;
   esac
 }
 
@@ -98,6 +120,7 @@ plugin_native_candidate() {
     opkg) opkg list 2>/dev/null | awk -v p="$pkg" '$1 == p {print $3; exit}' ;;
     apt) apt-cache policy "$pkg" 2>/dev/null | awk '/Candidate:/ {print $2; exit}' ;;
     ipkg) ipkg list 2>/dev/null | awk -v p="$pkg" '$1 == p {print $3; exit}' ;;
+    dpkg) printf '' ;;
   esac
 }
 
@@ -107,6 +130,7 @@ plugin_native_installed_version() {
     opkg) opkg status "$pkg" 2>/dev/null | sed -n 's/^Version:[[:space:]]*//p' | head -1 ;;
     apt) dpkg-query -W -f='%{Version}' "$pkg" 2>/dev/null ;;
     ipkg) ipkg status "$pkg" 2>/dev/null | sed -n 's/^Version:[[:space:]]*//p' | head -1 ;;
+    dpkg) dpkg-query -W -f='${Version}' "$pkg" 2>/dev/null ;;
   esac
 }
 
@@ -124,6 +148,7 @@ plugin_dependency_status() {
       opkg) opkg status "$dep" 2>/dev/null | grep -q '^Status:.*installed' || printf 'missing:%s ' "$dep" ;;
       apt) dpkg-query -W -f='%{Status}' "$dep" 2>/dev/null | grep -q 'install ok installed' || printf 'missing:%s ' "$dep" ;;
       ipkg) ipkg status "$dep" 2>/dev/null | grep -q '^Status:.*installed' || printf 'missing:%s ' "$dep" ;;
+      dpkg) dpkg-query -W -f='${Status}' "$dep" 2>/dev/null | grep -q 'install ok installed' || printf 'missing:%s ' "$dep" ;;
     esac
   done
 }
