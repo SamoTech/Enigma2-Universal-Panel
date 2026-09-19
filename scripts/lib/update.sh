@@ -31,18 +31,15 @@ panel_update() {
     printf 'status=failed\nreason=unable_to_create_staging_file\n'
     return 1
   }
-  trap 'rm -f "$tmp"' EXIT HUP INT TERM
 
   if ! _update_fetch "$PANEL_UPDATE_INSTALLER_URL" "$tmp"; then
     rm -f "$tmp"
-    trap - EXIT HUP INT TERM
     printf 'status=failed\nreason=unable_to_download_official_installer\n'
     return 1
   fi
 
   if ! sh -n "$tmp"; then
     rm -f "$tmp"
-    trap - EXIT HUP INT TERM
     printf 'status=failed\nreason=installer_syntax_validation_failed\n'
     return 1
   fi
@@ -51,7 +48,6 @@ panel_update() {
   case "$version" in
     ''|*[!0-9.]*)
       rm -f "$tmp"
-      trap - EXIT HUP INT TERM
       printf 'status=failed\nreason=invalid_official_installer_version\n'
       return 1
       ;;
@@ -59,20 +55,17 @@ panel_update() {
 
   if [ "$version" = "$PANEL_VERSION" ]; then
     rm -f "$tmp"
-    trap - EXIT HUP INT TERM
     printf 'status=current\ncurrent_version=%s\nlatest_version=%s\n' "$PANEL_VERSION" "$version"
     return 0
   fi
 
   if ! sh "$tmp" --no-restart; then
     rm -f "$tmp"
-    trap - EXIT HUP INT TERM
     printf 'status=failed\ncurrent_version=%s\ntarget_version=%s\nreason=installer_failed\n' "$PANEL_VERSION" "$version"
     return 1
   fi
 
   rm -f "$tmp"
-  trap - EXIT HUP INT TERM
-  printf 'status=updated\nprevious_version=%s\ncurrent_version=%s\nrestart_required=1\n' "$PANEL_VERSION" "$version"
+  printf 'status=updated\nprevious_version=%s\ntarget_version=%s\nrestart_required=1\n' "$PANEL_VERSION" "$version"
   return 0
 }
