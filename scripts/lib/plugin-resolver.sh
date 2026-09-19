@@ -28,8 +28,8 @@ plugin_catalog_field() {
 plugin_catalog_list() {
   id="$1"; field="$2"
   plugin_catalog_block "$id" | awk -v f="$field" '
-    $0 ~ "\"" f "\"[[:space:]]*:[[:space:]]*\\[" { inlist=1; next }
-    inlist && /\\]/ { exit }
+    index($0, "\"" f "\"") && index($0, "[") { inlist=1; next }
+    inlist && index($0, "]") { exit }
     inlist {
       while (match($0, /"[^"]+"/)) {
         v=substr($0, RSTART+1, RLENGTH-2)
@@ -46,7 +46,6 @@ plugin_json_escape() {
 
 plugin_catalog_match_image() {
   id="$1"; image="$2"
-  found=1
   while IFS= read -r allowed; do
     case "$allowed" in
       "$image"|compatible-enigma2) return 0 ;;
@@ -212,8 +211,11 @@ EOF
 plugin_resolve_install() {
   id="$1"
   preview_file="/tmp/e2panel-plugin-preview.$$"
-  plugin_preview "$id" >"$preview_file" 2>&1
-  rc=$?
+  if plugin_preview "$id" >"$preview_file" 2>&1; then
+    rc=0
+  else
+    rc=$?
+  fi
   cat "$preview_file"
   rm -f "$preview_file"
   [ "$rc" -eq 0 ] || { error "Plugin install blocked by preflight policy"; return "$rc"; }
