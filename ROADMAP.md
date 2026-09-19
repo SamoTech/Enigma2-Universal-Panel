@@ -141,7 +141,7 @@ Unknown values must be displayed as unknown, not inferred.
 
 ### 1.4 Plugin Library / Store
 
-Status: IN PROGRESS — unified store projection, search, details, and controlled feed installation implemented
+Status: IN PROGRESS — unified store projection, search, details, controlled feed installation, community library and audit-history display implemented
 
 Current slice:
 
@@ -155,6 +155,8 @@ Current slice:
 - compatibility/dependency installation preview
 - strict GUI action parameter validation
 - evidence-backed receiver telemetry
+- community Plugin Library with 49 metadata entries and explicit blocked/admitted source state
+- native read-only audit-history display backed by the receiver audit log
 
 Acceptance for current slice:
 - GUI package inventory is backed by the existing normalized package schema.
@@ -170,6 +172,7 @@ Acceptance for current slice:
 - Unknown/unsupported/partial compatibility remains blocked.
 - No arbitrary package-manager arguments or feed URLs are accepted.
 - Telemetry is sourced explicitly by the receiver runtime before the `telemetry` command is dispatched.
+- Audit history is read-only, bounded to the latest 20 audit records, and sourced only from the receiver panel log.
 
 Remaining Phase 1.4 work:
 
@@ -179,8 +182,8 @@ Remaining Phase 1.4 work:
 - asynchronous remove flow with confirmation — implemented
 - community plugin library source registry and native inspection screen — implemented (49 unique entries; 21 previously audited + 28 inventory additions)
 - community source-health metadata and native health display — implemented
-- richer audit-history display — next target
-- GUI restart handling when required by verified metadata
+- richer audit-history display — implemented
+- GUI restart handling when required by verified metadata — next target
 
 ## Phase 2 — Core receiver management
 

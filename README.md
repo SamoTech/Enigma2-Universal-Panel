@@ -52,6 +52,7 @@ The existing shell/CLI runtime remains a receiver-side foundation and diagnostic
 - Evidence-backed receiver telemetry
 - Community Plugin Library with fail-closed installation admission and source-health metadata (49 community entries)
 - Postcondition verification and audit foundations
+- Read-only native audit-history display backed by the receiver audit log
 - Confirmed asynchronous install, update and removal flows
 - Mock receiver harness and policy tests
 - Master native-GUI roadmap
@@ -68,6 +69,7 @@ The installed plugin will provide a store-like library as its primary screen:
 - Install from receiver-configured feeds
 - Installed / update state
 - Community source discovery with explicit blocked/admitted state
+- Read-only audit history for completed mutating actions
 
 Receiver information, diagnostics, packages, channels, settings, maintenance, and recovery remain supporting management areas.
 
@@ -86,6 +88,7 @@ The installed plugin will also provide:
 - Diagnostics
 - Backup/recovery
 - System operations
+- Audit history
 
 Navigation uses native Enigma2 screens and standard remote-control keys.
 
@@ -117,6 +120,6 @@ The current bootstrap installs the receiver-side runtime and native GUI. The plu
 
 The authoritative roadmap is ROADMAP.md.
 
-The immediate product milestone is the native Enigma2 Plugin Library / Store: registration, store navigation, catalog/search/categories, plugin details, compatibility preview, and controlled installation through the existing action/policy/resolver layers.
+The immediate product milestone is the native Enigma2 Plugin Library / Store: registration, store navigation, catalog/search/categories, plugin details, compatibility preview, controlled installation through the existing action/policy/resolver layers, and read-only audit-history display.
 
 Remote management and web/fleet management are later phases, not prerequisites for the receiver application.
