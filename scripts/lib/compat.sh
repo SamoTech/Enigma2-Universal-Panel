@@ -1,6 +1,8 @@
 #!/bin/sh
 select_adapter() {
-  case "$E2_IMAGE_FAMILY:$E2_IMAGE" in
+  image_family="${E2_IMAGE_FAMILY:-unknown}"
+  image_id="${E2_IMAGE:-unknown}"
+  case "$image_family:$image_id" in
     dreamos:*|dreambox-deb:*) ADAPTER=dreamos ;;
     oe-alliance:openatv) ADAPTER=openatv ;;
     oe-alliance:openvix) ADAPTER=openvix ;;
