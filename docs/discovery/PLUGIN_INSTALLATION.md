@@ -65,7 +65,7 @@ The native GUI is the primary user interface; CLI is secondary.
 
 ## Community installer registry
 
-The project also recognizes a separate class of third-party Enigma2 software distributed through direct installer scripts rather than receiver-configured package feeds. These sources are cataloged in `plugins/community.json`.
+The project also recognizes a separate class of third-party Enigma2 software distributed through direct installer scripts rather than receiver-configured package feeds. These sources are cataloged in `plugins/community.json`. The registry currently tracks 23 unique community entries; new entries are added only after a current source audit, while repeated entries are ignored.
 
 This registry is deliberately separate from the normal package-feed catalog:
 
