@@ -15,6 +15,7 @@
     "plugin.source_refresh": {"requires":["package_manager"],"requires_root":true},
     "plugin.discover": {"requires":["package_manager"],"read_only":true},
     "plugin.info": {"requires":["package_manager"],"read_only":true},
+    "community.catalog": {"read_only":true,"no_mutation":true},
     "plugin.resolve": {"requires":["package_manager"],"read_only":true},
     "plugin.preview": {"requires":["package_manager"],"read_only":true,"no_mutation":true},
     "plugin.install": {"requires":["package_manager"],"source":"receiver_feed","preflight":"plugin.preview"},
