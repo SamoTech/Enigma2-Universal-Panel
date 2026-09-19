@@ -13,6 +13,21 @@ from .debug import DebugActionMap, DebugMenuList, log
 from .audit_history import AuditHistory
 
 
+def _add_scroll_actions(screen, widget_name):
+    widget = screen[widget_name]
+    screen["scroll_actions_%s" % widget_name] = DebugActionMap(
+        ["DirectionActions"],
+        {
+            "up": widget.pageUp,
+            "down": widget.pageDown,
+            "left": widget.pageUp,
+            "right": widget.pageDown,
+        },
+        -1,
+    )
+
+
+
 class ActionResult(Screen):
     skin = """
     <screen name="ActionResult" position="center,center" size="1000,620" title="Enigma2 Universal Panel">
