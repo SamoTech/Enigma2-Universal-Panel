@@ -4,6 +4,7 @@ BASE="/usr/lib/enigma2-universal-panel"
 . "$BASE/scripts/lib/detect.sh"
 . "$BASE/scripts/lib/compat.sh"
 . "$BASE/scripts/lib/plugins.sh"
+. "$BASE/scripts/lib/library.sh"
 . "$BASE/scripts/lib/plugin-resolver.sh"
 . "$BASE/scripts/lib/actions.sh"
 . "$BASE/scripts/lib/status.sh"
@@ -29,6 +30,7 @@ Usage:
   e2panel plugin-remove-id <plugin-id>
   e2panel telemetry
   e2panel community-catalog
+  e2panel plugin-library
   e2panel restart-enigma2 | restart-gui
   e2panel reboot --confirm
 EOF
@@ -59,6 +61,7 @@ case "$cmd" in
   package-state) plugin_package_state;;
   telemetry) print_telemetry;;
   community-catalog) community_catalog;;
+  plugin-library) plugin_library;;
   plugin-source-status) plugin_source_status;; plugin-refresh) plugin_refresh_sources;;
   plugin-list) plugin_list "$1";; plugin-info) plugin_info "$1";;
   plugin-resolve) plugin_resolve "$1";;
