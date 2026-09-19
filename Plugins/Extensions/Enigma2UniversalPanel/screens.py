@@ -176,6 +176,76 @@ class ReceiverTelemetry(Screen):
         self["state"].setText("\n".join(lines))
 
 
+class PluginCategorySelector(Screen):
+    skin = """
+    <screen name="PluginCategorySelector" position="center,center" size="1000,650" title="Plugin Categories">
+        <widget name="title" position="35,20" size="930,42" font="Regular;30" />
+        <widget name="summary" position="35,62" size="930,30" font="Regular;18" />
+        <widget name="menu" position="35,100" size="930,340" itemHeight="44" font="Regular;21" />
+        <widget name="details" position="35,455" size="930,82" font="Regular;19" valign="top" />
+        <widget name="hint" position="35,565" size="930,30" font="Regular;18" />
+    </screen>
+    """
+
+    def __init__(self, session, categories, selected, callback):
+        Screen.__init__(self, session)
+        self["title"] = Label("Plugin Categories")
+        self["summary"] = Label("Browse the library by category")
+        self["menu"] = DebugMenuList([])
+        self["details"] = Label("Select a category.")
+        self["hint"] = Label("UP/DOWN: Select    OK: Open    EXIT: Back")
+        self.categories = categories or []
+        self.callback = callback
+        self.items = [{"id": "all", "name": "All Categories", "description": "Show every admitted plugin."}]
+        self.items.extend(
+            {
+                "id": item.get("id"),
+                "name": item.get("name") or str(item.get("id", "")).replace("_", " ").title(),
+                "description": item.get("description", ""),
+            }
+            for item in self.categories
+            if item.get("id")
+        )
+        self.selected = selected if any(item["id"] == selected for item in self.items) else "all"
+        self["menu"].setList([self._label(item) for item in self.items])
+        self["actions"] = DebugActionMap(
+            ["OkCancelActions"],
+            {"ok": self.activate, "cancel": self._cancel},
+            -2,
+        )
+        self["menu"].onSelectionChanged.append(self._selection_changed)
+        self._select_current()
+
+    @staticmethod
+    def _label(item):
+        return item["name"]
+
+    def _select_current(self):
+        index = next((i for i, item in enumerate(self.items) if item["id"] == self.selected), 0)
+        self["menu"].setIndex(index)
+        self._selection_changed()
+
+    def _selection_changed(self):
+        index = self["menu"].getSelectionIndex()
+        if index is None or index < 0 or index >= len(self.items):
+            return
+        item = self.items[index]
+        self["summary"].setText("%d category option(s)" % len(self.items))
+        self["details"].setText(
+            "%s\n%s" % (item["name"], item["description"] or "No category description available.")
+        )
+
+    def activate(self):
+        index = self["menu"].getSelectionIndex()
+        if index is None or index < 0 or index >= len(self.items):
+            return
+        self.callback(self.items[index]["id"])
+        self.close()
+
+    def _cancel(self):
+        self.close()
+
+
 class PluginLibrary(Screen):
     skin = """
     <screen name="PluginLibrary" position="center,center" size="1000,650" title="Enigma2 Plugin Library">
@@ -204,13 +274,12 @@ class PluginLibrary(Screen):
         self["hint"] = Label("OK: Details  |  EXIT: Back")
         self["actions"] = ActionMap(
             ["OkCancelActions", "ColorActions"],
-            {"ok": self.show_details, "cancel": self.close, "green": self.install_selected, "yellow": self.refresh, "blue": self.search, "red": self.cycle_category},
+            {"ok": self.show_details, "cancel": self.close, "green": self.install_selected, "yellow": self.refresh, "blue": self.search, "red": self.open_category_selector},
             -2,
         )
         self.entries = []
         self.filtered_entries = []
         self.categories = []
-        self.category_index = 0
         self.category_filter = "all"
         self.search_term = ""
         self.onLayoutFinish.append(self.refresh)
@@ -251,13 +320,18 @@ class PluginLibrary(Screen):
                 return category.get("name") or self.category_filter
         return self.category_filter.replace("_", " ").title()
 
-    def cycle_category(self):
-        category_ids = ["all"] + [x.get("id") for x in self.categories if x.get("id")]
-        if not category_ids:
+    def open_category_selector(self):
+        self.session.openWithCallback(
+            self._category_selected,
+            PluginCategorySelector,
+            self.categories,
+            self.category_filter,
+        )
+
+    def _category_selected(self, category_id):
+        if not category_id:
             return
-        self.category_index = (self.category_index + 1) % len(category_ids)
-        self.category_filter = category_ids[self.category_index]
-        self["title"].setText("Plugin Library — %s" % self._category_name())
+        self.category_filter = category_id
         self._apply_filter()
 
     def _apply_filter(self):
@@ -283,6 +357,7 @@ class PluginLibrary(Screen):
                 "%s  [%s | %s]"
                 % (entry.get("name", "unknown"), source, availability)
             )
+        self["title"].setText("Plugin Library — %s" % self._category_name())
         self["summary"].setText(
             "%d result(s) | Category: %s%s"
             % (
