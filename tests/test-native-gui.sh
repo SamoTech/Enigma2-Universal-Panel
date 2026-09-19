@@ -31,6 +31,9 @@ grep -Fq 'audit-history) audit_history;;' panel.sh || fail "audit history comman
 grep -Fq 'community-catalog) community_catalog;;' panel.sh || fail "community catalog command is not wired"
 grep -Fq 'plugin-library) plugin_library;;' panel.sh || fail "plugin library command is not wired"
 grep -Fq 'compatibility) print_compatibility;;' panel.sh || fail "compatibility command is not wired"
+grep -Fq 'reboot-status) reboot_status;;' panel.sh || fail "reboot-status command is not wired"
+grep -Fq '*vuuno4kse*)' scripts/lib/detect.sh || fail "VU+ Uno 4K SE hostname detection missing"
+grep -Fq 'E2_MODEL="VU+ Uno 4K SE"' scripts/lib/detect.sh || fail "VU+ Uno 4K SE canonical model mapping missing"
 
 grep -Fq '#!/bin/sh' scripts/lib/telemetry.sh || fail "telemetry library is not a shell script"
 
