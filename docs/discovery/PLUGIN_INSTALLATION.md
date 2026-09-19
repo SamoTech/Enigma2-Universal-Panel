@@ -61,3 +61,20 @@ The current CLI operations remain useful for diagnostics/recovery:
 - e2panel plugin-install-id <plugin-id>
 
 The native GUI is the primary user interface; CLI is secondary.
+
+
+## Community installer registry
+
+The project also recognizes a separate class of third-party Enigma2 software distributed through direct installer scripts rather than receiver-configured package feeds. These sources are cataloged in `plugins/community.json`.
+
+This registry is deliberately separate from the normal package-feed catalog:
+
+- The repository stores metadata and provenance only; it never mirrors third-party binaries.
+- Community installer URLs are not arbitrary user input. Each executable source must be explicitly admitted to the registry.
+- The native GUI never executes a user-supplied shell pipeline.
+- TLS certificate verification is required.
+- Installer execution is blocked by default until the source and secondary payloads have been reviewed and explicitly admitted.
+- A pinned installer script alone is not considered sufficient when that script fetches mutable package archives, native libraries, or other secondary payloads.
+- Entries whose current repository or installer cannot be established are retained as provenance records and remain blocked.
+
+The native GUI exposes the registry as **Community Installers** so an administrator can inspect the developer, repository, pinned source reference, delivery method, and current execution status before any future installation action is admitted.

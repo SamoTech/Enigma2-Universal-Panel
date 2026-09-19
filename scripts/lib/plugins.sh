@@ -210,3 +210,12 @@ plugin_source_add_external() {
   error "Arbitrary external feed registration is disabled by policy"
   return 1
 }
+
+
+community_catalog() {
+  [ -r "$PANEL_ROOT/plugins/community.json" ] || {
+    error "Community installer registry is unavailable"
+    return 1
+  }
+  cat "$PANEL_ROOT/plugins/community.json"
+}

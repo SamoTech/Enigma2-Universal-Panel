@@ -25,6 +25,7 @@ if ! grep -Fq '. "$BASE/scripts/lib/telemetry.sh"' panel.sh; then
 fi
 
 grep -Fq 'telemetry) print_telemetry;;' panel.sh || fail "telemetry command is not wired"
+grep -Fq 'community-catalog) community_catalog;;' panel.sh || fail "community catalog command is not wired"
 
 grep -Fq '#!/bin/sh' scripts/lib/telemetry.sh || fail "telemetry library is not a shell script"
 
@@ -61,6 +62,8 @@ assert '_prepare_remove' in Path("Plugins/Extensions/Enigma2UniversalPanel/scree
 assert '_prepare_update' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'Receiver Telemetry' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'class ReceiverTelemetry' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'Community Installers' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'class CommunityInstallerCatalog' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 resolver = Path("scripts/lib/plugin-resolver.sh").read_text()
 panel = Path("panel.sh").read_text()
 assert "plugin_update_id()" in resolver
