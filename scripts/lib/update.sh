@@ -26,7 +26,7 @@ _panel_version_compare() {
 
 _panel_extract_installer_version() {
   file="$1"
-  sed -n 's/^[[:space:]]*VERSION[[:space:]]*=[[:space:]]*"\\([0-9][0-9.]*\\)"[[:space:]]*$/\\1/p' "$file" | head -n 1
+  sed -n 's/^[[:space:]]*VERSION[[:space:]]*=[[:space:]]*"\([0-9][0-9.]*\)"[[:space:]]*$/\1/p' "$file" | head -n 1
 }
 
 _update_fetch() {
