@@ -57,6 +57,10 @@ class Dashboard(Screen):
             self["state"].setText("Status unavailable.\n\n" + (output or "unknown"))
             return
         state = self._kv(output)
+        telemetry = {}
+        telemetry_code, telemetry_output = run_action("receiver.telemetry")
+        if telemetry_code == 0:
+            telemetry = self._kv(telemetry_output)
         cap_code, cap_output = run_action("receiver.capabilities")
         capabilities = []
         if cap_code == 0:
@@ -71,10 +75,86 @@ class Dashboard(Screen):
             "Package manager: %s" % state.get("package_manager", "unknown"),
             "Network: %s" % state.get("network", "unknown"),
             "Storage available: %s KB" % state.get("available_storage_kb", "unknown"),
+            "CPU load: %s / %s / %s" % (
+                telemetry.get("load_1", "unknown"),
+                telemetry.get("load_5", "unknown"),
+                telemetry.get("load_15", "unknown"),
+            ),
+            "RAM: %s MB used / %s MB total (%s%%)" % (
+                telemetry.get("ram_used_mb", "unknown"),
+                telemetry.get("ram_total_mb", "unknown"),
+                telemetry.get("ram_used_percent", "unknown"),
+            ),
+            "Root filesystem: %s KB available (%s%% used)" % (
+                telemetry.get("root_available_kb", "unknown"),
+                telemetry.get("root_used_percent", "unknown"),
+            ),
             "",
             "Capabilities:",
         ]
         lines.extend("  - " + item for item in capabilities) if capabilities else lines.append("  - unknown")
+        self["state"].setText("\n".join(lines))
+
+
+class ReceiverTelemetry(Screen):
+    skin = """
+    <screen name="ReceiverTelemetry" position="center,center" size="1000,650" title="Enigma2 Universal Panel">
+        <widget name="title" position="35,20" size="930,45" font="Regular;30" />
+        <widget name="state" position="35,80" size="930,450" font="Regular;22" valign="top" />
+        <widget name="hint" position="35,555" size="930,35" font="Regular;20" />
+    </screen>
+    """
+
+    def __init__(self, session):
+        Screen.__init__(self, session)
+        self["title"] = Label("Receiver Telemetry")
+        self["state"] = Label("Reading telemetry...")
+        self["hint"] = Label("GREEN: Refresh    EXIT: Close")
+        self["actions"] = ActionMap(
+            ["OkCancelActions", "ColorActions"],
+            {"cancel": self.close, "green": self.refresh},
+            -2,
+        )
+        self.onLayoutFinish.append(self.refresh)
+
+    @staticmethod
+    def _kv(text):
+        values = {}
+        for line in text.splitlines():
+            if "=" in line:
+                key, value = line.split("=", 1)
+                values[key.strip()] = value.strip() or "unknown"
+        return values
+
+    def refresh(self):
+        try:
+            code, output = run_action("receiver.telemetry")
+        except Exception as exc:
+            self["state"].setText("Telemetry request rejected.\n\n%s" % exc)
+            return
+        if code != 0:
+            self["state"].setText("Telemetry unavailable.\n\n%s" % (output or "unknown"))
+            return
+        values = self._kv(output)
+        lines = [
+            "CPU load (1 min): %s" % values.get("load_1", "unknown"),
+            "CPU load (5 min): %s" % values.get("load_5", "unknown"),
+            "CPU load (15 min): %s" % values.get("load_15", "unknown"),
+            "",
+            "RAM total: %s MB" % values.get("ram_total_mb", "unknown"),
+            "RAM available: %s MB" % values.get("ram_available_mb", "unknown"),
+            "RAM used: %s MB (%s%%)" % (
+                values.get("ram_used_mb", "unknown"),
+                values.get("ram_used_percent", "unknown"),
+            ),
+            "MemFree kernel value: %s KB" % values.get("mem_free_kb", "unknown"),
+            "",
+            "Root filesystem total: %s KB" % values.get("root_total_kb", "unknown"),
+            "Root filesystem available: %s KB" % values.get("root_available_kb", "unknown"),
+            "Root filesystem used: %s%%" % values.get("root_used_percent", "unknown"),
+            "",
+            "Python runtime: %s" % values.get("python_version", "unknown"),
+        ]
         self["state"].setText("\n".join(lines))
 
 
@@ -265,6 +345,7 @@ class Enigma2UniversalPanel(Screen):
     ENTRIES = (
         ("Dashboard", "dashboard"),
         ("Package Browser", "package-browser"),
+        ("Receiver Telemetry", "receiver.telemetry"),
         ("Resolve Plugin", "plugin.resolve"),
         ("Preview Plugin", "plugin.preview"),
         ("Plugin Metadata", "plugin.info"),
@@ -494,6 +575,9 @@ class Enigma2UniversalPanel(Screen):
             return
         if action_id == "package-browser":
             self.session.open(PackageBrowser)
+            return
+        if action_id == "receiver.telemetry":
+            self.session.open(ReceiverTelemetry)
             return
         if action_id in ("plugin.resolve", "plugin.preview", "plugin.info"):
             if action_id == "plugin.info":

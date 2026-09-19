@@ -35,6 +35,8 @@ grep -q 'Post-install verification failed' "$ROOT/scripts/lib/plugin-resolver.sh
 grep -q 'Post-remove verification failed' "$ROOT/scripts/lib/plugin-resolver.sh" || fail "remove postcondition verification missing"
 grep -q 'plugin_remove_preview()' "$ROOT/scripts/lib/plugin-resolver.sh" || fail "remove preflight missing"
 grep -q 'plugin-remove-id' "$ROOT/panel.sh" || fail "plugin ID remove command missing"
+grep -q 'telemetry) print_telemetry' "$ROOT/panel.sh" || fail "telemetry command missing"
+[ -f "$ROOT/scripts/lib/telemetry.sh" ] || fail "telemetry module missing"
 pass "source/install policy gates"
 
 if find "$ROOT" -type f \( -name '*.ipk' -o -name '*.deb' \) -print -quit | grep -q .; then

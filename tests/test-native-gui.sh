@@ -44,6 +44,8 @@ assert 'Update Plugin' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens
 assert 'Remove Plugin' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert '_prepare_remove' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert '_prepare_update' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'Receiver Telemetry' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'class ReceiverTelemetry' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 resolver = Path("scripts/lib/plugin-resolver.sh").read_text()
 panel = Path("panel.sh").read_text()
 assert "plugin_update_id()" in resolver

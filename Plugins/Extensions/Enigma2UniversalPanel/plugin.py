@@ -11,9 +11,17 @@ def main(session, **kwargs):
 
 
 def Plugins(**kwargs):
-    return [PluginDescriptor(
-        name=PLUGIN_NAME,
-        description=PLUGIN_DESCRIPTION,
-        where=PluginDescriptor.WHERE_PLUGINMENU,
-        fnc=main,
-    )]
+    return [
+        PluginDescriptor(
+            name=PLUGIN_NAME,
+            description=PLUGIN_DESCRIPTION,
+            where=PluginDescriptor.WHERE_PLUGINMENU,
+            fnc=main,
+        ),
+        PluginDescriptor(
+            name=PLUGIN_NAME,
+            description=PLUGIN_DESCRIPTION,
+            where=PluginDescriptor.WHERE_EXTENSIONSMENU,
+            fnc=main,
+        ),
+    ]

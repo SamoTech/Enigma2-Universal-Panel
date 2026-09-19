@@ -91,6 +91,7 @@ EOF
   . "$ROOT/scripts/lib/detect.sh"
   . "$ROOT/scripts/lib/plugins.sh"
   . "$ROOT/scripts/lib/plugin-resolver.sh"
+  . "$ROOT/scripts/lib/telemetry.sh"
 
   require_root() { return 0; }
 
@@ -124,6 +125,18 @@ for feed in d["feeds"]:
     assert set(("id","uri","enabled","source","evidence")) <= set(feed)
 PY
   pass "mock receiver package-state"
+
+  telemetry_output="$TMP/telemetry.txt"
+  print_telemetry >"$telemetry_output"
+  grep -q '^load_1=' "$telemetry_output"
+  grep -q '^load_5=' "$telemetry_output"
+  grep -q '^load_15=' "$telemetry_output"
+  grep -q '^ram_total_mb=' "$telemetry_output"
+  grep -q '^ram_available_mb=' "$telemetry_output"
+  grep -q '^root_total_kb=' "$telemetry_output"
+  grep -q '^root_available_kb=' "$telemetry_output"
+  grep -q '^python_version=' "$telemetry_output"
+  pass "mock receiver telemetry output"
 
   if ! plugin_preview openwebif >"$TMP/preview.json" 2>&1; then
     cat "$TMP/preview.json" >&2
