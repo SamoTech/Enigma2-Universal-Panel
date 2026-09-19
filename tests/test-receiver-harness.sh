@@ -29,6 +29,7 @@ grep -q 'compatibility) print_compatibility;;' "$ROOT/panel.sh" || fail "compati
 pass "security policy gates"
 
 grep -q '^# wget -qO- https://raw.githubusercontent.com/SamoTech/Enigma2-Universal-Panel/main/install.sh | sh
+
 TMP="$(mktemp -d)"
 BIN="$TMP/bin"
 STATE="$TMP/state"
