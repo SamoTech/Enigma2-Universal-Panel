@@ -153,11 +153,16 @@ for x in d["entries"]:
     assert "health" in x
     assert x["health"]["hosting_status"]
     assert x["health"]["network_reachability"]
-assert len(d["entries"]) == 21
+assert len(d["entries"]) == 49
 expected_new = {
     "dreamsatpanel","linuxsat-panel","jedi-maker-xtream","jedi-epg-xtream",
     "epg-grabber","ipaudio","ipaudio-pro","subssupport","raedquicksignal",
-    "keyadder","levi45-multicam-manager","arabicsavior","neoboot"
+    "keyadder","levi45-multicam-manager","arabicsavior","neoboot",
+    "ultra-stalker","estalker","backupflash","ncam-emu","oscam-emu","barryallen",
+    "chkroot-multiboot","xportal","tivimate-iptv","hybridiptv","community-channel-bouquets",
+    "husn-al-muslim","mawaqit","iqraaquran","listen-quran","multiboot-links","gt-iptv-player-pro",
+    "levi45-free-server","xtreamnew","my-translator","xtream2audio","disk-cpu-temperature",
+    "subextractor","aio-image-rtlfixer","e2bisskeyeditor","timeshift-delay","ts-sateditor","epg-translator-lite"
 }
 ids = [x["id"] for x in d["entries"]]
 assert len(ids) == len(set(ids))
@@ -168,6 +173,8 @@ for repeated in {"ajpanel","aio-panel","e2iplayer","multi-stalker","xstreamity",
     assert ids.count(repeated) == 1
 assert any(x["id"] == "ajpanel" and x["source_status"] == "verified" for x in d["entries"])
 assert any(x["id"] == "aio-panel" and x["execution_status"] == "blocked_unverified_source" for x in d["entries"])
+assert any(x["id"] == "estalker" and x["source_status"] == "verified" for x in d["entries"])
+assert sum(1 for x in d["entries"] if x["execution_status"] == "blocked_metadata_only") == 27
 PY
   pass "community installer registry"
 
