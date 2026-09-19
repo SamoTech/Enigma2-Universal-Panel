@@ -3,6 +3,7 @@ import json
 from Components.ActionMap import ActionMap
 from Components.Label import Label
 from Components.MenuList import MenuList
+from Components.ScrollLabel import ScrollLabel
 from Screens.InputBox import InputBox
 from enigma import eConsoleAppContainer
 from Screens.MessageBox import MessageBox
@@ -42,7 +43,7 @@ class ActionResult(Screen):
         Screen.__init__(self, session)
         self["title"] = Label(title)
         self["subtitle"] = Label("Receiver-local result")
-        self["text"] = Label(text or "No output.")
+        self["text"] = ScrollLabel(text or "No output.")
         self["hint"] = Label("OK / EXIT: Back")
         self["actions"] = DebugActionMap(["OkCancelActions"], {"ok": self.close, "cancel": self.close}, -2)
 
@@ -61,7 +62,7 @@ class Dashboard(Screen):
         Screen.__init__(self, session)
         self["title"] = Label("Dashboard")
         self["summary"] = Label("Receiver-local system status")
-        self["state"] = Label("Loading receiver state...")
+        self["state"] = ScrollLabel("Loading receiver state...")
         self["hint"] = Label("GREEN: Refresh    EXIT: Back")
         self["actions"] = ActionMap(["OkCancelActions", "ColorActions"], {"cancel": self.close, "green": self.refresh}, -2)
         self.onLayoutFinish.append(self.refresh)
@@ -141,7 +142,7 @@ class ReceiverTelemetry(Screen):
         Screen.__init__(self, session)
         self["title"] = Label("Receiver Telemetry")
         self["summary"] = Label("Runtime, memory and filesystem telemetry")
-        self["state"] = Label("Reading telemetry...")
+        self["state"] = ScrollLabel("Reading telemetry...")
         self["hint"] = Label("GREEN: Refresh    EXIT: Back")
         self["actions"] = ActionMap(
             ["OkCancelActions", "ColorActions"],
@@ -538,7 +539,7 @@ class ReceiverCompatibility(Screen):
         Screen.__init__(self, session)
         self["title"] = Label("Receiver Compatibility")
         self["summary"] = Label("Fail-closed compatibility evidence")
-        self["state"] = Label("Detecting device and image...")
+        self["state"] = ScrollLabel("Detecting device and image...")
         self["hint"] = Label("GREEN: Refresh    EXIT: Back")
         self["actions"] = ActionMap(
             ["OkCancelActions", "ColorActions"],
@@ -954,7 +955,7 @@ class PackageInstallProgress(Screen):
         self.output = ""
         self.finished = False
         self["title"] = Label("%s: %s" % (operation, plugin_id))
-        self["state"] = Label("Starting native package operation...")
+        self["state"] = ScrollLabel("Starting native package operation...")
         self["hint"] = Label("Please wait — %s running" % operation.lower())
         self["actions"] = ActionMap(
             ["OkCancelActions"],
@@ -1076,7 +1077,7 @@ class RebootProgress(Screen):
         self.finished = False
         self.plugin_id = plugin_id
         self["title"] = Label("Rebooting Receiver")
-        self["state"] = Label(
+        self["state"] = ScrollLabel(
             "Persisting reboot verification intent...\n\n"
             "The receiver will restart now. Verification will occur the next time "
             "Enigma2 Universal Panel is opened."
@@ -1134,7 +1135,7 @@ class RestartGuiProgress(Screen):
         Screen.__init__(self, session)
         self.finished = False
         self["title"] = Label("Restarting Enigma2 GUI")
-        self["state"] = Label("Starting the controlled GUI restart action...")
+        self["state"] = ScrollLabel("Starting the controlled GUI restart action...")
         self["hint"] = Label("Please wait — Enigma2 may restart this interface")
         self["actions"] = ActionMap(
             ["OkCancelActions"],
@@ -1189,7 +1190,7 @@ class PluginMetadata(Screen):
         self.plugin_id = plugin_id
         self["title"] = Label("Plugin Metadata — %s" % plugin_id)
         self["summary"] = Label("Read-only package and compatibility metadata")
-        self["state"] = Label("Loading metadata...")
+        self["state"] = ScrollLabel("Loading metadata...")
         self["hint"] = Label("OK / EXIT: Back")
         self["actions"] = ActionMap(["OkCancelActions"], {"ok": self.close, "cancel": self.close}, -2)
         self.onLayoutFinish.append(self.refresh)
