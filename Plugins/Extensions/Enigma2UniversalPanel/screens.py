@@ -12,7 +12,7 @@ from Screens.Screen import Screen
 from .actions import build_action_command, run_action
 from .debug import DebugActionMap, DebugMenuList, log
 from .audit_history import AuditHistory
-from .version import PANEL_VERSION
+from .version import PANEL_VERSION, PLUGIN_NAME
 
 
 def _add_scroll_actions(screen, widget_name):
@@ -1354,7 +1354,7 @@ class Enigma2UniversalPanel(Screen):
             ("Diagnostics", "receiver.diagnose"),
             ("Package State", "receiver.package_state"),
             ("Audit History", "receiver.audit_history"),
-            ("Update Panel", "receiver.panel_update"),
+            ("Update Panel — v%s" % PANEL_VERSION, "receiver.panel_update"),
             ("Restart GUI", "receiver.restart_gui"),
         )),
         ("Advanced", (
@@ -1624,15 +1624,23 @@ class Enigma2UniversalPanel(Screen):
                 MessageBox.TYPE_INFO,
             )
             return
+        if status == "local_newer":
+            self.session.open(
+                MessageBox,
+                "%s\\n\\nInstalled: v%s\\nRemote release: v%s\\n\\nNo update was performed because the receiver already has a newer release."
+                % (PLUGIN_NAME, current, latest),
+                MessageBox.TYPE_INFO,
+            )
+            return
         if status == "available":
             summary = (
-                "Update Enigma2 Universal Panel\\n\\n"
-                "Current version: v%s\\n"
-                "Latest version: v%s\\n\\n"
-                "The updater will validate the official installer and only update after your confirmation.\\n"
+                "%s\\n\\n"
+                "Current installed: v%s\\n"
+                "Latest available: v%s\\n\\n"
+                "The updater will validate the official installer and update only to the newer release shown above.\\n"
                 "No arbitrary URL or command is accepted.\\n\\n"
                 "Update now?"
-                % (current, latest)
+                % (PLUGIN_NAME, current, latest)
             )
             self.session.openWithCallback(
                 lambda confirmed: self._prepare_panel_update() if confirmed else None,
