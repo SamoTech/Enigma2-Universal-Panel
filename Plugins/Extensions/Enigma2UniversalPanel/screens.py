@@ -37,7 +37,8 @@ class ActionResult(Screen):
         <widget name="text" position="35,105" size="930,445" font="Regular;20" valign="top" />
         <widget name="hint" position="35,570" size="930,30" font="Regular;18" />
     </screen>
-    """
+    """        _add_scroll_actions(self, "text")
+
 
     def __init__(self, session, title, text):
         Screen.__init__(self, session)
@@ -57,6 +58,7 @@ class Dashboard(Screen):
         <widget name="hint" position="35,565" size="930,28" font="Regular;18" />
     </screen>
     """
+        _add_scroll_actions(self, "state")
 
     def __init__(self, session):
         Screen.__init__(self, session)
@@ -137,6 +139,7 @@ class ReceiverTelemetry(Screen):
         <widget name="hint" position="35,565" size="930,28" font="Regular;18" />
     </screen>
     """
+        _add_scroll_actions(self, "state")
 
     def __init__(self, session):
         Screen.__init__(self, session)
@@ -534,6 +537,7 @@ class ReceiverCompatibility(Screen):
         <widget name="hint" position="35,565" size="930,28" font="Regular;18" />
     </screen>
     """
+        _add_scroll_actions(self, "state")
 
     def __init__(self, session):
         Screen.__init__(self, session)
@@ -962,6 +966,7 @@ class PackageInstallProgress(Screen):
             {"ok": self._close_when_finished, "cancel": self._close_when_finished},
             -2,
         )
+        _add_scroll_actions(self, "state")
         self.container = eConsoleAppContainer()
         self.container.dataAvail.append(self._data_available)
         self.container.appClosed.append(self._finished)
@@ -1088,6 +1093,7 @@ class RebootProgress(Screen):
             {"ok": self._close_when_finished, "cancel": self._close_when_finished},
             -2,
         )
+        _add_scroll_actions(self, "state")
         self.container = eConsoleAppContainer()
         self.container.appClosed.append(self._finished)
         self.onClose.append(self._cleanup)
@@ -1142,6 +1148,7 @@ class RestartGuiProgress(Screen):
             {"ok": self._close_when_finished, "cancel": self._close_when_finished},
             -2,
         )
+        _add_scroll_actions(self, "state")
         self.container = eConsoleAppContainer()
         self.container.appClosed.append(self._finished)
         self.onClose.append(self._cleanup)
@@ -1184,6 +1191,7 @@ class PluginMetadata(Screen):
         <widget name="hint" position="35,565" size="930,28" font="Regular;18" />
     </screen>
     """
+        _add_scroll_actions(self, "state")
 
     def __init__(self, session, plugin_id):
         Screen.__init__(self, session)
