@@ -1311,7 +1311,7 @@ class Enigma2UniversalPanel(Screen):
     def __init__(self, session):
         Screen.__init__(self, session)
         self["title"] = Label("Enigma2 Universal Panel")
-        self["subtitle"] = Label("Native receiver UI | Store-first workflow | No web dependency")
+        self["subtitle"] = Label("Enigma2 Universal Panel v1.8.0 | Native receiver UI | No web dependency")
         self["hint"] = Label("UP/DOWN: Select    OK: Open    EXIT: Back")
         self["menu"] = MenuList([title for title, _entries in self.SECTIONS])
         self["actions"] = ActionMap(["OkCancelActions"], {"ok": self.activate, "cancel": self.close}, -2)
@@ -1559,9 +1559,9 @@ class Enigma2UniversalPanel(Screen):
                 result[key] = value
         status = result.get("status", "unknown")
         if status == "refreshed":
-            message = "Panel refresh completed.\n\nVersion: %s\n\nThe official installer redeployed the current panel release. Use Receiver → Restart GUI to activate the refreshed Python modules." % result.get("target_version", result.get("previous_version", "unknown"))
+            message = "Panel refresh completed.\n\nInstalled version: v%s\nTarget release: v%s\n\nThe official installer redeployed the current panel release. Use Receiver → Restart GUI to activate the refreshed Python modules." % (result.get("previous_version", "unknown"), result.get("target_version", "unknown"))
         elif status == "updated":
-            message = "Panel update completed.\n\nTarget version: %s\n\nUse Receiver → Restart GUI to activate the updated Python modules." % result.get("target_version", "unknown")
+            message = "Panel update completed.\n\nPrevious version: v%s\nInstalled version: v%s\n\nUse Receiver → Restart GUI to activate the updated Python modules." % (result.get("previous_version", "unknown"), result.get("target_version", "unknown"))
         elif status == "current":
             message = "The panel is already up to date.\n\nInstalled: %s\nLatest: %s" % (result.get("current_version", "unknown"), result.get("latest_version", "unknown"))
         else:
@@ -1589,8 +1589,9 @@ class Enigma2UniversalPanel(Screen):
             return
         if action_id == "receiver.panel_update":
             summary = ("Update Enigma2 Universal Panel\n\n"
-                       "Download and validate the official SamoTech installer, then "
-                       "perform the transactional panel update.\n\n"
+                       "Installed version: v1.8.0\n"
+                       "The updater will retrieve the official release version, validate it, "
+                       "then perform a transactional update.\n\n"
                        "No arbitrary URL or command is accepted.\n\nContinue?")
             self.session.openWithCallback(
                 lambda confirmed: self._prepare_panel_update() if confirmed else None,
