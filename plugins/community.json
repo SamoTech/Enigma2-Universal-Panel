@@ -121,7 +121,15 @@
       "delivery": "repository_release",
       "source_status": "verified",
       "execution_status": "blocked_no_canonical_installer_script",
-      "notes": "The canonical repository currently uses a source/package layout and publishes releases. The older biko-73 installer wrapper is treated as legacy evidence, not as the canonical source."
+      "notes": "The canonical repository currently uses a source/package layout and publishes releases. The older biko-73 installer wrapper is treated as legacy evidence, not as the canonical source.",
+      "health": {
+        "hosting_type": "github",
+        "hosting_status": "repository_reachable",
+        "maintenance_status": "active_evidence",
+        "network_reachability": "repository_reachable_installer_not_canonical",
+        "verified_repository": "kiddac/XStreamity",
+        "notes": "Current canonical repository is reachable and has September 2026 maintenance history. The older biko-73 wrapper from the supplied list is not treated as canonical."
+      }
     },
     {
       "id": "chocholousek-picons",
