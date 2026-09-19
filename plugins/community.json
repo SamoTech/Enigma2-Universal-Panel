@@ -772,7 +772,7 @@
     {
       "id": "ncam-emu",
       "name": "Ncam EMU",
-      "category": "security",
+      "category": "emu",
       "developer": "marouan / fairman / community",
       "item_type": "tool",
       "delivery": "forum_release",
@@ -813,7 +813,7 @@
     {
       "id": "oscam-emu",
       "name": "Oscam EMU",
-      "category": "security",
+      "category": "emu",
       "developer": "fairman / community",
       "item_type": "tool",
       "delivery": "mixed_distribution",

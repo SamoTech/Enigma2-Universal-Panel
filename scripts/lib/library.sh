@@ -108,14 +108,13 @@ for entry in catalog.get("plugins") or []:
     })
 
 for entry in community.get("entries") or []:
-    # Store shows only independently verified current sources or explicitly admitted sources.
-    # Metadata-only/unverified forum claims stay out of the user-facing Store.
+    # Show EMU metadata even when its installer/source is not admitted; keep it blocked.
     admission = admitted_map.get(entry.get("id"))
-    if not admission and entry.get("source_status") not in ("verified", "current_verified"):
-        continue
-    health = entry.get("health") or {}
     category_original = entry.get("category", "unknown")
     category = category_original if category_original in canonical_categories else category_aliases.get(category_original, "utilities")
+    if not admission and entry.get("source_status") not in ("verified", "current_verified") and category != "emu":
+        continue
+    health = entry.get("health") or {}
     items.append({
         "id": entry.get("id"),
         "item_type": entry.get("item_type", "plugin"),
@@ -128,8 +127,8 @@ for entry in community.get("entries") or []:
         "source_type": entry.get("delivery", "unknown"),
         "status": entry.get("execution_status", "blocked"),
         "availability": "community_controlled" if (admission or entry.get("source_status") in ("verified", "current_verified")) else "community_blocked",
-        "installable": False,
-        "updatable": False,
+        "installable": bool(admission),
+        "updatable": bool(admission),
         "removable": False,
         "compatibility_confidence": "unknown",
         "repository": entry.get("repository"),
@@ -141,9 +140,6 @@ for entry in community.get("entries") or []:
         "installer_version": entry.get("installer_version") or entry.get("release_version"),
         "latest_version": entry.get("latest_version") or entry.get("release_version") or entry.get("installer_version") or "latest source",
         "source_ref": entry.get("source_ref"),
-        "installable": bool(admission),
-        "updatable": bool(admission),
-        "removable": False,
         "community_admitted": bool(admission),
         "requires_gui_restart": bool((admitted_map.get(entry.get("id")) or {}).get("requires_gui_restart", False)),
         "requires_reboot": bool((admitted_map.get(entry.get("id")) or {}).get("requires_reboot", False)),
