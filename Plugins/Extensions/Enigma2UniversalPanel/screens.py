@@ -158,6 +158,145 @@ class ReceiverTelemetry(Screen):
         self["state"].setText("\n".join(lines))
 
 
+class PluginLibrary(Screen):
+    skin = """
+    <screen name="PluginLibrary" position="center,center" size="1000,650" title="Enigma2 Plugin Library">
+        <widget name="title" position="35,20" size="930,45" font="Regular;30" />
+        <widget name="menu" position="35,80" size="930,365" itemHeight="42" font="Regular;21" />
+        <widget name="details" position="35,455" size="930,100" font="Regular;18" valign="top" />
+        <widget name="hint" position="35,575" size="930,35" font="Regular;19" />
+    </screen>
+    """
+
+    def __init__(self, session):
+        Screen.__init__(self, session)
+        self["title"] = Label("Plugin Library")
+        self["menu"] = MenuList([])
+        self["details"] = Label("Loading plugin library...")
+        self["hint"] = Label("OK: Details    GREEN: Refresh    BLUE: Search    EXIT: Close")
+        self["actions"] = ActionMap(
+            ["OkCancelActions", "ColorActions"],
+            {"ok": self.show_details, "cancel": self.close, "green": self.refresh, "blue": self.search},
+            -2,
+        )
+        self.entries = []
+        self.filtered_entries = []
+        self.search_term = ""
+        self.onLayoutFinish.append(self.refresh)
+        self["menu"].onSelectionChanged.append(self._selection_changed)
+
+    def refresh(self):
+        try:
+            code, output = run_action("plugin.library")
+        except Exception as exc:
+            self.entries = []
+            self.filtered_entries = []
+            self["menu"].setList([])
+            self["details"].setText("Plugin library request rejected.\n%s" % exc)
+            return
+        if code != 0:
+            self.entries = []
+            self.filtered_entries = []
+            self["menu"].setList([])
+            self["details"].setText("Plugin library unavailable.\n%s" % (output or "unknown"))
+            return
+        try:
+            data = json.loads(output)
+            self.entries = data.get("entries") or []
+        except (TypeError, ValueError, AttributeError):
+            self.entries = []
+            self.filtered_entries = []
+            self["menu"].setList([])
+            self["details"].setText("Invalid plugin library response.")
+            return
+        self._apply_filter()
+
+    def _apply_filter(self):
+        term = self.search_term.lower().strip()
+        if term:
+            self.filtered_entries = [
+                entry for entry in self.entries
+                if term in str(entry.get("name", "")).lower()
+                or term in str(entry.get("id", "")).lower()
+                or term in str(entry.get("category", "")).lower()
+                or term in str(entry.get("author", "")).lower()
+            ]
+        else:
+            self.filtered_entries = list(self.entries)
+        choices = []
+        for entry in self.filtered_entries:
+            source = "Feed" if entry.get("source") == "receiver_feed" else "Community"
+            availability = entry.get("availability", "unknown")
+            choices.append(
+                "%s  [%s | %s]"
+                % (entry.get("name", "unknown"), source, availability)
+            )
+        self["menu"].setList(choices)
+        self._selection_changed()
+
+    def search(self):
+        self.session.openWithCallback(self._search_done, InputBox, title="Search Plugin Library", text=self.search_term)
+
+    def _search_done(self, value):
+        if value is None:
+            return
+        self.search_term = value.strip()
+        self._apply_filter()
+
+    def _selected_entry(self):
+        index = self["menu"].getSelectionIndex()
+        if index is None or index < 0 or index >= len(self.filtered_entries):
+            return None
+        return self.filtered_entries[index]
+
+    def _selection_changed(self):
+        entry = self._selected_entry()
+        if not entry:
+            self["details"].setText("No plugin selected.")
+            return
+        source = "Receiver feed" if entry.get("source") == "receiver_feed" else "Community source"
+        self["details"].setText(
+            "%s | %s | %s\n%s | %s"
+            % (
+                entry.get("category", "unknown"),
+                entry.get("author", "unknown"),
+                source,
+                entry.get("status", "unknown"),
+                entry.get("compatibility_confidence", "unknown"),
+            )
+        )
+
+    def show_details(self):
+        entry = self._selected_entry()
+        if not entry:
+            return
+        lines = [
+            "Name: %s" % entry.get("name", "unknown"),
+            "Plugin ID: %s" % entry.get("id", "unknown"),
+            "Category: %s" % entry.get("category", "unknown"),
+            "Subcategory: %s" % entry.get("subcategory", "unknown"),
+            "Author: %s" % entry.get("author", "unknown"),
+            "Source: %s" % entry.get("source", "unknown"),
+            "Availability: %s" % entry.get("availability", "unknown"),
+            "Status: %s" % entry.get("status", "unknown"),
+            "Compatibility: %s" % entry.get("compatibility_confidence", "unknown"),
+            "Installable: %s" % entry.get("installable", False),
+            "Updatable: %s" % entry.get("updatable", False),
+            "Removable: %s" % entry.get("removable", False),
+            "Repository: %s" % entry.get("repository", "unknown"),
+        ]
+        if entry.get("source") == "community":
+            lines.extend([
+                "Network: %s" % entry.get("network_reachability", "unknown"),
+                "Maintenance: %s" % entry.get("maintenance_status", "unknown"),
+                "",
+                "Community execution is currently blocked until source admission is complete.",
+            ])
+            self.session.open(ActionResult, "Plugin Library — Community Entry", "\n".join(lines))
+            return
+
+        self.session.open(PluginMetadata, entry.get("id", ""))
+
 class CommunityInstallerCatalog(Screen):
     skin = """
     <screen name="CommunityInstallerCatalog" position="center,center" size="1000,650" title="Enigma2 Universal Panel">
@@ -440,8 +579,9 @@ class Enigma2UniversalPanel(Screen):
 
     ENTRIES = (
         ("Dashboard", "dashboard"),
+        ("Plugin Library", "plugin.library"),
         ("Package Browser", "package-browser"),
-        ("Community Installers", "community.catalog"),
+        ("Community Sources", "community.catalog"),
         ("Receiver Telemetry", "receiver.telemetry"),
         ("Resolve Plugin", "plugin.resolve"),
         ("Preview Plugin", "plugin.preview"),
