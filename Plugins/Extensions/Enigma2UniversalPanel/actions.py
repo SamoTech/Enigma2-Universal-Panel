@@ -7,6 +7,7 @@ import subprocess
 ACTIONS = {
     "receiver.status": {"command": ("/usr/local/bin/e2panel", "status"), "risk": "low", "confirmation": False},
     "receiver.capabilities": {"command": ("/usr/local/bin/e2panel", "capabilities"), "risk": "low", "confirmation": False},
+    "receiver.compatibility": {"command": ("/usr/local/bin/e2panel", "compatibility"), "risk": "low", "confirmation": False},
     "receiver.diagnose": {"command": ("/usr/local/bin/e2panel", "diagnose"), "risk": "low", "confirmation": False},
     "receiver.package_state": {"command": ("/usr/local/bin/e2panel", "package-state"), "risk": "low", "confirmation": False},
     "receiver.telemetry": {"command": ("/usr/local/bin/e2panel", "telemetry"), "risk": "low", "confirmation": False},
@@ -39,7 +40,15 @@ def build_action_command(action_id, params=None):
         raise ValueError("action parameters must be an object")
 
     command = list(action["command"])
-    if action_id in ("plugin.resolve", "plugin.preview", "plugin.info", "plugin.install", "plugin.update", "plugin.remove_preview", "plugin.remove"):
+    if action_id in (
+        "plugin.resolve",
+        "plugin.preview",
+        "plugin.info",
+        "plugin.install",
+        "plugin.update",
+        "plugin.remove_preview",
+        "plugin.remove",
+    ):
         if set(params) != {"plugin_id"}:
             raise ValueError("plugin_id is required")
         command.append(_validate_plugin_id(params["plugin_id"]))
@@ -48,15 +57,17 @@ def build_action_command(action_id, params=None):
     return tuple(command)
 
 
-def run_action(action_id, params=None):
-    command = build_action_command(action_id, params)
-
-    result = subprocess.run(
+def _run(command):
+    process = subprocess.Popen(
         command,
         shell=False,
-        check=False,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
-        text=True,
+        universal_newlines=True,
     )
-    return result.returncode, result.stdout.strip()
+    stdout, _ = process.communicate()
+    return process.returncode, (stdout or "").strip()
+
+
+def run_action(action_id, params=None):
+    return _run(build_action_command(action_id, params))
