@@ -174,7 +174,7 @@ for repeated in {"ajpanel","aio-panel","e2iplayer","multi-stalker","xstreamity",
 assert any(x["id"] == "ajpanel" and x["source_status"] == "verified" for x in d["entries"])
 assert any(x["id"] == "aio-panel" and x["execution_status"] == "blocked_unverified_source" for x in d["entries"])
 assert any(x["id"] == "estalker" and x["source_status"] == "verified" for x in d["entries"])
-assert sum(1 for x in d["entries"] if x["execution_status"] == "blocked_metadata_only") == 27
+assert sum(1 for x in d["entries"] if x["execution_status"] == "blocked_metadata_only") == 28
 PY
   pass "community installer registry"
 
