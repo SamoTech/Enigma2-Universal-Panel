@@ -136,6 +136,7 @@ Current slice:
 - plugin resolution by normalized plugin ID
 - compatibility/dependency installation preview
 - strict GUI action parameter validation
+- evidence-backed receiver telemetry
 
 Acceptance for current slice:
 - GUI package inventory is backed by the existing normalized package schema.
@@ -150,13 +151,14 @@ Acceptance for current slice:
 - The receiver-side install action performs post-install verification and writes an audit record.
 - Unknown/unsupported/partial compatibility remains blocked.
 - No arbitrary package-manager arguments or feed URLs are accepted.
+- Telemetry is sourced explicitly by the receiver runtime before the `telemetry` command is dispatched.
 
 Remaining Phase 1.4 work:
 
 - plugin metadata browsing — implemented
 - asynchronous update flow with confirmation — implemented
 - asynchronous remove flow with confirmation — implemented
-- richer audit-history display
+- richer audit-history display — next target
 - GUI restart handling when required by verified metadata
 
 ## Phase 2 — Core receiver management
@@ -283,12 +285,14 @@ Repository binary-hosting policy remains unchanged.
 6. Native GUI test/harness coverage.
 7. Native asynchronous package mutation with confirmation/postcondition/audit.
 8. Native receiver-side real-device validation.
-9. Core management screens.
-10. Channels/bouquets/EPG.
-11. Settings and backup/recovery.
-12. Local automation.
-13. Optional remote control plane.
-14. Optional web/fleet layer.
+9. Richer audit-history display.
+10. GUI restart handling when required by verified metadata.
+11. Core management screens.
+12. Channels/bouquets/EPG.
+13. Settings and backup/recovery.
+14. Local automation.
+15. Optional remote control plane.
+16. Optional web/fleet layer.
 
 ## Definition of done for the native GUI milestone
 
