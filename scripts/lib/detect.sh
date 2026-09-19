@@ -192,7 +192,7 @@ detect_image() {
     *openeight*) E2_IMAGE=openeight; E2_IMAGE_FAMILY=oe-alliance ;;
     *openld*) E2_IMAGE=openld; E2_IMAGE_FAMILY=oe-alliance ;;
     *openpli*) E2_IMAGE=openpli; E2_IMAGE_FAMILY=openpli ;;
-    *dreamos*|*dreambox*|*dream multimedia*) E2_IMAGE=dreamos; E2_IMAGE_FAMILY=dreamos ;;
+    *dreamos*|*dreambox*|*"dream multimedia"*) E2_IMAGE=dreamos; E2_IMAGE_FAMILY=dreamos ;;
     *newnigma2*) E2_IMAGE=newnigma2; E2_IMAGE_FAMILY=dreambox-deb ;;
     *merlin*) E2_IMAGE=merlin; E2_IMAGE_FAMILY=dreambox-deb ;;
     *vti*) E2_IMAGE=vti; E2_IMAGE_FAMILY=vti ;;
