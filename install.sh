@@ -6,7 +6,7 @@ DEST="/usr/lib/enigma2-universal-panel"
 BIN="/usr/local/bin/e2panel"
 [ "$(id -u)" = 0 ] || { echo "Run as root."; exit 1; }
 command -v wget >/dev/null 2>&1 || command -v curl >/dev/null 2>&1 || { echo "wget or curl is required."; exit 1; }
-mkdir -p "$DEST/scripts/lib" "$DEST/config" "$DEST/plugins" "$DEST/docs/discovery" "$DEST/docs/api" "$DEST/docs/native-gui" "$DEST/channels" "$DEST/settings" "$DEST/packages"
+mkdir -p "$DEST/scripts/lib" "$DEST/config" "$DEST/plugins" "$DEST/docs/discovery" "$DEST/docs/api" "$DEST/docs/native-gui" "$DEST/docs/compatibility" "$DEST/channels" "$DEST/settings" "$DEST/packages"
 fetch() {
   url="$REPO/$1"; out="$DEST/$1"; mkdir -p "$(dirname "$out")"
   if command -v wget >/dev/null 2>&1; then wget -q -O "$out" "$url"; else curl -fsSL "$url" -o "$out"; fi
@@ -15,6 +15,7 @@ fetch panel.sh
 fetch scripts/lib/common.sh
 fetch scripts/lib/detect.sh
 fetch scripts/lib/compat.sh
+fetch scripts/lib/compatibility.sh
 fetch scripts/lib/actions.sh
 fetch scripts/lib/plugins.sh
 fetch scripts/lib/plugin-resolver.sh
@@ -30,6 +31,7 @@ fetch config/compatibility.json
 fetch config/plugin-sources.json
 fetch plugins/catalog.json
 fetch plugins/community.json
+fetch plugins/categories.json
 fetch plugins/compatibility.json
 fetch plugins/sources.json
 fetch channels/schema.json
@@ -38,6 +40,7 @@ fetch settings/schema.json
 fetch settings/categories.json
 fetch packages/schema.json
 fetch docs/discovery/PLUGIN_INSTALLATION.md
+fetch docs/compatibility/PLATFORM_MATRIX.md
 fetch docs/discovery/PACKAGE_INTELLIGENCE.md
 fetch docs/native-gui/PLUGIN_PACKAGE.md
 PLUGIN_ROOT="/usr/lib/enigma2/python/Plugins/Extensions"
