@@ -14,15 +14,19 @@ from .audit_history import AuditHistory
 
 class ActionResult(Screen):
     skin = """
-    <screen name="ActionResult" position="center,center" size="900,520" title="Enigma2 Universal Panel">
-        <widget name="text" position="30,30" size="840,430" font="Regular;22" valign="top" />
-        <widget name="hint" position="30,465" size="840,35" font="Regular;20" />
+    <screen name="ActionResult" position="center,center" size="1000,620" title="Enigma2 Universal Panel">
+        <widget name="title" position="35,20" size="930,42" font="Regular;30" />
+        <widget name="subtitle" position="35,62" size="930,30" font="Regular;18" />
+        <widget name="text" position="35,105" size="930,445" font="Regular;20" valign="top" />
+        <widget name="hint" position="35,570" size="930,30" font="Regular;18" />
     </screen>
     """
 
     def __init__(self, session, title, text):
         Screen.__init__(self, session)
-        self["text"] = Label(title + "\n\n" + (text or "No output."))
+        self["title"] = Label(title)
+        self["subtitle"] = Label("Receiver-local result")
+        self["text"] = Label(text or "No output.")
         self["hint"] = Label("OK / EXIT: Back")
         self["actions"] = ActionMap(["OkCancelActions"], {"ok": self.close, "cancel": self.close}, -2)
 
@@ -30,17 +34,19 @@ class ActionResult(Screen):
 class Dashboard(Screen):
     skin = """
     <screen name="Dashboard" position="center,center" size="1000,650" title="Enigma2 Universal Panel">
-        <widget name="title" position="35,20" size="930,45" font="Regular;30" />
-        <widget name="state" position="35,80" size="930,450" font="Regular;22" valign="top" />
-        <widget name="hint" position="35,555" size="930,35" font="Regular;20" />
+        <widget name="title" position="35,20" size="930,42" font="Regular;30" />
+        <widget name="summary" position="35,62" size="930,30" font="Regular;18" />
+        <widget name="state" position="35,102" size="930,428" font="Regular;21" valign="top" />
+        <widget name="hint" position="35,565" size="930,28" font="Regular;18" />
     </screen>
     """
 
     def __init__(self, session):
         Screen.__init__(self, session)
-        self["title"] = Label("Enigma2 Universal Panel — Dashboard")
+        self["title"] = Label("Dashboard")
+        self["summary"] = Label("Receiver-local system status")
         self["state"] = Label("Loading receiver state...")
-        self["hint"] = Label("GREEN: Refresh    EXIT: Close")
+        self["hint"] = Label("GREEN: Refresh    EXIT: Back")
         self["actions"] = ActionMap(["OkCancelActions", "ColorActions"], {"cancel": self.close, "green": self.refresh}, -2)
         self.onLayoutFinish.append(self.refresh)
 
@@ -170,19 +176,29 @@ class ReceiverTelemetry(Screen):
 class PluginLibrary(Screen):
     skin = """
     <screen name="PluginLibrary" position="center,center" size="1000,650" title="Enigma2 Plugin Library">
-        <widget name="title" position="35,20" size="930,45" font="Regular;30" />
-        <widget name="menu" position="35,80" size="930,365" itemHeight="42" font="Regular;21" />
-        <widget name="details" position="35,455" size="930,100" font="Regular;18" valign="top" />
-        <widget name="hint" position="35,575" size="930,35" font="Regular;19" />
+        <widget name="title" position="35,20" size="930,42" font="Regular;30" />
+        <widget name="summary" position="35,62" size="930,30" font="Regular;18" />
+        <widget name="menu" position="35,100" size="930,340" itemHeight="44" font="Regular;21" />
+        <widget name="details" position="35,455" size="930,82" font="Regular;19" valign="top" />
+        <widget name="key_red" position="35,565" size="175,30" font="Regular;18" foregroundColor="#f24b4b" />
+        <widget name="key_green" position="210,565" size="175,30" font="Regular;18" foregroundColor="#4bd66f" />
+        <widget name="key_yellow" position="385,565" size="175,30" font="Regular;18" foregroundColor="#f3d45c" />
+        <widget name="key_blue" position="560,565" size="175,30" font="Regular;18" foregroundColor="#4da6ff" />
+        <widget name="hint" position="735,565" size="230,30" font="Regular;18" halign="right" />
     </screen>
     """
 
     def __init__(self, session):
         Screen.__init__(self, session)
-        self["title"] = Label("Plugin Library — All Categories")
+        self["title"] = Label("Plugin Library")
+        self["summary"] = Label("Loading library...")
         self["menu"] = MenuList([])
         self["details"] = Label("Loading plugin library...")
-        self["hint"] = Label("OK: Details    GREEN: Install    RED: Category    BLUE: Search    YELLOW: Refresh    EXIT: Close")
+        self["key_red"] = Label("RED: Category")
+        self["key_green"] = Label("GREEN: Install")
+        self["key_yellow"] = Label("YELLOW: Refresh")
+        self["key_blue"] = Label("BLUE: Search")
+        self["hint"] = Label("OK: Details  |  EXIT: Back")
         self["actions"] = ActionMap(
             ["OkCancelActions", "ColorActions"],
             {"ok": self.show_details, "cancel": self.close, "green": self.install_selected, "yellow": self.refresh, "blue": self.search, "red": self.cycle_category},
@@ -259,12 +275,19 @@ class PluginLibrary(Screen):
         choices = []
         for entry in self.filtered_entries:
             source = "Feed" if entry.get("source") == "receiver_feed" else "Community"
-            item_type = entry.get("item_type", "plugin")
             availability = entry.get("availability", "unknown")
             choices.append(
-                "%s  [%s | %s | %s]"
-                % (entry.get("name", "unknown"), item_type, source, availability)
+                "%s  [%s | %s]"
+                % (entry.get("name", "unknown"), source, availability)
             )
+        self["summary"].setText(
+            "%d result(s) | Category: %s%s"
+            % (
+                len(self.filtered_entries),
+                self._category_name(),
+                " | Search: %s" % self.search_term if self.search_term else "",
+            )
+        )
         self["menu"].setList(choices)
         self._selection_changed()
 
@@ -918,16 +941,18 @@ class PluginMetadata(Screen):
 
 class PanelSectionMenu(Screen):
     skin = """
-    <screen name="PanelSectionMenu" position="center,center" size="900,600" title="Enigma2 Universal Panel">
-        <widget name="menu" position="35,70" size="830,420" itemHeight="50" font="Regular;26" />
-        <widget name="title" position="35,20" size="830,40" font="Regular;30" />
-        <widget name="hint" position="35,520" size="830,35" font="Regular;20" />
+    <screen name="PanelSectionMenu" position="center,center" size="1000,620" title="Enigma2 Universal Panel">
+        <widget name="title" position="35,20" size="930,42" font="Regular;30" />
+        <widget name="subtitle" position="35,62" size="930,30" font="Regular;18" />
+        <widget name="menu" position="35,105" size="930,405" itemHeight="48" font="Regular;25" />
+        <widget name="hint" position="35,540" size="930,30" font="Regular;18" />
     </screen>
     """
 
     def __init__(self, session, title, entries, controller):
         Screen.__init__(self, session)
-        self["title"] = Label(title)
+        self["title"] = Label(title.title())
+        self["subtitle"] = Label("Select an operation with UP/DOWN, then press OK")
         self["hint"] = Label("UP/DOWN: Select    OK: Open    EXIT: Back")
         self.entries = entries
         self.controller = controller
@@ -944,22 +969,23 @@ class PanelSectionMenu(Screen):
 
 class Enigma2UniversalPanel(Screen):
     skin = """
-    <screen name="Enigma2UniversalPanel" position="center,center" size="900,600" title="Enigma2 Universal Panel">
-        <widget name="menu" position="35,70" size="830,420" itemHeight="50" font="Regular;26" />
-        <widget name="title" position="35,20" size="830,40" font="Regular;30" />
-        <widget name="hint" position="35,520" size="830,35" font="Regular;20" />
+    <screen name="Enigma2UniversalPanel" position="center,center" size="1000,620" title="Enigma2 Universal Panel">
+        <widget name="title" position="35,20" size="930,42" font="Regular;30" />
+        <widget name="subtitle" position="35,62" size="930,30" font="Regular;18" />
+        <widget name="menu" position="35,105" size="930,405" itemHeight="48" font="Regular;25" />
+        <widget name="hint" position="35,540" size="930,30" font="Regular;18" />
     </screen>
     """
 
     SECTIONS = (
-        ("STORE", (
+        ("Store", (
             ("Plugin Library", "plugin.library"),
             ("Community Sources", "community.catalog"),
             ("Install Plugin", "plugin.install"),
             ("Update Plugin", "plugin.update"),
             ("Remove Plugin", "plugin.remove"),
         )),
-        ("RECEIVER", (
+        ("Receiver", (
             ("Dashboard", "dashboard"),
             ("Compatibility", "receiver.compatibility"),
             ("Reboot Status", "receiver.reboot_status"),
@@ -967,13 +993,13 @@ class Enigma2UniversalPanel(Screen):
             ("Status", "receiver.status"),
             ("Capabilities", "receiver.capabilities"),
         )),
-        ("MANAGEMENT", (
+        ("Management", (
             ("Package Browser", "package-browser"),
             ("Diagnostics", "receiver.diagnose"),
             ("Package State", "receiver.package_state"),
             ("Audit History", "receiver.audit_history"),
         )),
-        ("ADVANCED", (
+        ("Advanced", (
             ("Resolve Plugin", "plugin.resolve"),
             ("Preview Plugin", "plugin.preview"),
             ("Plugin Metadata", "plugin.info"),
@@ -983,7 +1009,8 @@ class Enigma2UniversalPanel(Screen):
     def __init__(self, session):
         Screen.__init__(self, session)
         self["title"] = Label("Enigma2 Universal Panel")
-        self["hint"] = Label("UP/DOWN: Select    OK: Open    EXIT: Close")
+        self["subtitle"] = Label("Native receiver UI | Store-first workflow | No web dependency")
+        self["hint"] = Label("UP/DOWN: Select    OK: Open    EXIT: Back")
         self["menu"] = MenuList([title for title, _entries in self.SECTIONS])
         self["actions"] = ActionMap(["OkCancelActions"], {"ok": self.activate, "cancel": self.close}, -2)
 
