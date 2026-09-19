@@ -122,7 +122,7 @@ for entry in community.get("entries") or []:
         "source": "community",
         "source_type": entry.get("delivery", "unknown"),
         "status": entry.get("execution_status", "blocked"),
-        "availability": "community_blocked" if str(entry.get("execution_status", "")).startswith("blocked") else "community_controlled",
+        "availability": "community_controlled" if (admission or entry.get("source_status") in ("verified", "current_verified")) else "community_blocked",
         "installable": False,
         "updatable": False,
         "removable": False,
