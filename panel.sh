@@ -3,6 +3,7 @@ BASE="/usr/lib/enigma2-universal-panel"
 . "$BASE/scripts/lib/common.sh"
 . "$BASE/scripts/lib/detect.sh"
 . "$BASE/scripts/lib/compat.sh"
+. "$BASE/scripts/lib/compatibility.sh"
 . "$BASE/scripts/lib/plugins.sh"
 . "$BASE/scripts/lib/library.sh"
 . "$BASE/scripts/lib/plugin-resolver.sh"
@@ -15,7 +16,7 @@ usage() {
   cat <<EOF
 Enigma2 Universal Panel $PANEL_VERSION
 Usage:
-  e2panel status | capabilities | diagnose
+  e2panel status | capabilities | compatibility | diagnose
   e2panel package-state
   e2panel audit-history
   e2panel plugin-source-status | plugin-refresh | plugin-list [pattern]
@@ -30,6 +31,7 @@ Usage:
   e2panel plugin-remove-preview <plugin-id>
   e2panel plugin-remove-id <plugin-id>
   e2panel telemetry
+  e2panel compatibility
   e2panel community-catalog
   e2panel plugin-library
   e2panel restart-enigma2 | restart-gui
@@ -62,6 +64,7 @@ case "$cmd" in
   package-state) plugin_package_state;;
   audit-history) audit_history;;
   telemetry) print_telemetry;;
+  compatibility) print_compatibility;;
   community-catalog) community_catalog;;
   plugin-library) plugin_library;;
   plugin-source-status) plugin_source_status;; plugin-refresh) plugin_refresh_sources;;
