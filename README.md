@@ -59,7 +59,14 @@ The existing shell/CLI runtime remains a receiver-side foundation and diagnostic
 
 ## Native Plugin Library / Store target
 
-The installed plugin will provide a store-like library as its primary screen:
+The installed plugin is organized into four native top-level sections:
+
+- STORE — Plugin Library, Community Sources, Install/Update/Remove
+- RECEIVER — Dashboard, Compatibility, Telemetry, Status, Capabilities
+- MANAGEMENT — Packages and Diagnostics
+- ADVANCED — Resolver, Preview and Metadata
+
+The Store remains the primary user journey. The installed plugin will provide a store-like library as its primary screen:
 
 - Plugin Library / Store
 - Store categories: System, Network, Remote Access, Media & Streaming, EPG, Channels & Bouquets, Recording & Timeshift, Skins & Display, Language & Subtitles, Audio, Multiboot & Recovery, Monitoring & Diagnostics, Security & Access, Religious & Community, Utilities
