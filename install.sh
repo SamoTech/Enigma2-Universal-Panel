@@ -29,6 +29,7 @@ fetch config/receivers.json
 fetch config/compatibility.json
 fetch config/plugin-sources.json
 fetch plugins/catalog.json
+fetch plugins/community.json
 fetch plugins/compatibility.json
 fetch plugins/sources.json
 fetch channels/schema.json
