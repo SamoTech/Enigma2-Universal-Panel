@@ -694,6 +694,32 @@ class PackageInstallProgress(Screen):
             self["state"].setText(text)
             self["hint"].setText("OK / EXIT: Close")
 
+    def _offer_reboot(self):
+        self.session.openWithCallback(
+            self._reboot_confirmed,
+            MessageBox,
+            "The %s operation completed successfully.\n\n"
+            "Verified plugin metadata requires a receiver reboot.\n"
+            "The reboot intent will be persisted and verified after the receiver starts again.\n\n"
+            "Reboot now?"
+            % self.operation,
+            MessageBox.TYPE_YESNO,
+        )
+
+    def _reboot_confirmed(self, confirmed):
+        if not confirmed:
+            self["hint"].setText("OK / EXIT: Close — reboot deferred")
+            return
+        try:
+            command = build_action_command(
+                "receiver.reboot_for_plugin",
+                {"plugin_id": self.plugin_id},
+            )
+        except Exception as exc:
+            self["hint"].setText("Reboot action rejected: %s" % exc)
+            return
+        self.session.open(RebootProgress, command, self.plugin_id)
+
     def _offer_gui_restart(self):
         self.session.openWithCallback(
             self._restart_gui_confirmed,
