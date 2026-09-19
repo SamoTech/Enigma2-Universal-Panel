@@ -30,11 +30,13 @@ assert '"receiver.status"' in p
 assert '"plugin.resolve"' in p
 assert '"plugin.preview"' in p
 assert '"plugin.install"' in p
+assert '"plugin.info"' in p
 assert '"confirmation": True' in p
 assert 'build_action_command' in p
 assert 'shell=False' in p
 assert 'eConsoleAppContainer' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'PackageInstallProgress' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'PluginMetadata' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'MessageBox.TYPE_YESNO' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert '"ok": self._close_when_finished' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert '"cancel": self._close_when_finished' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
@@ -51,7 +53,7 @@ for value in ("openwebif", "auto.bouquets-maker", "epg_import_2"):
 assert mod.build_action_command("plugin.install", {"plugin_id": "openwebif"}) == (
     "/usr/local/bin/e2panel", "plugin-install-id", "openwebif"
 )
-for action_id in ("plugin.resolve", "plugin.preview", "plugin.install"):
+for action_id in ("plugin.resolve", "plugin.preview", "plugin.info", "plugin.install"):
     for value in ("", "OpenWebif", "openwebif;rm", "../../etc/passwd", "openwebif --confirm"):
         try:
             mod.build_action_command(action_id, {"plugin_id": value})
