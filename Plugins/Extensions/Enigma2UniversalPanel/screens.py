@@ -12,6 +12,7 @@ from Screens.Screen import Screen
 from .actions import build_action_command, run_action
 from .debug import DebugActionMap, DebugMenuList, log
 from .audit_history import AuditHistory
+from .version import PANEL_VERSION
 
 
 def _add_scroll_actions(screen, widget_name):
@@ -1365,7 +1366,7 @@ class Enigma2UniversalPanel(Screen):
 
     def __init__(self, session):
         Screen.__init__(self, session)
-        self["title"] = Label("Enigma2 Universal Panel v1.10.0")
+        self["title"] = Label("Enigma2 Universal Panel v%s" % PANEL_VERSION)
         self["subtitle"] = Label("Native receiver UI | Store-first workflow | No web dependency")
         self["hint"] = Label("UP/DOWN: Select    OK: Open    EXIT: Back")
         self["menu"] = MenuList([title for title, _entries in self.SECTIONS])
@@ -1598,6 +1599,48 @@ class Enigma2UniversalPanel(Screen):
         title, entries = self.SECTIONS[index]
         self.session.open(PanelSectionMenu, title, entries, self)
 
+    def _check_panel_update(self):
+        try:
+            code, output = run_action("receiver.panel_update_check")
+        except Exception as exc:
+            self.session.open(MessageBox, "Update check failed.\\n\\n%s" % exc, MessageBox.TYPE_ERROR)
+            return
+        if code != 0:
+            self.session.open(MessageBox, "Update check failed.\\n\\n%s" % (output or "unknown error"), MessageBox.TYPE_ERROR)
+            return
+        result = {}
+        for line in (output or "").splitlines():
+            if "=" in line:
+                key, value = line.split("=", 1)
+                result[key] = value
+        status = result.get("status", "unknown")
+        current = result.get("current_version", "unknown")
+        latest = result.get("latest_version", "unknown")
+        if status == "current":
+            self.session.open(
+                MessageBox,
+                "Enigma2 Universal Panel\\n\\nCurrent: v%s\\nLatest: v%s\\n\\nThe panel is already up to date."
+                % (current, latest),
+                MessageBox.TYPE_INFO,
+            )
+            return
+        if status == "available":
+            summary = (
+                "Update Enigma2 Universal Panel\\n\\n"
+                "Current version: v%s\\n"
+                "Latest version: v%s\\n\\n"
+                "The updater will validate the official installer and only update after your confirmation.\\n"
+                "No arbitrary URL or command is accepted.\\n\\n"
+                "Update now?"
+                % (current, latest)
+            )
+            self.session.openWithCallback(
+                lambda confirmed: self._prepare_panel_update() if confirmed else None,
+                MessageBox, summary, MessageBox.TYPE_YESNO,
+            )
+            return
+        self.session.open(MessageBox, "Unexpected update-check result.\\n\\n%s" % (output or "unknown"), MessageBox.TYPE_ERROR)
+
     def _prepare_panel_update(self):
         try:
             code, output = run_action("receiver.panel_update")
@@ -1643,15 +1686,7 @@ class Enigma2UniversalPanel(Screen):
             self.session.open(AuditHistory)
             return
         if action_id == "receiver.panel_update":
-            summary = ("Update Enigma2 Universal Panel\n\n"
-                       "Installed version: v1.8.0\n"
-                       "The updater will retrieve the official release version, validate it, "
-                       "then perform a transactional update.\n\n"
-                       "No arbitrary URL or command is accepted.\n\nContinue?")
-            self.session.openWithCallback(
-                lambda confirmed: self._prepare_panel_update() if confirmed else None,
-                MessageBox, summary, MessageBox.TYPE_YESNO,
-            )
+            self._check_panel_update()
             return
         if action_id == "receiver.reboot_status":
             code, output = run_action(action_id)
