@@ -64,6 +64,7 @@ assert 'Receiver Telemetry' in Path("Plugins/Extensions/Enigma2UniversalPanel/sc
 assert 'class ReceiverTelemetry' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'Community Installers' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'class CommunityInstallerCatalog' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'network_reachability' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 resolver = Path("scripts/lib/plugin-resolver.sh").read_text()
 panel = Path("panel.sh").read_text()
 assert "plugin_update_id()" in resolver
