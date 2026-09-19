@@ -8,12 +8,14 @@ pass() { echo "PASS: $1"; }
 [ -f Plugins/Extensions/Enigma2UniversalPanel/screens.py ] || fail "screens.py missing"
 [ -f Plugins/Extensions/Enigma2UniversalPanel/audit_history.py ] || fail "audit_history.py missing"
 [ -f Plugins/Extensions/Enigma2UniversalPanel/actions.py ] || fail "actions.py missing"
+[ -f Plugins/Extensions/Enigma2UniversalPanel/version.py ] || fail "version.py missing"
 
 command -v python3 >/dev/null 2>&1 || fail "python3 unavailable"
 python3 -m py_compile \
   Plugins/Extensions/Enigma2UniversalPanel/__init__.py \
   Plugins/Extensions/Enigma2UniversalPanel/plugin.py \
   Plugins/Extensions/Enigma2UniversalPanel/actions.py \
+  Plugins/Extensions/Enigma2UniversalPanel/version.py \
   Plugins/Extensions/Enigma2UniversalPanel/audit_history.py \
   Plugins/Extensions/Enigma2UniversalPanel/screens.py
 
@@ -62,6 +64,7 @@ p = Path("Plugins/Extensions/Enigma2UniversalPanel/actions.py").read_text()
 screens = Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert "ACTIONS =" in p
 assert '"receiver.status"' in p
+assert '"receiver.panel_update_check"' in p
 assert '"receiver.package_state"' in p
 assert '"receiver.package_info"' in p
 assert '"community.preview"' in p
