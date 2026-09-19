@@ -173,10 +173,10 @@ class PluginLibrary(Screen):
         self["title"] = Label("Plugin Library")
         self["menu"] = MenuList([])
         self["details"] = Label("Loading plugin library...")
-        self["hint"] = Label("OK: Details    GREEN: Refresh    BLUE: Search    EXIT: Close")
+        self["hint"] = Label("OK: Details    GREEN: Install    YELLOW: Refresh    BLUE: Search    EXIT: Close")
         self["actions"] = ActionMap(
             ["OkCancelActions", "ColorActions"],
-            {"ok": self.show_details, "cancel": self.close, "green": self.refresh, "blue": self.search},
+            {"ok": self.show_details, "cancel": self.close, "green": self.install_selected, "yellow": self.refresh, "blue": self.search},
             -2,
         )
         self.entries = []
@@ -264,6 +264,79 @@ class PluginLibrary(Screen):
                 entry.get("status", "unknown"),
                 entry.get("compatibility_confidence", "unknown"),
             )
+        )
+
+    def install_selected(self):
+        entry = self._selected_entry()
+        if not entry:
+            return
+        if entry.get("source") != "receiver_feed" or not entry.get("installable"):
+            self.session.open(
+                MessageBox,
+                "This entry is not currently installable through the receiver feed.\n\n"
+                "Community installers remain blocked until explicit source admission.",
+                MessageBox.TYPE_ERROR,
+            )
+            return
+        plugin_id = entry.get("id", "")
+        try:
+            code, output = run_action("plugin.preview", {"plugin_id": plugin_id})
+        except Exception as exc:
+            self.session.open(MessageBox, "Installation request rejected: %s" % exc, MessageBox.TYPE_ERROR)
+            return
+        try:
+            preview = json.loads(output)
+        except (TypeError, ValueError):
+            self.session.open(MessageBox, "Invalid compatibility evidence returned by receiver.", MessageBox.TYPE_ERROR)
+            return
+        if code != 0 or preview.get("status") != "supported":
+            self.session.open(
+                MessageBox,
+                "Installation blocked.\n\nCompatibility: %s\nAction: %s"
+                % (preview.get("status", "unknown"), preview.get("action", "blocked")),
+                MessageBox.TYPE_ERROR,
+            )
+            return
+        summary = (
+            "Install plugin: %s\n\n"
+            "Package: %s\n"
+            "Candidate: %s\n"
+            "Compatibility: supported\n"
+            "Dependencies: %s\n\n"
+            "Source: receiver-configured package feed\n"
+            "Continue?"
+            % (
+                entry.get("name", plugin_id),
+                preview.get("package", "unknown"),
+                preview.get("candidate_version", "unknown"),
+                preview.get("dependency_status", "none"),
+            )
+        )
+        self.session.openWithCallback(
+            lambda confirmed: self._start_library_install(
+                confirmed,
+                plugin_id,
+                bool(preview.get("requires_gui_restart") is True),
+            ),
+            MessageBox,
+            summary,
+            MessageBox.TYPE_YESNO,
+        )
+
+    def _start_library_install(self, confirmed, plugin_id, requires_gui_restart):
+        if not confirmed:
+            return
+        try:
+            command = build_action_command("plugin.install", {"plugin_id": plugin_id})
+        except Exception as exc:
+            self.session.open(MessageBox, "Installation action rejected: %s" % exc, MessageBox.TYPE_ERROR)
+            return
+        self.session.open(
+            PackageInstallProgress,
+            plugin_id,
+            command,
+            "Installing",
+            requires_gui_restart,
         )
 
     def show_details(self):
