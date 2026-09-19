@@ -231,6 +231,21 @@ for rel in $PLUGIN_FILES; do
   "$PYTHON_BIN" -m py_compile "$file" 2>/dev/null || fail "Python syntax check failed: $rel"
 done
 
+REMOTE_PANEL_VERSION="$("$PYTHON_BIN" - "$PLUGIN_STAGE/version.py" <<'PY'
+import re
+import sys
+path = sys.argv[1]
+text = open(path, "r").read()
+match = re.search(r'^\s*PANEL_VERSION\s*=\s*["\']([^"\']+)["\']', text, re.M)
+print(match.group(1) if match else "")
+PY
+)"
+case "$REMOTE_PANEL_VERSION" in
+  [0-9]*.[0-9]*.[0-9]*) ;;
+  *) fail "Downloaded native panel version metadata is invalid." ;;
+esac
+[ "$REMOTE_PANEL_VERSION" = "$VERSION" ] || fail "Release version mismatch: installer v$VERSION vs native panel v$REMOTE_PANEL_VERSION"
+
 for rel in $RUNTIME_FILES; do
   case "$rel" in
     *.json)

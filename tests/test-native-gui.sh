@@ -65,6 +65,11 @@ screens = Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text(
 assert "ACTIONS =" in p
 assert '"receiver.status"' in p
 assert '"receiver.panel_update_check"' in p
+assert '"receiver.panel_update"' in p
+assert 'Refresh official release now?' in screens
+assert 'No update was applied.' in screens
+assert '_panel_installed_version' in Path("scripts/lib/update.sh").read_text()
+assert 'status=refreshed' in Path("scripts/lib/update.sh").read_text()
 assert '"receiver.package_state"' in p
 assert '"receiver.package_info"' in p
 assert '"community.preview"' in p
