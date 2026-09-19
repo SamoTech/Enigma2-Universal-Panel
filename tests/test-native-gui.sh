@@ -27,6 +27,7 @@ fi
 grep -Fq 'telemetry) print_telemetry;;' panel.sh || fail "telemetry command is not wired"
 grep -Fq 'community-catalog) community_catalog;;' panel.sh || fail "community catalog command is not wired"
 grep -Fq 'plugin-library) plugin_library;;' panel.sh || fail "plugin library command is not wired"
+grep -Fq 'compatibility) print_compatibility;;' panel.sh || fail "compatibility command is not wired"
 
 grep -Fq '#!/bin/sh' scripts/lib/telemetry.sh || fail "telemetry library is not a shell script"
 
@@ -44,6 +45,7 @@ p = Path("Plugins/Extensions/Enigma2UniversalPanel/actions.py").read_text()
 assert "ACTIONS =" in p
 assert '"receiver.status"' in p
 assert '"receiver.telemetry"' in p
+assert '"receiver.compatibility"' in p
 assert '"plugin.resolve"' in p
 assert '"plugin.preview"' in p
 assert '"plugin.install"' in p
@@ -63,9 +65,12 @@ assert '_prepare_remove' in Path("Plugins/Extensions/Enigma2UniversalPanel/scree
 assert '_prepare_update' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'Receiver Telemetry' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'class ReceiverTelemetry' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'class ReceiverCompatibility' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'receiver.compatibility' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'Community Sources' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'class CommunityInstallerCatalog' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'class PluginLibrary' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'RED: Category' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'Plugin Library' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'Search Plugin Library' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'GREEN: Install' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
@@ -88,6 +93,8 @@ assert '"ok": self._close_when_finished' in Path("Plugins/Extensions/Enigma2Univ
 assert '"cancel": self._close_when_finished' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'unregistered action' in p
 assert "_PLUGIN_ID" in p
+assert '"subprocess.Popen"' in p
+assert '"universal_newlines=True"' in p
 
 spec = importlib.util.spec_from_file_location("e2_actions", "Plugins/Extensions/Enigma2UniversalPanel/actions.py")
 mod = importlib.util.module_from_spec(spec)
