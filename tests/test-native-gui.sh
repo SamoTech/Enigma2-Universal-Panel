@@ -63,7 +63,7 @@ assert '_prepare_remove' in Path("Plugins/Extensions/Enigma2UniversalPanel/scree
 assert '_prepare_update' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'Receiver Telemetry' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'class ReceiverTelemetry' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
-assert 'Community Installers' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'Community Sources' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'class CommunityInstallerCatalog' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'class PluginLibrary' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'Plugin Library' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
