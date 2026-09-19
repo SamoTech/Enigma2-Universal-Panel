@@ -164,6 +164,19 @@ spec.loader.exec_module(mod)
 for value in ("openwebif", "auto.bouquets-maker", "epg_import_2"):
     assert mod._validate_plugin_id(value) == value
 
+assert mod.build_action_command("receiver.package_info", {"package": "enigma2-plugin-systemplugins-networkmanager"}) == (
+    "/usr/local/bin/e2panel", "plugin-info", "enigma2-plugin-systemplugins-networkmanager"
+)
+assert mod.build_action_command("package.install", {"package": "enigma2-plugin-extensions-openwebif"}) == (
+    "/usr/local/bin/e2panel", "package-install", "enigma2-plugin-extensions-openwebif"
+)
+assert mod.build_action_command("package.update", {"package": "enigma2-plugin-extensions-openwebif"}) == (
+    "/usr/local/bin/e2panel", "package-update", "enigma2-plugin-extensions-openwebif"
+)
+assert mod.build_action_command("package.remove", {"package": "enigma2-plugin-extensions-openwebif"}) == (
+    "/usr/local/bin/e2panel", "package-remove", "enigma2-plugin-extensions-openwebif", "--confirm"
+)
+
 assert mod.build_action_command("plugin.info", {"plugin_id": "openwebif"}) == ("/usr/local/bin/e2panel", "plugin-info-id", "openwebif")
 assert mod.build_action_command("plugin.update", {"plugin_id": "openwebif"}) == ("/usr/local/bin/e2panel", "plugin-update-id", "openwebif")
 assert mod.build_action_command("plugin.remove_preview", {"plugin_id": "openwebif"}) == ("/usr/local/bin/e2panel", "plugin-remove-preview", "openwebif")
