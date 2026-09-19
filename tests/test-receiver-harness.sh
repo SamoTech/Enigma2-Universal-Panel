@@ -156,7 +156,10 @@ pass "admitted direct community installers preview successfully"
   [ "$(plugin_native_arch_compatibility x86_64 x86_64)" = true ] || fail "exact architecture compatibility"
   [ "$(plugin_native_arch_compatibility armhf x86_64)" = false ] || fail "mismatched architecture rejection"
   [ "$(plugin_native_arch_compatibility unknown x86_64)" = unknown ] || fail "unknown architecture fail-closed state"
-  pass "native package architecture policy"
+  printf "dep-pkg - 1.2\\n" >> "$STATE/available"
+  printf "dep-pkg - 1.2\\n" >> "$STATE/installed-feed"
+  [ "$(plugin_dependency_status "dep-pkg")" = resolvable ] || fail "feed-resolvable dependency was blocked"
+  pass "native package architecture and dependency resolution policy"
 
   compatibility_status >"$TMP/compatibility.json"
   python3 - "$TMP/compatibility.json" <<'PY'
