@@ -10,8 +10,10 @@ The primary user journey is browse → inspect → compatibility preview → con
 
 ## Native GUI installation flow
 
-1. Detect image, architecture and package manager.
-2. Detect receiver-configured feed(s).
+1. Detect receiver device family and model when exposed by the image.
+2. Detect image family/version, CPU architecture, Python runtime and package backend.
+3. Select the generic or image-specific receiver adapter.
+4. Detect receiver-configured feed(s).
 3. Discover package candidates.
 4. Resolve normalized plugin ID to a native package name when evidence exists.
 5. Validate image/architecture compatibility.
@@ -43,6 +45,36 @@ It should show clear states such as:
 - Partial / requires receiver evidence
 
 Unknown is not treated as compatible.
+
+## Store taxonomy
+
+The native Store groups entries into a fixed compatibility-neutral taxonomy:
+
+- System & Image
+- Network & Connectivity
+- Remote Access
+- Media & Streaming
+- EPG & TV Guide
+- Channels & Bouquets
+- Recording & Timeshift
+- Skins & Display
+- Language & Subtitles
+- Audio
+- Multiboot & Recovery
+- Monitoring & Diagnostics
+- Security & Access
+- Religious & Community
+- Utilities
+
+Category assignment is metadata, not an installation permission.
+
+## Universal receiver compatibility
+
+Device and image are separate dimensions. Dreambox/Dream Multimedia is explicitly detected as a device family, while DreamOS, NewNigma2 and related Debian-oriented images are separated from OE-Alliance/OpenPLi families.
+
+A receiver may therefore be represented as "Dreambox + DreamOS" or "Dreambox + OpenATV"; package operations follow the detected backend rather than the vendor name.
+
+See docs/compatibility/PLATFORM_MATRIX.md for the full support contract and evidence states.
 
 ## Sources
 
