@@ -20,6 +20,20 @@ if grep -R -nE 'shell[[:space:]]*=[[:space:]*]True|os\.system[[:space:]]*\(|subp
   fail "arbitrary shell execution detected"
 fi
 
+if ! grep -Fq '. "$BASE/scripts/lib/telemetry.sh"' panel.sh; then
+  fail "telemetry library is not sourced by panel runtime"
+fi
+
+grep -Fq 'telemetry) print_telemetry;;' panel.sh || fail "telemetry command is not wired"
+
+grep -Fq '#!/bin/sh' scripts/lib/telemetry.sh || fail "telemetry library is not a shell script"
+
+grep -Fq 'print_telemetry()' scripts/lib/telemetry.sh || fail "telemetry function missing"
+
+grep -Fq '/proc/loadavg' scripts/lib/telemetry.sh || fail "load telemetry source missing"
+grep -Fq '/proc/meminfo' scripts/lib/telemetry.sh || fail "memory telemetry source missing"
+grep -Fq 'df -k /' scripts/lib/telemetry.sh || fail "filesystem telemetry source missing"
+
 python3 - <<'PY'
 from pathlib import Path
 import importlib.util
@@ -27,6 +41,7 @@ import importlib.util
 p = Path("Plugins/Extensions/Enigma2UniversalPanel/actions.py").read_text()
 assert "ACTIONS =" in p
 assert '"receiver.status"' in p
+assert '"receiver.telemetry"' in p
 assert '"plugin.resolve"' in p
 assert '"plugin.preview"' in p
 assert '"plugin.install"' in p
@@ -102,4 +117,4 @@ else:
     raise AssertionError("unexpected parameters accepted")
 PY
 
-pass "native GUI package, registered actions, parameter validation and shell policy"
+pass "native GUI package, registered actions, parameter validation, shell policy and telemetry wiring"
