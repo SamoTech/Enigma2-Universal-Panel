@@ -11,3 +11,5 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run native GUI package tests
         run: sh tests/test-native-gui.sh
+      - name: Run self-updater tests
+        run: sh tests/test-updater.sh
