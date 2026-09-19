@@ -1011,9 +1011,12 @@ class Enigma2UniversalPanel(Screen):
 
     def activate(self):
         index = self["menu"].getSelectionIndex()
-        if index is None or index < 0 or index >= len(self.ENTRIES):
+        if index is None or index < 0 or index >= len(self.SECTIONS):
             return
-        title, action_id = self.ENTRIES[index]
+        title, entries = self.SECTIONS[index]
+        self.session.open(PanelSectionMenu, title, entries, self)
+
+    def _dispatch_action(self, action_id):
         if action_id == "dashboard":
             self.session.open(Dashboard)
             return
@@ -1059,8 +1062,7 @@ class Enigma2UniversalPanel(Screen):
                 pass
         if code != 0:
             output = "Command failed with exit code %s.\n\n%s" % (code, output)
-        self.session.open(ActionResult, title, output)
-
+        self.session.open(ActionResult, action_id, output)
 
 def main(session, **kwargs):
     session.open(Enigma2UniversalPanel)
