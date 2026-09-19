@@ -103,7 +103,7 @@ EOF
   [ "$E2_DEVICE_FAMILY" = dreambox ] || fail "Dreambox device detection on DreamOS"
   [ "$E2_IMAGE" = dreamos ] || fail "DreamOS image detection"
   [ "$E2_IMAGE_FAMILY" = dreamos ] || fail "DreamOS image family"
-  [ "$E2_PKG" = apt ] || fail "DreamOS apt backend"
+  [ "$E2_PKG" = apt ] || fail "DreamOS apt backend: pkg=$E2_PKG apt_get=$(command -v apt-get 2>/dev/null || echo missing) dpkg=$(command -v dpkg 2>/dev/null || echo missing)"
   [ "$E2_PACKAGE_FAMILY" = deb ] || fail "DreamOS deb family"
   [ "$ADAPTER" = dreamos ] || fail "DreamOS adapter"
   pass "Dreambox + DreamOS profile"
