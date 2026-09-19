@@ -4,21 +4,10 @@ import subprocess
 
 
 ACTIONS = {
-    "receiver.status": {
-        "command": ("/usr/local/bin/e2panel", "status"),
-        "risk": "low",
-        "confirmation": False,
-    },
-    "receiver.capabilities": {
-        "command": ("/usr/local/bin/e2panel", "capabilities"),
-        "risk": "low",
-        "confirmation": False,
-    },
-    "receiver.diagnose": {
-        "command": ("/usr/local/bin/e2panel", "diagnose"),
-        "risk": "low",
-        "confirmation": False,
-    },
+    "receiver.status": {"command": ("/usr/local/bin/e2panel", "status"), "risk": "low", "confirmation": False},
+    "receiver.capabilities": {"command": ("/usr/local/bin/e2panel", "capabilities"), "risk": "low", "confirmation": False},
+    "receiver.diagnose": {"command": ("/usr/local/bin/e2panel", "diagnose"), "risk": "low", "confirmation": False},
+    "receiver.package_state": {"command": ("/usr/local/bin/e2panel", "package-state"), "risk": "low", "confirmation": False},
 }
 
 
