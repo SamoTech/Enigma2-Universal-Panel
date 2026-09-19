@@ -1623,11 +1623,20 @@ class Enigma2UniversalPanel(Screen):
         latest = result.get("latest_version", "unknown")
 
         if status == "current":
-            self.session.open(
+            summary = (
+                "%s\n\n"
+                "Current installed: v%s\n"
+                "Latest available: v%s\n\n"
+                "The panel is already on the latest release.\n"
+                "You can refresh the official v%s files in place to repair or replace stale modules.\n\n"
+                "Refresh official release now?"
+                % (PLUGIN_NAME, current, latest, latest)
+            )
+            self.session.openWithCallback(
+                lambda confirmed: self._prepare_panel_update() if confirmed else None,
                 MessageBox,
-                "%s\n\nCurrent installed: v%s\nLatest available: v%s\n\nThe panel is already up to date."
-                % (PLUGIN_NAME, current, latest),
-                MessageBox.TYPE_INFO,
+                summary,
+                MessageBox.TYPE_YESNO,
             )
             return
 
@@ -1724,7 +1733,8 @@ class Enigma2UniversalPanel(Screen):
         if status == "current":
             self.session.open(
                 MessageBox,
-                "%s\n\nInstalled: v%s\nLatest: v%s" % (
+                "%s\n\nInstalled: v%s\nLatest: v%s\n\nNo update was applied."
+                % (
                     PLUGIN_NAME,
                     result.get("current_version", "unknown"),
                     result.get("latest_version", "unknown"),
