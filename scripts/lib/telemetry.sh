@@ -39,7 +39,7 @@ print_telemetry() {
     set -- $(df -k / 2>/dev/null | awk 'NR==2 {print $2, $4, $5}')
     root_total_kb=${1:-unknown}
     root_available_kb=${2:-unknown}
-    root_used_percent=${3%%}
+    root_used_percent=$(printf "%s" "${3:-unknown}" | tr -d "%")
     [ -n "$root_used_percent" ] || root_used_percent=unknown
   fi
 
