@@ -1,21 +1,81 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "title": "Enigma2 Plugin Store Categories",
   "categories": [
-    {"id":"system","name":"System & Image","description":"System utilities, image tools and receiver administration."},
-    {"id":"network","name":"Network & Connectivity","description":"Network, storage, sharing and connectivity plugins."},
-    {"id":"remote_control","name":"Remote Access","description":"Web and remote-control integrations."},
-    {"id":"media","name":"Media & Streaming","description":"Media playback, streaming and service integrations."},
-    {"id":"epg","name":"EPG & TV Guide","description":"EPG import, grabbers and guide tooling."},
-    {"id":"channels","name":"Channels & Bouquets","description":"Channel discovery, scanning, bouquets and service lists."},
-    {"id":"recording","name":"Recording & Timeshift","description":"Recording, playback and timeshift utilities."},
-    {"id":"gui","name":"Skins & Display","description":"Skins, display, LCD and visual enhancements."},
-    {"id":"localization","name":"Language & Subtitles","description":"Translations, subtitles and localization."},
-    {"id":"audio","name":"Audio","description":"Audio playback, routing and media helpers."},
-    {"id":"multiboot","name":"Multiboot & Recovery","description":"Multiboot, backup and recovery tooling."},
-    {"id":"monitoring","name":"Monitoring & Diagnostics","description":"System metrics, temperatures and health tools."},
-    {"id":"security","name":"Security & Access","description":"Security, authentication and other sensitive system tooling."},
-    {"id":"religious","name":"Religious & Community","description":"Religious content and community-maintained resources."},
-    {"id":"utilities","name":"Utilities","description":"General receiver utilities and helpers."}
+    {
+      "id": "system",
+      "name": "System & Image",
+      "description": "System utilities, image tools, package/image administration."
+    },
+    {
+      "id": "network",
+      "name": "Network & Connectivity",
+      "description": "Network, storage, sharing and connectivity."
+    },
+    {
+      "id": "remote_control",
+      "name": "Remote Access",
+      "description": "Web interfaces and remote-control integrations."
+    },
+    {
+      "id": "media",
+      "name": "Media & Streaming",
+      "description": "Video, streaming, media players and online media."
+    },
+    {
+      "id": "iptv",
+      "name": "IPTV",
+      "description": "Xtream, Stalker, M3U and IPTV bouquet tools."
+    },
+    {
+      "id": "epg",
+      "name": "EPG & TV Guide",
+      "description": "EPG import, grabbers and guide tooling."
+    },
+    {
+      "id": "channels",
+      "name": "Channels & Bouquets",
+      "description": "Channel scanning, settings, bouquets and converters."
+    },
+    {
+      "id": "recording",
+      "name": "Recording & Timeshift",
+      "description": "Recording, movie and timeshift tools."
+    },
+    {
+      "id": "skins",
+      "name": "Skins & Display",
+      "description": "Skins, picons, LCD and visual presentation."
+    },
+    {
+      "id": "audio",
+      "name": "Audio & Radio",
+      "description": "Audio playback, radio and audio helpers."
+    },
+    {
+      "id": "localization",
+      "name": "Language & Subtitles",
+      "description": "Translations, subtitles and localization."
+    },
+    {
+      "id": "multiboot",
+      "name": "Multiboot & Recovery",
+      "description": "Multiboot, backup and recovery."
+    },
+    {
+      "id": "monitoring",
+      "name": "Monitoring & Diagnostics",
+      "description": "Signal, temperature, bitrate and receiver diagnostics."
+    },
+    {
+      "id": "security",
+      "name": "Security & Access",
+      "description": "Security and access-control tooling."
+    },
+    {
+      "id": "utilities",
+      "name": "Utilities",
+      "description": "General receiver tools and administration."
+    }
   ]
 }
