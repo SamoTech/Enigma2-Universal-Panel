@@ -42,6 +42,29 @@ sh -n "$UPDATE" || fail "panel self-update shell syntax"
 grep -q 'status=refreshed' "$UPDATE" || fail "same-version panel refresh status missing"
 grep -q 'same_version=1' "$UPDATE" || fail "same-version refresh path missing"
 grep -q 'panel_update_check()' "$UPDATE" || fail "non-destructive update check missing"
+grep -q 'PANEL_UPDATE_VERSION_URL=' "$UPDATE" || fail "official version metadata endpoint missing"
+grep -q '_panel_extract_panel_version()' "$UPDATE" || fail "panel version metadata parser missing"
+grep -q '_panel_validate_version()' "$UPDATE" || fail "strict version validation helper missing"
+if grep -q 'sed -n.*VERSION=' "$UPDATE"; then
+  fail "strict sed VERSION parser still present"
+fi
+
+VERSION_TEST_DIR="$(mktemp -d /tmp/e2panel-version-test.XXXXXX)" || fail "unable to create updater version test directory"
+trap 'rm -rf "$VERSION_TEST_DIR"' EXIT HUP INT TERM
+cat >"$VERSION_TEST_DIR/install.sh" <<'EOF'
+#!/bin/sh
+  VERSION = "1.10.0" # release version
+EOF
+cat >"$VERSION_TEST_DIR/version.py" <<'EOF'
+PANEL_VERSION = "1.10.0" # native plugin version
+EOF
+. "$UPDATE"
+[ "$(_panel_extract_installer_version "$VERSION_TEST_DIR/install.sh")" = "1.10.0" ] || fail "installer version extraction failed"
+[ "$(_panel_extract_panel_version "$VERSION_TEST_DIR/version.py")" = "1.10.0" ] || fail "panel metadata version extraction failed"
+_panel_validate_version "1.10.0" || fail "valid dotted version rejected"
+if _panel_validate_version "1.10"; then fail "incomplete version accepted"; fi
+if _panel_validate_version "1.10.0x"; then fail "non-numeric version accepted"; fi
+pass "BusyBox-safe updater version extraction and validation"
 
 grep -q 'BACKUP_DEST=' "$INSTALL" || fail "runtime backup path missing"
 grep -q 'BACKUP_PLUGIN=' "$INSTALL" || fail "plugin backup path missing"

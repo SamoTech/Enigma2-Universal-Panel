@@ -1,5 +1,6 @@
 #!/bin/sh
 PANEL_UPDATE_INSTALLER_URL="https://raw.githubusercontent.com/SamoTech/Enigma2-Universal-Panel/main/install.sh"
+PANEL_UPDATE_VERSION_URL="https://raw.githubusercontent.com/SamoTech/Enigma2-Universal-Panel/main/Plugins/Extensions/Enigma2UniversalPanel/version.py"
 PANEL_UPDATE_TIMEOUT="${E2PANEL_FETCH_TIMEOUT:-30}"
 PANEL_UPDATE_RETRIES="${E2PANEL_FETCH_RETRIES:-3}"
 
@@ -26,7 +27,45 @@ _panel_version_compare() {
 
 _panel_extract_installer_version() {
   file="$1"
-  sed -n 's/^[[:space:]]*VERSION[[:space:]]*=[[:space:]]*"\([0-9][0-9.]*\)"[[:space:]]*$/\1/p' "$file" | head -n 1
+  awk -F= '
+    /^[[:space:]]*VERSION[[:space:]]*=/ {
+      value=$2
+      sub(/#.*/, "", value)
+      gsub(/[[:space:]]/, "", value)
+      if (value ~ /^".*"$/) {
+        sub(/^"/, "", value)
+        sub(/"$/, "", value)
+      }
+      print value
+      exit
+    }
+  ' "$file"
+}
+
+_panel_extract_panel_version() {
+  file="$1"
+  awk -F= '
+    /^[[:space:]]*PANEL_VERSION[[:space:]]*=/ {
+      value=$2
+      sub(/#.*/, "", value)
+      gsub(/[[:space:]]/, "", value)
+      if (value ~ /^".*"$/) {
+        sub(/^"/, "", value)
+        sub(/"$/, "", value)
+      }
+      print value
+      exit
+    }
+  ' "$file"
+}
+
+_panel_validate_version() {
+  value="$1"
+  printf '%s\n' "$value" | awk '
+    /^[0-9]+\.[0-9]+\.[0-9]+$/ { ok=1; exit }
+    { ok=0; exit }
+    END { exit(ok ? 0 : 1) }
+  '
 }
 
 _update_fetch() {
@@ -71,10 +110,34 @@ panel_update_check() {
   fi
 
   latest_version="$(_panel_extract_installer_version "$tmp")"
-  rm -f "$tmp"
-  case "$latest_version" in
-    ''|*[!0-9.]*) printf 'status=failed\nreason=invalid_official_installer_version\n'; return 1 ;;
-  esac
+  if ! _panel_validate_version "$latest_version"; then
+    rm -f "$tmp"
+    printf 'status=failed\nreason=invalid_official_installer_version\n'
+    return 1
+  fi
+
+  metadata_tmp="$(mktemp /tmp/e2panel-self-update-version.XXXXXX)" || {
+    rm -f "$tmp"
+    printf 'status=failed\nreason=unable_to_create_version_metadata_file\n'
+    return 1
+  }
+  if ! _update_fetch "$PANEL_UPDATE_VERSION_URL" "$metadata_tmp"; then
+    rm -f "$tmp" "$metadata_tmp"
+    printf 'status=failed\nreason=unable_to_download_official_version_metadata\n'
+    return 1
+  fi
+  metadata_version="$(_panel_extract_panel_version "$metadata_tmp")"
+  rm -f "$tmp" "$metadata_tmp"
+  if ! _panel_validate_version "$metadata_version"; then
+    printf 'status=failed\nreason=invalid_official_version_metadata\n'
+    return 1
+  fi
+  if [ "$metadata_version" != "$latest_version" ]; then
+    printf 'status=failed\nreason=official_release_version_mismatch\ninstaller_version=%s\nmetadata_version=%s\n' "$latest_version" "$metadata_version"
+    return 1
+  fi
+
+  latest_version="$metadata_version"
 
   if _panel_version_compare "$latest_version" "$PANEL_VERSION"; then
     printf 'status=available\ncurrent_version=%s\nlatest_version=%s\nupdate_available=1\n' "$PANEL_VERSION" "$latest_version"
@@ -107,14 +170,36 @@ panel_update() {
     return 1
   fi
 
-  version="$(sed -n 's/^VERSION="\([^"]*\)"$/\1/p' "$tmp" | head -n 1)"
-  case "$version" in
-    ''|*[!0-9.]*)
-      rm -f "$tmp"
-      printf 'status=failed\nreason=invalid_official_installer_version\n'
-      return 1
-      ;;
-  esac
+  version="$(_panel_extract_installer_version "$tmp")"
+  if ! _panel_validate_version "$version"; then
+    rm -f "$tmp"
+    printf 'status=failed\nreason=invalid_official_installer_version\n'
+    return 1
+  fi
+
+  metadata_tmp="$(mktemp /tmp/e2panel-self-update-version.XXXXXX)" || {
+    rm -f "$tmp"
+    printf 'status=failed\nreason=unable_to_create_version_metadata_file\n'
+    return 1
+  }
+  if ! _update_fetch "$PANEL_UPDATE_VERSION_URL" "$metadata_tmp"; then
+    rm -f "$tmp" "$metadata_tmp"
+    printf 'status=failed\nreason=unable_to_download_official_version_metadata\n'
+    return 1
+  fi
+  metadata_version="$(_panel_extract_panel_version "$metadata_tmp")"
+  rm -f "$metadata_tmp"
+  if ! _panel_validate_version "$metadata_version"; then
+    rm -f "$tmp"
+    printf 'status=failed\nreason=invalid_official_version_metadata\n'
+    return 1
+  fi
+  if [ "$metadata_version" != "$version" ]; then
+    rm -f "$tmp"
+    printf 'status=failed\nreason=official_release_version_mismatch\ninstaller_version=%s\nmetadata_version=%s\n' "$version" "$metadata_version"
+    return 1
+  fi
+  version="$metadata_version"
 
   if _panel_version_compare "$version" "$PANEL_VERSION"; then
     :
