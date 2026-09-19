@@ -50,7 +50,7 @@ The existing shell/CLI runtime remains a receiver-side foundation and diagnostic
 - Source-driven receiver package/plugin management
 - Normalized runtime package state
 - Evidence-backed receiver telemetry
-- Community installer source registry with fail-closed admission and source-health metadata
+- Community Plugin Library with fail-closed installation admission and source-health metadata (49 community entries)
 - Postcondition verification and audit foundations
 - Confirmed asynchronous install, update and removal flows
 - Mock receiver harness and policy tests

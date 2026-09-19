@@ -177,7 +177,7 @@ Remaining Phase 1.4 work:
 - plugin metadata browsing — implemented
 - asynchronous update flow with confirmation — implemented
 - asynchronous remove flow with confirmation — implemented
-- community installer source registry and native inspection screen — implemented (21 unique entries audited)
+- community plugin library source registry and native inspection screen — implemented (49 unique entries; 21 previously audited + 28 inventory additions)
 - community source-health metadata and native health display — implemented
 - richer audit-history display — next target
 - GUI restart handling when required by verified metadata

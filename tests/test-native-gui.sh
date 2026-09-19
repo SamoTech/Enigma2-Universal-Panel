@@ -67,7 +67,11 @@ assert 'Community Sources' in Path("Plugins/Extensions/Enigma2UniversalPanel/scr
 assert 'class CommunityInstallerCatalog' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'class PluginLibrary' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'Plugin Library' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'Search Plugin Library' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'GREEN: Install' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'plugin.library' in p
+assert 'if action_id == "plugin.library"' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'self.session.open(PluginLibrary)' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'network_reachability' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 resolver = Path("scripts/lib/plugin-resolver.sh").read_text()
 panel = Path("panel.sh").read_text()
