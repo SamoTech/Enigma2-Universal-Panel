@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 4,
   "adapters": [
     {
       "id": "openatv",
@@ -14,15 +14,6 @@
       "id": "openvix",
       "match": [
         "openvix"
-      ],
-      "fallback": false,
-      "package_manager": "opkg",
-      "capability_policy": "evidence_required"
-    },
-    {
-      "id": "openpli",
-      "match": [
-        "openpli"
       ],
       "fallback": false,
       "package_manager": "opkg",
@@ -65,10 +56,54 @@
       "capability_policy": "evidence_required"
     },
     {
+      "id": "openpli",
+      "match": [
+        "openpli"
+      ],
+      "fallback": false,
+      "package_manager": "opkg",
+      "capability_policy": "evidence_required"
+    },
+    {
+      "id": "oe-alliance",
+      "match": [
+        "oe-alliance"
+      ],
+      "fallback": false,
+      "package_manager": "opkg",
+      "capability_policy": "evidence_required"
+    },
+    {
       "id": "dreamos",
       "match": [
-        "dreamos",
-        "dreambox"
+        "dreamos"
+      ],
+      "fallback": false,
+      "package_manager": "apt",
+      "capability_policy": "evidence_required"
+    },
+    {
+      "id": "dreambox-deb",
+      "match": [
+        "dreambox-deb"
+      ],
+      "fallback": false,
+      "package_manager": "image-dependent",
+      "capability_policy": "evidence_required"
+    },
+    {
+      "id": "vti",
+      "match": [
+        "vti"
+      ],
+      "fallback": false,
+      "package_manager": "image-dependent",
+      "capability_policy": "evidence_required"
+    },
+    {
+      "id": "community-enigma2",
+      "match": [
+        "community-enigma2"
       ],
       "fallback": false,
       "package_manager": "image-dependent",
@@ -77,7 +112,7 @@
     {
       "id": "generic-enigma2",
       "match": [
-        "enigma2"
+        "generic-enigma2"
       ],
       "fallback": true,
       "package_manager": "detect",

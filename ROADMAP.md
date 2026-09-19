@@ -74,8 +74,9 @@ The same action registry and policy rules must be usable by the native GUI and C
 Status: COMPLETE
 
 - Repository structure and receiver bootstrap reconstructed.
-- Receiver/image/package-manager detection established.
+- Runtime-first receiver/device/image/package-backend detection established.
 - Capability and adapter models established.
+- Dreambox/DreamOS is a first-class compatibility target.
 - Action registry and policy layer established.
 - Plugin catalog and compatibility metadata established.
 - Source-driven package/plugin installation established.
@@ -141,12 +142,14 @@ Unknown values must be displayed as unknown, not inferred.
 
 ### 1.4 Plugin Library / Store
 
-Status: IN PROGRESS — unified store projection, search, details, controlled feed installation, community library and audit-history display implemented
+Status: IN PROGRESS — categorized unified store, search, details, controlled feed installation, community library and audit-history display implemented
 
 Current slice:
 
 - unified Plugin Library projection across official receiver-feed metadata and community-source metadata
+- canonical Store taxonomy and native category filtering
 - native store browsing with search, categories, availability and source state
+- receiver compatibility screen exposing device, image, architecture, Python and package backend
 - selected-plugin details
 - controlled feed-plugin installation from the store
 - installed packages from normalized `package-state`
@@ -155,7 +158,6 @@ Current slice:
 - compatibility/dependency installation preview
 - strict GUI action parameter validation
 - evidence-backed receiver telemetry
-- community Plugin Library with 49 metadata entries and explicit blocked/admitted source state
 - native read-only audit-history display backed by the receiver audit log
 
 Acceptance for current slice:
@@ -172,7 +174,9 @@ Acceptance for current slice:
 - Unknown/unsupported/partial compatibility remains blocked.
 - No arbitrary package-manager arguments or feed URLs are accepted.
 - Telemetry is sourced explicitly by the receiver runtime before the `telemetry` command is dispatched.
-- Audit history is read-only, bounded to the latest 20 audit records, and sourced only from the receiver panel log.
+- GUI restart handling is offered only when verified plugin metadata declares `requires_gui_restart=true`.
+- Restart execution uses the registered `receiver.restart_gui` action and an explicit remote-control confirmation.
+- Restart requests are audited by the native receiver action layer.
 
 Remaining Phase 1.4 work:
 
@@ -183,7 +187,31 @@ Remaining Phase 1.4 work:
 - community plugin library source registry and native inspection screen — implemented (49 unique entries; 21 previously audited + 28 inventory additions)
 - community source-health metadata and native health display — implemented
 - richer audit-history display — implemented
-- GUI restart handling when required by verified metadata — next target
+- GUI restart handling when required by verified metadata — implemented
+- verified reboot handling when required by plugin metadata — next target
+
+## Universal compatibility workstream
+
+Status: IN PROGRESS
+
+The native product must operate across the broad Enigma2 ecosystem without assuming one image, vendor or package backend.
+
+Compatibility is modeled as:
+
+**Device family + Image family/version + CPU architecture + Python runtime + Package backend + Receiver capabilities + Plugin-specific evidence**
+
+Current implementation:
+
+- separates device identity from image identity;
+- detects Dreambox/Dream Multimedia as a first-class device family;
+- detects DreamOS/NewNigma2/Merlin-style Debian image families separately from OE-style images;
+- detects OpenATV/OpenViX/OpenHDF/OpenDroid/OpenEight/OpenLD, OpenPLi, VTi and additional community image families;
+- detects opkg, apt/dpkg and ipkg paths;
+- supports read-only dpkg inventory while keeping installation blocked when no configured-feed installer is available;
+- exposes a native Receiver Compatibility screen;
+- runs a mock platform matrix covering Dreambox + OpenATV, Dreambox + DreamOS, Zgemma + OpenPLi, unknown Enigma2 fallback, legacy Python 2 and device/image separation.
+
+The compatibility layer does **not** claim that every receiver model/image/version has been physically tested. Real-receiver certification remains a separate acceptance gate.
 
 ## Phase 2 — Core receiver management
 
@@ -305,16 +333,17 @@ Repository binary-hosting policy remains unchanged.
 2. Native screen/navigation framework.
 3. Plugin Library / Store shell and navigation.
 4. Unified catalog/search/category browsing.
-5. Dashboard backed by existing detection/capability functions.
-6. Read-only plugin details and resolver screens.
-7. Controlled store installation with compatibility preview.
-8. Native plugin metadata browsing.
-9. Native GUI test/harness coverage.
-10. Native asynchronous package mutation with confirmation/postcondition/audit.
-11. Native receiver-side real-device validation.
-12. Richer audit-history display.
-13. GUI restart handling when required by verified metadata.
-14. Core management screens.
+5. Universal receiver compatibility model and native compatibility screen.
+6. Dashboard backed by existing detection/capability functions.
+7. Read-only plugin details and resolver screens.
+8. Controlled store installation with compatibility preview.
+9. Native plugin metadata browsing.
+10. Native GUI test/harness coverage.
+11. Native asynchronous package mutation with confirmation/postcondition/audit.
+12. Native receiver-side real-device validation across representative device/image matrix.
+13. Richer audit-history display.
+14. GUI restart handling when required by verified metadata.
+15. Core management screens.
 15. Channels/bouquets/EPG.
 16. Settings and backup/recovery.
 17. Local automation.

@@ -50,6 +50,7 @@ plugin_refresh_sources() {
     opkg) info "Refreshing configured opkg feeds"; opkg update ;;
     apt) info "Refreshing configured apt sources"; apt-get update ;;
     ipkg) info "Refreshing configured ipkg feeds"; ipkg update ;;
+    dpkg) error "No configured Debian feed refresh command is available"; return 1 ;;
   esac
 }
 plugin_list() {
@@ -64,14 +65,24 @@ plugin_list() {
 plugin_info() {
   plugin_validate_package "$1" || return 2
   plugin_package_manager || return 1
-  case "$E2_PKG" in opkg) opkg info "$1";; apt) apt-cache show "$1";; ipkg) ipkg info "$1";; esac
+  case "$E2_PKG" in
+    opkg) opkg info "$1";;
+    apt) apt-cache show "$1";;
+    ipkg) ipkg info "$1";;
+    dpkg) dpkg-query -s "$1";;
+  esac
 }
 plugin_install() {
   plugin_validate_package "$1" || return 2
   plugin_package_manager || return 1
   require_root || return 1
   info "Installing package from configured receiver feeds: $1"
-  case "$E2_PKG" in opkg) opkg install "$1";; apt) DEBIAN_FRONTEND=noninteractive apt-get install -y "$1";; ipkg) ipkg install "$1";; esac
+  case "$E2_PKG" in
+    opkg) opkg install "$1";;
+    apt) DEBIAN_FRONTEND=noninteractive apt-get install -y "$1";;
+    ipkg) ipkg install "$1";;
+    dpkg) error "Debian receiver has no supported configured-feed installer"; return 1;;
+  esac
 }
 plugin_update() {
   plugin_validate_package "$1" || return 2
@@ -81,6 +92,7 @@ plugin_update() {
     opkg) opkg update || return 1; opkg install "$1" ;;
     apt) apt-get update || return 1; DEBIAN_FRONTEND=noninteractive apt-get install --only-upgrade -y "$1" ;;
     ipkg) ipkg update || return 1; ipkg install "$1" ;;
+    dpkg) error "Debian receiver has no supported configured-feed updater"; return 1 ;;
   esac
 }
 plugin_remove() {
@@ -88,7 +100,12 @@ plugin_remove() {
   plugin_package_manager || return 1
   require_root || return 1
   info "Removing package: $1"
-  case "$E2_PKG" in opkg) opkg remove "$1";; apt) DEBIAN_FRONTEND=noninteractive apt-get remove -y "$1";; ipkg) ipkg remove "$1";; esac
+  case "$E2_PKG" in
+    opkg) opkg remove "$1";;
+    apt) DEBIAN_FRONTEND=noninteractive apt-get remove -y "$1";;
+    ipkg) ipkg remove "$1";;
+    dpkg) error "Debian receiver removal requires an apt-capable configured source"; return 1;;
+  esac
 }
 plugin_installed() {
   plugin_validate_package "$1" || return 2
@@ -97,6 +114,7 @@ plugin_installed() {
     opkg) opkg status "$1" 2>/dev/null | grep -q "^Status:.*installed" ;;
     apt) dpkg-query -W -f='%{Status}' "$1" 2>/dev/null | grep -q "install ok installed" ;;
     ipkg) ipkg status "$1" 2>/dev/null | grep -q "^Status:.*installed" ;;
+    dpkg) dpkg-query -W -f='${Status}' "$1" 2>/dev/null | grep -q "install ok installed" ;;
   esac
 }
 plugin_source_status() {
@@ -150,6 +168,10 @@ plugin_package_state() {
     ipkg)
       ipkg list_installed 2>/dev/null | awk -F ' - ' '{print $1"\t"$2"\tall"}' >"$packages_file"
       ipkg list 2>/dev/null | awk 'NF >= 3 {print $1"\t"$3"\tunknown"}' >"$available_file"
+      ;;
+    dpkg)
+      dpkg-query -W -f='${Package}\t${Version}\t${Architecture}\n' 2>/dev/null >"$packages_file"
+      : >"$available_file"
       ;;
     *)
       : >"$packages_file"

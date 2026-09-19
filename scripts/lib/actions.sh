@@ -1,8 +1,22 @@
 #!/bin/sh
 action_restart_enigma2() {
   require_capability enigma2 || return 1
-  if has systemctl; then systemctl restart enigma2 2>/dev/null && return 0; fi
-  if has init; then init 4 2>/dev/null; sleep 2; init 3 2>/dev/null && return 0; fi
+  audit "restart-enigma2 requested"
+  if has systemctl; then
+    if systemctl restart enigma2 2>/dev/null; then
+      audit "restart-enigma2 result=success method=systemctl"
+      return 0
+    fi
+  fi
+  if has init; then
+    init 4 2>/dev/null
+    sleep 2
+    if init 3 2>/dev/null; then
+      audit "restart-enigma2 result=success method=init"
+      return 0
+    fi
+  fi
+  audit "restart-enigma2 result=failed"
   error "No supported Enigma2 restart method detected"
   return 1
 }

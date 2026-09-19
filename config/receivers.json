@@ -1,194 +1,203 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
+  "identity_note": "Device identity and image identity are separate compatibility dimensions.",
   "receiver_families": [
     {
       "id": "dreambox",
+      "name": "Dream Multimedia",
       "match": [
         "dreambox",
-        "dm9",
+        "dream multimedia",
+        "dm500",
+        "dm520",
+        "dm525",
+        "dm820",
+        "dm900",
         "dm920",
-        "one"
+        "dm one",
+        "dm two"
       ],
-      "images": [
-        "dreamos",
-        "enigma2"
-      ]
+      "image_policy": "runtime_detect_and_capability_gate"
     },
     {
       "id": "vuplus",
+      "name": "VU+",
       "match": [
-        "vu+",
         "vuplus",
-        "uno4k",
-        "duo4k",
-        "zero4k"
+        "vuplus"
       ],
-      "images": [
-        "openatv",
-        "openvix",
-        "openpli",
-        "enigma2"
-      ]
+      "image_policy": "runtime_detect_and_capability_gate"
     },
     {
       "id": "gigablue",
+      "name": "GigaBlue",
       "match": [
+        "gigablue",
         "gigablue"
       ],
-      "images": [
-        "enigma2"
-      ]
-    },
-    {
-      "id": "octagon",
-      "match": [
-        "octagon"
-      ],
-      "images": [
-        "enigma2"
-      ]
+      "image_policy": "runtime_detect_and_capability_gate"
     },
     {
       "id": "zgemma",
+      "name": "Zgemma",
       "match": [
+        "zgemma",
         "zgemma"
       ],
-      "images": [
-        "enigma2"
-      ]
+      "image_policy": "runtime_detect_and_capability_gate"
     },
     {
-      "id": "mutant",
+      "id": "octagon",
+      "name": "Octagon",
       "match": [
-        "mutant"
+        "octagon",
+        "octagon"
       ],
-      "images": [
-        "enigma2"
-      ]
+      "image_policy": "runtime_detect_and_capability_gate"
     },
     {
       "id": "edision",
+      "name": "Edision",
       "match": [
+        "edision",
         "edision"
       ],
-      "images": [
-        "enigma2"
-      ]
+      "image_policy": "runtime_detect_and_capability_gate"
     },
     {
-      "id": "formuler",
+      "id": "mutant",
+      "name": "Mutant",
       "match": [
-        "formuler"
+        "mutant",
+        "mutant"
       ],
-      "images": [
-        "enigma2"
-      ]
-    },
-    {
-      "id": "qviart",
-      "match": [
-        "qviart"
-      ],
-      "images": [
-        "enigma2"
-      ]
-    },
-    {
-      "id": "venton",
-      "match": [
-        "venton"
-      ],
-      "images": [
-        "enigma2"
-      ]
-    },
-    {
-      "id": "xtrend",
-      "match": [
-        "xtrend"
-      ],
-      "images": [
-        "enigma2"
-      ]
-    },
-    {
-      "id": "golden-interstar",
-      "match": [
-        "golden interstar"
-      ],
-      "images": [
-        "enigma2"
-      ]
-    },
-    {
-      "id": "opticum",
-      "match": [
-        "opticum"
-      ],
-      "images": [
-        "enigma2"
-      ]
+      "image_policy": "runtime_detect_and_capability_gate"
     },
     {
       "id": "amiko",
+      "name": "Amiko",
       "match": [
+        "amiko",
         "amiko"
       ],
-      "images": [
-        "enigma2"
-      ]
+      "image_policy": "runtime_detect_and_capability_gate"
     },
     {
-      "id": "ustym",
+      "id": "formuler",
+      "name": "Formuler",
       "match": [
-        "ustym"
+        "formuler",
+        "formuler"
       ],
-      "images": [
-        "enigma2"
-      ]
+      "image_policy": "runtime_detect_and_capability_gate"
     },
     {
-      "id": "dinobot",
+      "id": "abcom",
+      "name": "AB-COM",
       "match": [
-        "dinobot"
+        "abcom",
+        "abcom"
       ],
-      "images": [
-        "enigma2"
-      ]
+      "image_policy": "runtime_detect_and_capability_gate"
     },
     {
-      "id": "hitube",
+      "id": "axas",
+      "name": "Axas",
       "match": [
-        "hitube"
+        "axas",
+        "axas"
       ],
-      "images": [
-        "enigma2"
-      ]
+      "image_policy": "runtime_detect_and_capability_gate"
     },
     {
-      "id": "sogno",
+      "id": "golden-interstar",
+      "name": "Golden Interstar",
       "match": [
-        "sogno"
+        "golden interstar",
+        "golden-interstar"
       ],
-      "images": [
-        "enigma2"
-      ]
+      "image_policy": "runtime_detect_and_capability_gate"
     },
     {
-      "id": "ax",
+      "id": "maxytec",
+      "name": "Maxytec",
       "match": [
-        "ax"
+        "maxytec",
+        "maxytec"
       ],
-      "images": [
-        "enigma2"
-      ]
+      "image_policy": "runtime_detect_and_capability_gate"
     },
     {
-      "id": "generic",
-      "match": [],
-      "images": [
-        "enigma2"
-      ]
+      "id": "qviart",
+      "name": "Qviart",
+      "match": [
+        "qviart",
+        "qviart"
+      ],
+      "image_policy": "runtime_detect_and_capability_gate"
+    },
+    {
+      "id": "uclan",
+      "name": "Uclan",
+      "match": [
+        "uclan",
+        "uclan"
+      ],
+      "image_policy": "runtime_detect_and_capability_gate"
+    },
+    {
+      "id": "xsarius",
+      "name": "Xsarius",
+      "match": [
+        "xsarius",
+        "xsarius"
+      ],
+      "image_policy": "runtime_detect_and_capability_gate"
+    },
+    {
+      "id": "xtrend",
+      "name": "Xtrend",
+      "match": [
+        "xtrend",
+        "xtrend"
+      ],
+      "image_policy": "runtime_detect_and_capability_gate"
+    },
+    {
+      "id": "sab",
+      "name": "SAB",
+      "match": [
+        "sab",
+        "sab"
+      ],
+      "image_policy": "runtime_detect_and_capability_gate"
+    },
+    {
+      "id": "miraclebox",
+      "name": "Miraclebox",
+      "match": [
+        "miraclebox",
+        "miraclebox"
+      ],
+      "image_policy": "runtime_detect_and_capability_gate"
+    },
+    {
+      "id": "wetek",
+      "name": "WeTek",
+      "match": [
+        "wetek",
+        "wetek"
+      ],
+      "image_policy": "runtime_detect_and_capability_gate"
+    },
+    {
+      "id": "generic-enigma2",
+      "name": "Unknown Enigma2 vendor",
+      "match": [
+        "generic enigma2",
+        "generic-enigma2"
+      ],
+      "image_policy": "runtime_detect_and_capability_gate"
     }
   ]
 }

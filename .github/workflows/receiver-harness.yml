@@ -9,3 +9,5 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run mock receiver harness
         run: sh tests/test-receiver-harness.sh
+      - name: Run universal platform matrix
+        run: sh tests/test-platform-compatibility.sh
