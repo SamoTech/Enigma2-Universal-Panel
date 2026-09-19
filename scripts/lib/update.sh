@@ -6,12 +6,14 @@ PANEL_UPDATE_RETRIES="${E2PANEL_FETCH_RETRIES:-3}"
 # Compare dotted numeric versions without relying on sort -V (BusyBox compatible).
 # Returns 0 when first version is newer, 1 when equal, 2 when older.
 _panel_version_compare() {
+  first="$1"
+  second="$2"
   old_ifs="$IFS"
   IFS=.
-  set -- $1
+  set -- $first
   a1="${1:-0}"; a2="${2:-0}"; a3="${3:-0}"; a4="${4:-0}"
   IFS=.
-  set -- $2
+  set -- $second
   b1="${1:-0}"; b2="${2:-0}"; b3="${3:-0}"; b4="${4:-0}"
   IFS="$old_ifs"
   for pair in "$a1:$b1" "$a2:$b2" "$a3:$b3" "$a4:$b4"; do
@@ -69,10 +71,15 @@ panel_update_check() {
     ''|*[!0-9.]*) printf 'status=failed\\nreason=invalid_official_installer_version\\n'; return 1 ;;
   esac
 
-  if [ "$latest_version" = "$PANEL_VERSION" ]; then
-    printf 'status=current\\ncurrent_version=%s\\nlatest_version=%s\\nupdate_available=0\\n' "$PANEL_VERSION" "$latest_version"
-  else
+  if _panel_version_compare "$latest_version" "$PANEL_VERSION"; then
     printf 'status=available\\ncurrent_version=%s\\nlatest_version=%s\\nupdate_available=1\\n' "$PANEL_VERSION" "$latest_version"
+  else
+    compare_rc=$?
+    if [ "$compare_rc" -eq 1 ]; then
+      printf 'status=current\\ncurrent_version=%s\\nlatest_version=%s\\nupdate_available=0\\n' "$PANEL_VERSION" "$latest_version"
+    else
+      printf 'status=local_newer\\ncurrent_version=%s\\nlatest_version=%s\\nupdate_available=0\\n' "$PANEL_VERSION" "$latest_version"
+    fi
   fi
   return 0
 }
