@@ -94,9 +94,18 @@ assert 'Community Sources' in Path("Plugins/Extensions/Enigma2UniversalPanel/scr
 assert 'class CommunityInstallerCatalog' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'class PluginLibrary' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'RED: Category' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'GREEN: Install' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'YELLOW: Refresh' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'BLUE: Search' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'name="key_red"' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'name="key_green"' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'name="key_yellow"' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'name="key_blue"' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'name="summary"' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'Plugin Library' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'Search Plugin Library' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
-assert 'GREEN: Install' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'title.title()' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'Native receiver UI | Store-first workflow | No web dependency' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'plugin.library' in p
 assert 'if action_id == "plugin.library"' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'self.session.open(PluginLibrary)' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
@@ -119,10 +128,10 @@ assert "_PLUGIN_ID" in p
 assert 'subprocess.Popen' in p
 assert 'universal_newlines=True' in p
 assert 'class PanelSectionMenu' in screens
-assert '("STORE", (' in screens
-assert '("RECEIVER", (' in screens
-assert '("MANAGEMENT", (' in screens
-assert '("ADVANCED", (' in screens
+assert '("Store", (' in screens
+assert '("Receiver", (' in screens
+assert '("Management", (' in screens
+assert '("Advanced", (' in screens
 assert 'Audit History' in Path("Plugins/Extensions/Enigma2UniversalPanel/plugin.py").read_text()
 
 spec = importlib.util.spec_from_file_location("e2_actions", "Plugins/Extensions/Enigma2UniversalPanel/actions.py")
