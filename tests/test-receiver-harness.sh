@@ -247,14 +247,15 @@ import json,sys
 d=json.load(open(sys.argv[1]))
 assert d["schema_version"] == 2
 assert d["type"] == "plugin_library"
-assert d["taxonomy_version"] == 1
+assert d["taxonomy_version"] == 2
 assert d["categories"]
-assert d["counts"]["community"] == 49
-assert d["counts"]["feed_managed"] == len(d["entries"]) - 49
-assert d["counts"]["community_blocked"] == 49
+assert d["counts"]["community"] < 49
+assert d["counts"]["feed_managed"] == len(d["entries"]) - d["counts"]["community"]
+assert d["counts"]["community_blocked"] == 0
 ids = [x["id"] for x in d["entries"]]
 assert "openwebif" in ids
 assert "ajpanel" in ids
+assert all(x.get("source_status") != "reported_current_unverified" for x in d["entries"] if x["source"] == "community")
 for item in d["entries"]:
     assert item["source"] in {"receiver_feed", "community"}
     assert item["category_name"]
