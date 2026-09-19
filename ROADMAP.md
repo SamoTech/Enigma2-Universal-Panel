@@ -126,24 +126,33 @@ Unknown values must be displayed as unknown, not inferred.
 
 ### 1.4 Plugin/package GUI
 
-Status: NEXT
+Status: IN PROGRESS — read-only browser/resolver slice
 
-Build native screens over the existing resolver/action layer:
+Current slice:
 
-- installed plugins
-- available packages
-- plugin metadata
-- compatibility result
-- installation preview
-- confirmation
-- installation progress
-- verification result
-- update/remove flows
+- installed packages from normalized `package-state`
+- available packages from receiver-configured sources
+- plugin resolution by normalized plugin ID
+- compatibility/dependency installation preview
+- strict GUI action parameter validation
 
-Acceptance:
-- GUI installation uses the same policy gates as CLI.
-- Unknown mappings are blocked.
+Acceptance for current slice:
+- GUI package inventory is backed by the existing normalized package schema.
+- GUI resolution and preview use registered actions and the existing resolver.
+- Invalid plugin IDs are rejected before subprocess execution.
+- Unknown mappings remain fail-closed.
 - External arbitrary feeds remain blocked.
+- No package mutation is exposed by this slice.
+
+Remaining Phase 1.4 work:
+
+- plugin metadata browsing
+- confirmation flow
+- native asynchronous installation
+- installation progress
+- postcondition verification
+- result/audit display
+- update/remove flows with confirmation and policy enforcement
 
 ## Phase 2 — Core receiver management
 
@@ -264,15 +273,16 @@ Repository binary-hosting policy remains unchanged.
 1. Native Enigma2 plugin package and registration.
 2. Native screen/navigation framework.
 3. Dashboard backed by existing detection/capability functions.
-4. Plugin/package screens backed by existing resolver/actions.
+4. Read-only plugin/package browser and resolver screens.
 5. Native GUI test/harness coverage.
-6. Receiver-side real-device validation.
-7. Core management screens.
-8. Channels/bouquets/EPG.
-9. Settings and backup/recovery.
-10. Local automation.
-11. Optional remote control plane.
-12. Optional web/fleet layer.
+6. Native asynchronous package mutation with confirmation/postcondition/audit.
+7. Receiver-side real-device validation.
+8. Core management screens.
+9. Channels/bouquets/EPG.
+10. Settings and backup/recovery.
+11. Local automation.
+12. Optional remote control plane.
+13. Optional web/fleet layer.
 
 ## Definition of done for the native GUI milestone
 

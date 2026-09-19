@@ -22,11 +22,37 @@ fi
 
 python3 - <<'PY'
 from pathlib import Path
+import importlib.util
+
 p = Path("Plugins/Extensions/Enigma2UniversalPanel/actions.py").read_text()
 assert "ACTIONS =" in p
 assert '"receiver.status"' in p
+assert '"plugin.resolve"' in p
+assert '"plugin.preview"' in p
 assert 'shell=False' in p
 assert 'unregistered action' in p
+assert "_PLUGIN_ID" in p
+
+spec = importlib.util.spec_from_file_location("e2_actions", "Plugins/Extensions/Enigma2UniversalPanel/actions.py")
+mod = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(mod)
+
+for value in ("openwebif", "auto.bouquets-maker", "epg_import_2"):
+    assert mod._validate_plugin_id(value) == value
+for value in ("", "OpenWebif", "openwebif;rm", "../../etc/passwd", "openwebif --confirm"):
+    try:
+        mod._validate_plugin_id(value)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("unsafe plugin id accepted: %r" % value)
+
+try:
+    mod.run_action("receiver.status", {"unexpected": "value"})
+except ValueError:
+    pass
+else:
+    raise AssertionError("unexpected parameters accepted")
 PY
 
-pass "native GUI package and policy"
+pass "native GUI package, registered actions, parameter validation and shell policy"
