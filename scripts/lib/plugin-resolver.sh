@@ -328,18 +328,17 @@ plugin_remove_preview() {
   status=blocked
   risk=high
   action=blocked
-  reason="blocked"
+  reason=blocked
   if [ "$removable_ok" = true ] && [ -n "$installed" ] && [ "$image_ok" = true ] && [ "$arch_ok" = true ] && [ "$native_arch_ok" = true ]; then
     status=supported
-    risk=high
     action=remove
-    reason="ready"
+    reason=ready
   elif [ "$removable_ok" != true ]; then
-    reason="plugin_not_declared_removable"
+    reason=plugin_not_declared_removable
   elif [ -z "$installed" ]; then
-    reason="plugin_not_installed"
+    reason=plugin_not_installed
   elif [ "$image_ok" = false ] || [ "$arch_ok" = false ] || [ "$native_arch_ok" != true ]; then
-    reason="compatibility_not_verified"
+    reason=compatibility_not_verified
   fi
 
   cat <<EOF
@@ -357,110 +356,8 @@ plugin_remove_preview() {
   "risk":"$risk",
   "action":"$action",
   "reason":"$reason",
-  "requires_gui_restart":$(plugin_catalog_field "$id" requires_gui_restart | grep -q '^true
-  id="$1"
-  plugin_validate_package "$id" || return 2
-  plugin_package_manager || return 1
-  [ -r "$PANEL_ROOT/plugins/catalog.json" ] || { error "plugin catalog unavailable"; return 1; }
-
-  pkg="$(plugin_catalog_field "$id" package_name)"
-  case "$pkg" in
-    ""|unknown|"image/feed dependent")
-      error "No authoritative package mapping for plugin: $id"
-      return 3
-      ;;
-  esac
-
-  installed="$(plugin_native_installed_version "$pkg")"
-  [ -n "$installed" ] || { error "Plugin is not installed: $id"; return 4; }
-
-  preview_file="/tmp/e2panel-plugin-update-preview.$"
-  if plugin_preview "$id" >"$preview_file" 2>&1; then
-    rc=0
-  else
-    rc=$?
-  fi
-  cat "$preview_file"
-  rm -f "$preview_file"
-  [ "$rc" -eq 0 ] || { error "Plugin update blocked by preflight policy"; return "$rc"; }
-
-  resolved="$(plugin_resolve "$id")" || return $?
-  plugin_update "$resolved" || return 1
-  verified="$(plugin_native_installed_version "$resolved")"
-  [ -n "$verified" ] || { error "Post-update verification failed: $resolved"; return 1; }
-  audit "plugin-update-id id=$id package=$resolved verified=true installed_before=$installed installed_after=$verified"
-}
-
-plugin_resolve_install() {
-  id="$1"
-  preview_file="/tmp/e2panel-plugin-preview.$$"
-  if plugin_preview "$id" >"$preview_file" 2>&1; then
-    rc=0
-  else
-    rc=$?
-  fi
-  cat "$preview_file"
-  rm -f "$preview_file"
-  [ "$rc" -eq 0 ] || { error "Plugin install blocked by preflight policy"; return "$rc"; }
-
-  resolved="$(plugin_resolve "$id")" || return $?
-  plugin_install "$resolved" || return 1
-  plugin_installed "$resolved" || { error "Post-install verification failed: $resolved"; return 1; }
-  audit "plugin-install-id id=$id package=$resolved verified=true"
-}
- && printf true || printf false),
-  "requires_reboot":$(plugin_catalog_field "$id" requires_reboot | grep -q '^true
-  id="$1"
-  plugin_validate_package "$id" || return 2
-  plugin_package_manager || return 1
-  [ -r "$PANEL_ROOT/plugins/catalog.json" ] || { error "plugin catalog unavailable"; return 1; }
-
-  pkg="$(plugin_catalog_field "$id" package_name)"
-  case "$pkg" in
-    ""|unknown|"image/feed dependent")
-      error "No authoritative package mapping for plugin: $id"
-      return 3
-      ;;
-  esac
-
-  installed="$(plugin_native_installed_version "$pkg")"
-  [ -n "$installed" ] || { error "Plugin is not installed: $id"; return 4; }
-
-  preview_file="/tmp/e2panel-plugin-update-preview.$"
-  if plugin_preview "$id" >"$preview_file" 2>&1; then
-    rc=0
-  else
-    rc=$?
-  fi
-  cat "$preview_file"
-  rm -f "$preview_file"
-  [ "$rc" -eq 0 ] || { error "Plugin update blocked by preflight policy"; return "$rc"; }
-
-  resolved="$(plugin_resolve "$id")" || return $?
-  plugin_update "$resolved" || return 1
-  verified="$(plugin_native_installed_version "$resolved")"
-  [ -n "$verified" ] || { error "Post-update verification failed: $resolved"; return 1; }
-  audit "plugin-update-id id=$id package=$resolved verified=true installed_before=$installed installed_after=$verified"
-}
-
-plugin_resolve_install() {
-  id="$1"
-  preview_file="/tmp/e2panel-plugin-preview.$$"
-  if plugin_preview "$id" >"$preview_file" 2>&1; then
-    rc=0
-  else
-    rc=$?
-  fi
-  cat "$preview_file"
-  rm -f "$preview_file"
-  [ "$rc" -eq 0 ] || { error "Plugin install blocked by preflight policy"; return "$rc"; }
-
-  resolved="$(plugin_resolve "$id")" || return $?
-  plugin_install "$resolved" || return 1
-  plugin_installed "$resolved" || { error "Post-install verification failed: $resolved"; return 1; }
-  audit "plugin-install-id id=$id package=$resolved verified=true"
-}
- && printf true || printf false)
+  "requires_gui_restart":$(plugin_catalog_bool "$id" requires_gui_restart),
+  "requires_reboot":$(plugin_catalog_bool "$id" requires_reboot)
 }
 EOF
   [ "$status" = supported ]
@@ -484,14 +381,9 @@ plugin_remove_id() {
   [ -n "$installed" ] || { error "Plugin is not installed: $id"; return 4; }
   [ "$(plugin_catalog_bool "$id" removable)" = true ] || { error "Plugin is not declared removable: $id"; return 5; }
 
-  preview_file="/tmp/e2panel-plugin-remove-preview.$"
-  if plugin_remove_preview "$id" >"$preview_file" 2>&1; then
-    rc=0
-  else
-    rc=$?
-  fi
-  cat "$preview_file"
-  rm -f "$preview_file"
+  preview_output="$(plugin_remove_preview "$id" 2>&1)"
+  rc=$?
+  printf '%s\n' "$preview_output"
   [ "$rc" -eq 0 ] || { error "Plugin removal blocked by preflight policy"; return "$rc"; }
 
   resolved="$(plugin_resolve "$id")" || return $?
