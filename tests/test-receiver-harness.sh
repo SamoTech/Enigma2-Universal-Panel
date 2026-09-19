@@ -170,7 +170,8 @@ assert any(x["id"] == "ajpanel" and x["source_status"] == "verified" for x in d[
 assert any(x["id"] == "aio-panel" and x["execution_status"] == "blocked_unverified_source" for x in d["entries"])
 PY
   pass "community installer registry"
-\n  library_output="$TMP/library.json"
+
+  library_output="$TMP/library.json"
   plugin_library >"$library_output"
   python3 - "$library_output" <<'PY'
 import json,sys
