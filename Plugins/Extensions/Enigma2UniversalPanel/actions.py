@@ -26,6 +26,8 @@ ACTIONS = {
     "receiver.reboot_status": {"command": ("/usr/local/bin/e2panel", "reboot-status"), "risk": "low", "confirmation": False},
     "receiver.reboot_for_plugin": {"command": ("/usr/local/bin/e2panel", "reboot-for-plugin"), "risk": "critical", "confirmation": True},
     "community.catalog": {"command": ("/usr/local/bin/e2panel", "community-catalog"), "risk": "low", "confirmation": False},
+    "community.preview": {"command": ("/usr/local/bin/e2panel", "community-preview"), "risk": "low", "confirmation": False},
+    "community.install": {"command": ("/usr/local/bin/e2panel", "community-install"), "risk": "critical", "confirmation": True},
     "plugin.library": {"command": ("/usr/local/bin/e2panel", "plugin-library"), "risk": "low", "confirmation": False},
     "plugin.resolve": {"command": ("/usr/local/bin/e2panel", "plugin-resolve"), "risk": "low", "confirmation": False},
     "plugin.preview": {"command": ("/usr/local/bin/e2panel", "plugin-preview"), "risk": "low", "confirmation": False},
@@ -65,6 +67,8 @@ def build_action_command(action_id, params=None):
         "plugin.update",
         "plugin.remove_preview",
         "plugin.remove",
+        "community.preview",
+        "community.install",
         "receiver.reboot_for_plugin",
     ):
         if set(params) != {"plugin_id"}:

@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "policy": {
+    "binaries_hosted_in_repository": false,
+    "source_ref_required": true,
+    "installer_blob_sha_required": true,
+    "arbitrary_urls": false,
+    "arbitrary_shell": false,
+    "direct_remote_installer": true,
+    "tls_certificate_verification_required": true,
+    "restart_environment": "SKIP_REBOOT=1",
+    "compatibility_fail_closed": true
+  },
+  "entries": [
+    {
+      "id": "ciefpplugins",
+      "name": "Ciefp Plugins Panel",
+      "developer": "ciefp",
+      "category": "utilities",
+      "repository": "https://github.com/ciefp/CiefpPlugins",
+      "source_ref": "27133260ab23a4e23caaae732d4390600bc0d9d1",
+      "installer_path": "installer.sh",
+      "installer_blob_sha": "87f56e08a039d8cce3f6c25ac9937b99b60ff21c",
+      "source_status": "admitted",
+      "execution_status": "community_confirmed",
+      "delivery": "remote_installer",
+      "supported_images": [
+        "openatv",
+        "openvix",
+        "openpli",
+        "openhdf",
+        "generic-enigma2"
+      ],
+      "supported_architectures": [
+        "armv7l",
+        "arm",
+        "arm64",
+        "mips",
+        "mipsel",
+        "x86",
+        "x86_64"
+      ],
+      "requires_gui_restart": true,
+      "requires_reboot": false,
+      "notes": "Pinned installer source. The installer is executed locally on the receiver with SKIP_REBOOT=1 so Enigma2 restart remains under the panel's controlled restart flow."
+    }
+  ]
+}

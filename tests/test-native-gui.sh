@@ -64,6 +64,8 @@ assert "ACTIONS =" in p
 assert '"receiver.status"' in p
 assert '"receiver.package_state"' in p
 assert '"receiver.package_info"' in p
+assert '"community.preview"' in p
+assert '"community.install"' in p
 assert '"package.install"' in p
 assert '"package.update"' in p
 assert '"package.remove"' in p
@@ -77,6 +79,8 @@ assert '"receiver.reboot_for_plugin"' in p
 assert '"plugin.resolve"' in p
 assert '"plugin.preview"' in p
 assert '"plugin.install"' in p
+assert 'community-admitted.json' in Path("scripts/lib/library.sh").read_text()
+assert 'community_confirmed' in Path("scripts/lib/community.sh").read_text()
 assert '"plugin.info"' in p
 assert '"plugin.update"' in p
 assert '"plugin.remove_preview"' in p
@@ -182,6 +186,8 @@ assert mod.build_action_command("plugin.update", {"plugin_id": "openwebif"}) == 
 assert mod.build_action_command("plugin.remove_preview", {"plugin_id": "openwebif"}) == ("/usr/local/bin/e2panel", "plugin-remove-preview", "openwebif")
 assert mod.build_action_command("plugin.remove", {"plugin_id": "openwebif"}) == ("/usr/local/bin/e2panel", "plugin-remove-id", "openwebif")
 assert mod.build_action_command("plugin.update", {"plugin_id": "openwebif"}) == ("/usr/local/bin/e2panel", "plugin-update-id", "openwebif")
+assert mod.build_action_command("community.install", {"plugin_id": "ciefpplugins"}) == ("/usr/local/bin/e2panel", "community-install", "ciefpplugins")
+assert mod.build_action_command("community.preview", {"plugin_id": "ciefpplugins"}) == ("/usr/local/bin/e2panel", "community-preview", "ciefpplugins")
 assert mod.build_action_command("plugin.install", {"plugin_id": "openwebif"}) == (
     "/usr/local/bin/e2panel", "plugin-install-id", "openwebif"
 )

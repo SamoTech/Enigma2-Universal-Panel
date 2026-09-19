@@ -7,10 +7,8 @@ plugin_library() {
     error "Plugin catalog is unavailable"
     return 1
   }
-  [ -r "$PANEL_ROOT/plugins/community.json" ] || {
-    error "Community registry is unavailable"
-    return 1
-  }
+  [ -r "$PANEL_ROOT/plugins/community.json" ] || { error "Community registry is unavailable"; return 1; }
+  [ -r "$PANEL_ROOT/plugins/community-admitted.json" ] || { error "Community admission registry is unavailable"; return 1; }
 
   PYTHON_BIN=unknown
   if has python3; then
@@ -30,6 +28,7 @@ import json
 import sys
 
 catalog_path, community_path, categories_path = sys.argv[1:4]
+admitted_path = catalog_path.rsplit('/', 1)[0] + '/community-admitted.json'
 
 def read_json(path):
     with io.open(path, "r", encoding="utf-8") as fh:
@@ -38,6 +37,8 @@ def read_json(path):
 catalog = read_json(catalog_path)
 community = read_json(community_path)
 taxonomy = read_json(categories_path)
+admitted = read_json(admitted_path)
+admitted_map = {e.get('id'): e for e in admitted.get('entries') or []}
 
 category_titles = {}
 for category in taxonomy.get("categories") or []:
@@ -119,6 +120,16 @@ for entry in community.get("entries") or []:
         "source_reference": entry.get("source_reference") or entry.get("repository"),
         "network_reachability": health.get("network_reachability", "unknown"),
         "maintenance_status": health.get("maintenance_status", "unknown"),
+        "execution_status": entry.get("execution_status", "blocked"),
+        "installer_path": entry.get("installer_path"),
+        "installer_version": entry.get("installer_version") or entry.get("release_version"),
+        "source_ref": entry.get("source_ref"),
+        "installable": bool(admitted_map.get(entry.get("id"))),
+        "updatable": bool(admitted_map.get(entry.get("id"))),
+        "removable": False,
+        "community_admitted": bool(admitted_map.get(entry.get("id"))),
+        "requires_gui_restart": bool((admitted_map.get(entry.get("id")) or {}).get("requires_gui_restart", False)),
+        "requires_reboot": bool((admitted_map.get(entry.get("id")) or {}).get("requires_reboot", False)),
     })
 
 items.sort(key=lambda item: (

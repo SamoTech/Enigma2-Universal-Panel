@@ -10,14 +10,14 @@
 #
 # The installer runs on the Enigma2 receiver as root and installs the native
 # Enigma2 plugin plus its receiver-side runtime. No browser or PC is required.
-# Enigma2 Universal Panel installer v1.8.0
+# Enigma2 Universal Panel installer v1.9.0
 set -eu
 umask 022
 
 REPO="https://raw.githubusercontent.com/SamoTech/Enigma2-Universal-Panel/main"
 DEST="/usr/lib/enigma2-universal-panel"
 BIN="/usr/local/bin/e2panel"
-VERSION="1.8.0"
+VERSION="1.9.0"
 FETCH_TIMEOUT="${E2PANEL_FETCH_TIMEOUT:-30}"
 FETCH_RETRIES="${E2PANEL_FETCH_RETRIES:-3}"
 MIN_FREE_KB="${E2PANEL_MIN_FREE_KB:-4096}"
@@ -168,6 +168,7 @@ scripts/lib/status.sh
 scripts/lib/telemetry.sh
 scripts/lib/diagnose.sh
 scripts/lib/library.sh
+scripts/lib/community.sh
 scripts/lib/validation.sh
 scripts/lib/update.sh
 config/capabilities.json
@@ -179,6 +180,7 @@ config/compatibility.json
 config/plugin-sources.json
 plugins/catalog.json
 plugins/community.json
+plugins/community-admitted.json
 plugins/categories.json
 plugins/compatibility.json
 plugins/sources.json
