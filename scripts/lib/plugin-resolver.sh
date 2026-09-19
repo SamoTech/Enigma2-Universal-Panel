@@ -108,8 +108,28 @@ plugin_native_arch_compatibility() {
   native_arch="$1"
   receiver_arch="$2"
   case "$native_arch" in
-    all|"$receiver_arch") printf 'true\n' ;;
-    ""|unknown) printf 'unknown\n' ;;
+    all|noarch|"$receiver_arch") printf 'true\n'; return 0 ;;
+    ""|unknown) printf 'unknown\n'; return 0 ;;
+  esac
+
+  # opkg exposes the architectures actually accepted by the installed image.
+  # Do not compare a package's OE machine architecture directly with uname -m:
+  # e.g. VU+ ARM receivers can report armv7l while OpenATV feeds use a tuned
+  # architecture such as cortexa15hf-neon-vfpv4.
+  if [ "$E2_PKG" = opkg ] && command -v opkg >/dev/null 2>&1; then
+    if opkg print-architecture 2>/dev/null |
+      awk -v wanted="$native_arch" '
+        $1 == "arch" && $2 == wanted { found=1 }
+        END { exit(found ? 0 : 1) }
+      '
+    then
+      printf 'true\n'
+      return 0
+    fi
+  fi
+
+  case "$E2_PKG:$native_arch:$receiver_arch" in
+    apt:all:*|ipkg:all:*) printf 'true\n' ;;
     *) printf 'false\n' ;;
   esac
 }
