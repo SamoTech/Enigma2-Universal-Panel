@@ -54,6 +54,7 @@ spec.loader.exec_module(mod)
 for value in ("openwebif", "auto.bouquets-maker", "epg_import_2"):
     assert mod._validate_plugin_id(value) == value
 
+assert mod.build_action_command("plugin.info", {"plugin_id": "openwebif"}) == ("/usr/local/bin/e2panel", "plugin-info-id", "openwebif")
 assert mod.build_action_command("plugin.install", {"plugin_id": "openwebif"}) == (
     "/usr/local/bin/e2panel", "plugin-install-id", "openwebif"
 )
