@@ -79,10 +79,16 @@ detect_device() {
   [ -r "$(_detect_path /proc/stb/info/chipset)" ] && E2_CHIPSET="$(tr '\r\n' '  ' < "$(_detect_path /proc/stb/info/chipset)" 2>/dev/null | sed 's/[[:space:]][[:space:]]*/ /g; s/^ //; s/ $//')"
   [ -n "$E2_CHIPSET" ] || E2_CHIPSET=unknown
 
-  raw="$(printf '%s %s %s %s' "$E2_MODEL" "$E2_MACHINE" "$E2_CHIPSET" "$(hostname 2>/dev/null || true)")"
+  E2_HOSTNAME="$(hostname 2>/dev/null || true)"
+  raw="$(printf '%s %s %s %s' "$E2_MODEL" "$E2_MACHINE" "$E2_CHIPSET" "$E2_HOSTNAME")"
   low="$(printf '%s' "$raw" | tr '[:upper:]' '[:lower:]')"
 
   case "$low" in
+    *vuuno4kse*)
+      E2_DEVICE_FAMILY=vuplus
+      E2_VENDOR="VU+"
+      E2_MODEL="VU+ Uno 4K SE"
+      ;;
     *dreambox*|*dm500*|*dm520*|*dm525*|*dm820*|*dm900*|*dm920*|*dmone*|*dmtwo*|*"one ultra"*)
       E2_DEVICE_FAMILY=dreambox
       E2_VENDOR="Dream Multimedia"

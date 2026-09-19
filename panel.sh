@@ -71,6 +71,7 @@ case "$cmd" in
   status) print_status;; capabilities) print_capabilities;; diagnose) diagnose;;
   validation-snapshot) print_validation_snapshot;;
   package-state) plugin_package_state;;
+  reboot-status) reboot_status;;
   audit-history) audit_history;;
   telemetry) print_telemetry;;
   compatibility) print_compatibility;;
