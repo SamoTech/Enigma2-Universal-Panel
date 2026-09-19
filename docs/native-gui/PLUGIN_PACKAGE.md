@@ -47,3 +47,8 @@ The native Update Plugin entry performs a read-only compatibility preflight and 
 ### Native remove flow
 
 The native Remove Plugin entry uses a dedicated read-only removal preflight rather than the install/update preview because removal must not depend on an available candidate version. The preflight requires an authoritative package mapping, `removable=true`, an installed package, and verified receiver/image/package-architecture compatibility. Confirmation is shown on the receiver, then the registered high-risk `plugin.remove` action runs asynchronously through `eConsoleAppContainer`. The receiver action repeats the same gates, removes only the catalog-resolved package through receiver-configured sources, verifies that it is no longer installed, and writes an audit record. GUI-restart/reboot requirements are displayed from catalog metadata; restart execution remains a separate controlled action.
+
+
+### Receiver telemetry
+
+The native dashboard now consumes a dedicated read-only `receiver.telemetry` action. It reports evidence-backed CPU load averages from `/proc/loadavg`, RAM totals/availability from `/proc/meminfo`, root filesystem capacity from `df`, and the available Python runtime version. The GUI can open a dedicated Receiver Telemetry screen and refresh the sample with the GREEN key. This is sampled telemetry, not a background real-time monitoring daemon.
