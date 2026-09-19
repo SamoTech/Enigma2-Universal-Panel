@@ -1,0 +1,13 @@
+name: installer-tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  installer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run installer validation
+        run: sh tests/test-installer.sh
