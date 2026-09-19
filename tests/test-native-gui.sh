@@ -100,6 +100,7 @@ assert 'class ReceiverCompatibility' in Path("Plugins/Extensions/Enigma2Universa
 assert 'receiver.compatibility' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'Community Sources' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'class CommunityInstallerCatalog' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'class PackageBrowser' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'class PluginLibrary' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'class PluginCategorySelector' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'Plugin Categories' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
