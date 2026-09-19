@@ -87,7 +87,7 @@ detect_device() {
       E2_DEVICE_FAMILY=dreambox
       E2_VENDOR="Dream Multimedia"
       ;;
-    *vu+*|*vuplus*|*solo*|*duo*|*uno*|*zero*)
+    *vu+*|*vuplus*|*vuuno*|*vuduo*|*vusolo*|*vuultimo*|*vuzero*|*uno4kse*)
       E2_DEVICE_FAMILY=vuplus
       E2_VENDOR="VU+"
       ;;
