@@ -1,0 +1,11 @@
+name: receiver-harness-tests
+on:
+  push:
+  pull_request:
+jobs:
+  receiver-harness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run mock receiver harness
+        run: sh tests/test-receiver-harness.sh
