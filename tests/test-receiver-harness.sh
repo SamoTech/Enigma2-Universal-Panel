@@ -25,6 +25,7 @@ pass "no binary packages hosted"
 grep -q '"arbitrary_url_installation": false' "$ROOT/plugins/catalog.json" || fail "URL policy"
 grep -q 'Arbitrary external feed registration is disabled by policy' "$ROOT/scripts/lib/plugins.sh" || fail "feed guard"
 grep -q 'plugin-preview' "$ROOT/panel.sh" || fail "preview command"
+grep -q 'compatibility) print_compatibility;;' "$ROOT/panel.sh" || fail "compatibility command"
 pass "security policy gates"
 
 TMP="$(mktemp -d)"
@@ -93,6 +94,8 @@ EOF
   . "$ROOT/scripts/lib/plugin-resolver.sh"
   . "$ROOT/scripts/lib/telemetry.sh"
   . "$ROOT/scripts/lib/library.sh"
+  . "$ROOT/scripts/lib/compat.sh"
+  . "$ROOT/scripts/lib/compatibility.sh"
 
   require_root() { return 0; }
 
@@ -100,9 +103,20 @@ EOF
     E2_ARCH=x86_64
     E2_ARCH_FAMILY=x86_64
     E2_PKG=opkg
+    E2_PACKAGE_FAMILY=opkg
     E2_IMAGE=openatv
+    E2_IMAGE_FAMILY=oe-alliance
     E2_BIN=/usr/bin/enigma2
     E2_VERSION=mock
+    E2_PYTHON_BIN=python3
+    E2_PYTHON_MAJOR=3
+    E2_PYTHON_VERSION=3.12
+    E2_DEVICE_FAMILY=generic-enigma2
+    E2_VENDOR=unknown
+    E2_MODEL=mock
+    E2_MACHINE=mock
+    E2_CHIPSET=unknown
+    E2_ARCH_FAMILY=x86_64
     E2_STORAGE_AVAILABLE=99000
     E2_NETWORK=online
   }
@@ -112,6 +126,23 @@ EOF
   [ "$(plugin_native_arch_compatibility armhf x86_64)" = false ] || fail "mismatched architecture rejection"
   [ "$(plugin_native_arch_compatibility unknown x86_64)" = unknown ] || fail "unknown architecture fail-closed state"
   pass "native package architecture policy"
+
+  compatibility_status >"$TMP/compatibility.json"
+  python3 - "$TMP/compatibility.json" <<'PY'
+import json,sys
+d=json.load(open(sys.argv[1]))
+assert d["schema_version"] == 1
+assert d["type"] == "receiver_compatibility"
+assert d["architecture"]["family"] == "x86_64"
+assert d["package"]["manager"] == "opkg"
+assert d["package"]["family"] == "opkg"
+assert d["runtime"]["native_gui"] == "supported"
+assert d["image"]["family"] == "oe-alliance"
+assert d["device"]["family"] == "generic-enigma2"
+assert d["overall"] == "image-and-device-detected"
+assert d["real_receiver_validation"] is False
+PY
+  pass "mock receiver compatibility report"
 
   plugin_package_state >"$TMP/state.json"
   python3 - "$TMP/state.json" <<'PY'
@@ -183,8 +214,10 @@ PY
   python3 - "$library_output" <<'PY'
 import json,sys
 d=json.load(open(sys.argv[1]))
-assert d["schema_version"] == 1
+assert d["schema_version"] == 2
 assert d["type"] == "plugin_library"
+assert d["taxonomy_version"] == 1
+assert d["categories"]
 assert d["counts"]["community"] == 49
 assert d["counts"]["feed_managed"] == len(d["entries"]) - 49
 assert d["counts"]["community_blocked"] == 49
@@ -193,6 +226,7 @@ assert "openwebif" in ids
 assert "ajpanel" in ids
 for item in d["entries"]:
     assert item["source"] in {"receiver_feed", "community"}
+    assert item["category_name"]
     assert item["availability"]
 PY
   pass "unified plugin library projection"
@@ -249,4 +283,5 @@ PY
   pass "arbitrary feed blocked"
 )
 
+sh "$ROOT/tests/test-platform-compatibility.sh"
 printf 'Mock receiver harness completed. No real receiver was contacted.\n'
