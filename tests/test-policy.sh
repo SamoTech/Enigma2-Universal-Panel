@@ -32,6 +32,9 @@ grep -q '"arbitrary_url_installation": false' "$ROOT/plugins/catalog.json" || fa
 grep -q 'Arbitrary external feed registration is disabled by policy' "$ROOT/scripts/lib/plugins.sh" || fail "external feed guard missing"
 grep -q 'Plugin install blocked by preflight policy' "$ROOT/scripts/lib/plugin-resolver.sh" || fail "preflight gate missing"
 grep -q 'Post-install verification failed' "$ROOT/scripts/lib/plugin-resolver.sh" || fail "postcondition verification missing"
+grep -q 'Post-remove verification failed' "$ROOT/scripts/lib/plugin-resolver.sh" || fail "remove postcondition verification missing"
+grep -q 'plugin_remove_preview()' "$ROOT/scripts/lib/plugin-resolver.sh" || fail "remove preflight missing"
+grep -q 'plugin-remove-id' "$ROOT/panel.sh" || fail "plugin ID remove command missing"
 pass "source/install policy gates"
 
 if find "$ROOT" -type f \( -name '*.ipk' -o -name '*.deb' \) -print -quit | grep -q .; then
