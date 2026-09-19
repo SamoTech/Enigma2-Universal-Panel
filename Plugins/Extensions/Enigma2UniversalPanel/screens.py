@@ -143,12 +143,21 @@ class PackageInstallProgress(Screen):
         self.finished = False
         self["title"] = Label("Installing plugin: %s" % plugin_id)
         self["state"] = Label("Starting native package operation...")
-        self["hint"] = Label("Please wait — EXIT is disabled during installation")
+        self["hint"] = Label("Please wait — installation running")
+        self["actions"] = ActionMap(
+            ["OkCancelActions"],
+            {"ok": self._close_when_finished, "cancel": self._close_when_finished},
+            -2,
+        )
         self.container = eConsoleAppContainer()
         self.container.dataAvail.append(self._data_available)
         self.container.appClosed.append(self._finished)
         self.onClose.append(self._cleanup)
         self.container.execute(*self.command)
+
+    def _close_when_finished(self):
+        if self.finished:
+            self.close()
 
     def _data_available(self, data):
         if isinstance(data, bytes):
