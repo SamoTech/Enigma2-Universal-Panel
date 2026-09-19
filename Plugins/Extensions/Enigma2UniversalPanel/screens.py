@@ -152,10 +152,10 @@ class ReceiverTelemetry(Screen):
             {"cancel": self.close, "green": self.refresh},
             -2,
         )
+        _add_scroll_actions(self, "state")
         self.onLayoutFinish.append(self.refresh)
 
     @staticmethod
-        _add_scroll_actions(self, "state")
     def _kv(text):
         values = {}
         for line in text.splitlines():
