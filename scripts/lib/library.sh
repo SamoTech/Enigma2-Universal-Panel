@@ -159,13 +159,36 @@ def read_json(path):
         return json.load(fh)
 
 catalog, community = [read_json(path) for path in sys.argv[1:3]]
+category_aliases = {
+    "system_administration": "system", "service_management": "system",
+    "satellite_configuration": "channels", "conditional_access_configuration": "security",
+    "conditional_access_software": "security", "backup_flash": "multiboot",
+    "multi_boot": "multiboot", "media_streaming": "media", "iptv_interface": "media",
+    "iptv_stalker": "media", "iptv_streaming": "media", "stalker_portal": "media",
+    "audio_commentary": "audio", "epg_bouquet_generation": "epg",
+    "iptv_bouquet_generation": "channels", "iptv_to_dvb_mapping": "channels",
+    "sports_and_satellite": "media", "signal_diagnostics": "monitoring",
+    "picons": "gui", "subtitles": "localization", "translation": "localization",
+    "timeshift": "recording", "third_party_catalog": "utilities"
+}
+canonical_categories = {
+    "system","network","remote_control","media","epg","channels","recording","gui",
+    "localization","audio","multiboot","monitoring","security","religious","utilities"
+}
+def canonical_category(value):
+    if value in canonical_categories:
+        return value
+    return category_aliases.get(value, "utilities")
+
 items = []
 for entry in catalog.get("plugins") or []:
-    category = entry.get("category", "unknown")
+    category_original = entry.get("category", "unknown")
+    category = canonical_category(category_original)
     items.append({
         "id": entry.get("id"), "item_type": "plugin",
         "name": entry.get("display_name") or entry.get("name") or entry.get("id"),
-        "category": category, "category_name": category.replace("_", " ").title(),
+        "category": category, "category_original": category_original,
+        "category_name": category.replace("_", " ").title(),
         "subcategory": entry.get("subcategory", "unknown"),
         "author": entry.get("author", "unknown"), "source": "receiver_feed",
         "source_type": entry.get("source_type", "unknown"), "status": entry.get("status", "unknown"),
@@ -176,7 +199,8 @@ for entry in catalog.get("plugins") or []:
     })
 for entry in community.get("entries") or []:
     health = entry.get("health") or {}
-    category = entry.get("category", "unknown")
+    category_original = entry.get("category", "unknown")
+    category = canonical_category(category_original)
     items.append({
         "id": entry.get("id"), "item_type": entry.get("item_type", "plugin"),
         "name": entry.get("name") or entry.get("id"), "category": category,
