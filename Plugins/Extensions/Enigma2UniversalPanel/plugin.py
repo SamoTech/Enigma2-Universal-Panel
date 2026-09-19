@@ -4,7 +4,7 @@ from .audit_history import AuditHistory
 
 PLUGIN_NAME = "Enigma2 Universal Panel"
 PLUGIN_DESCRIPTION = "Native receiver management panel"
-PLUGIN_VERSION = "1.9.0"
+PLUGIN_VERSION = "1.10.0"
 
 
 def main(session, **kwargs):
