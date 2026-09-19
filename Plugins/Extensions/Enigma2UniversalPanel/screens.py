@@ -62,6 +62,13 @@ class Dashboard(Screen):
         telemetry_code, telemetry_output = run_action("receiver.telemetry")
         if telemetry_code == 0:
             telemetry = self._kv(telemetry_output)
+        reboot_status_code, reboot_status_output = run_action("receiver.reboot_status")
+        reboot_status = "unknown"
+        if reboot_status_code == 0:
+            try:
+                reboot_status = json.loads(reboot_status_output).get("status", "unknown")
+            except (TypeError, ValueError, AttributeError):
+                reboot_status = "unknown"
         cap_code, cap_output = run_action("receiver.capabilities")
         capabilities = []
         if cap_code == 0:
@@ -75,6 +82,7 @@ class Dashboard(Screen):
             "Enigma2: %s" % state.get("enigma2_version", "unknown"),
             "Package manager: %s" % state.get("package_manager", "unknown"),
             "Network: %s" % state.get("network", "unknown"),
+            "Reboot verification: %s" % reboot_status,
             "Storage available: %s KB" % state.get("available_storage_kb", "unknown"),
             "CPU load: %s / %s / %s" % (
                 telemetry.get("load_1", "unknown"),
@@ -343,13 +351,14 @@ class PluginLibrary(Screen):
                 confirmed,
                 plugin_id,
                 bool(preview.get("requires_gui_restart") is True),
+                bool(preview.get("requires_reboot") is True),
             ),
             MessageBox,
             summary,
             MessageBox.TYPE_YESNO,
         )
 
-    def _start_library_install(self, confirmed, plugin_id, requires_gui_restart):
+    def _start_library_install(self, confirmed, plugin_id, requires_gui_restart, requires_reboot):
         if not confirmed:
             return
         try:
@@ -363,6 +372,7 @@ class PluginLibrary(Screen):
             command,
             "Installing",
             requires_gui_restart,
+            requires_reboot,
         )
 
     def show_details(self):
@@ -623,12 +633,13 @@ class PackageInstallProgress(Screen):
     </screen>
     """
 
-    def __init__(self, session, plugin_id, command, operation="Installing", requires_gui_restart=False):
+    def __init__(self, session, plugin_id, command, operation="Installing", requires_gui_restart=False, requires_reboot=False):
         Screen.__init__(self, session)
         self.plugin_id = plugin_id
         self.command = tuple(command)
         self.operation = operation
         self.requires_gui_restart = requires_gui_restart
+        self.requires_reboot = requires_reboot
         self.output = ""
         self.finished = False
         self["title"] = Label("%s plugin: %s" % (operation, plugin_id))
@@ -665,7 +676,10 @@ class PackageInstallProgress(Screen):
                 "Plugin: %s" % (self.operation, self.plugin_id)
             )
             self["state"].setText(text)
-            if self.requires_gui_restart:
+            if self.requires_reboot:
+                self["hint"].setText("OK / EXIT: Close — receiver reboot required")
+                self._offer_reboot()
+            elif self.requires_gui_restart:
                 self["hint"].setText("OK / EXIT: Close — GUI restart required")
                 self._offer_gui_restart()
             else:
@@ -679,6 +693,32 @@ class PackageInstallProgress(Screen):
             )
             self["state"].setText(text)
             self["hint"].setText("OK / EXIT: Close")
+
+    def _offer_reboot(self):
+        self.session.openWithCallback(
+            self._reboot_confirmed,
+            MessageBox,
+            "The %s operation completed successfully.\n\n"
+            "Verified plugin metadata requires a receiver reboot.\n"
+            "The reboot intent will be persisted and verified after the receiver starts again.\n\n"
+            "Reboot now?"
+            % self.operation,
+            MessageBox.TYPE_YESNO,
+        )
+
+    def _reboot_confirmed(self, confirmed):
+        if not confirmed:
+            self["hint"].setText("OK / EXIT: Close — reboot deferred")
+            return
+        try:
+            command = build_action_command(
+                "receiver.reboot_for_plugin",
+                {"plugin_id": self.plugin_id},
+            )
+        except Exception as exc:
+            self["hint"].setText("Reboot action rejected: %s" % exc)
+            return
+        self.session.open(RebootProgress, command, self.plugin_id)
 
     def _offer_gui_restart(self):
         self.session.openWithCallback(
@@ -709,6 +749,65 @@ class PackageInstallProgress(Screen):
             except Exception:
                 pass
 
+
+
+class RebootProgress(Screen):
+    skin = """
+    <screen name="RebootProgress" position="center,center" size="1000,500" title="Enigma2 Universal Panel">
+        <widget name="title" position="35,20" size="930,45" font="Regular;30" />
+        <widget name="state" position="35,90" size="930,320" font="Regular;20" valign="top" />
+        <widget name="hint" position="35,430" size="930,35" font="Regular;20" />
+    </screen>
+    """
+
+    def __init__(self, session, command, plugin_id):
+        Screen.__init__(self, session)
+        self.finished = False
+        self.plugin_id = plugin_id
+        self["title"] = Label("Rebooting Receiver")
+        self["state"] = Label(
+            "Persisting reboot verification intent...\n\n"
+            "The receiver will restart now. Verification will occur the next time "
+            "Enigma2 Universal Panel is opened."
+        )
+        self["hint"] = Label("Please wait — receiver reboot in progress")
+        self["actions"] = ActionMap(
+            ["OkCancelActions"],
+            {"ok": self._close_when_finished, "cancel": self._close_when_finished},
+            -2,
+        )
+        self.container = eConsoleAppContainer()
+        self.container.appClosed.append(self._finished)
+        self.onClose.append(self._cleanup)
+        self.container.execute(*tuple(command))
+
+    def _close_when_finished(self):
+        if self.finished:
+            self.close()
+
+    def _finished(self, retval):
+        self.finished = True
+        if retval == 0:
+            self["state"].setText(
+                "Reboot request accepted.\n\n"
+                "Verification is pending until the receiver boots again.\n"
+                "Open Enigma2 Universal Panel after boot to complete verification."
+            )
+        else:
+            self["state"].setText(
+                "Reboot request failed.\n\n"
+                "Exit code: %s\n"
+                "No successful reboot verification can be claimed."
+                % retval
+            )
+        self["hint"].setText("OK / EXIT: Close")
+
+    def _cleanup(self):
+        if not self.finished:
+            try:
+                self.container.kill()
+            except Exception:
+                pass
 
 
 class RestartGuiProgress(Screen):
@@ -863,6 +962,7 @@ class Enigma2UniversalPanel(Screen):
         ("RECEIVER", (
             ("Dashboard", "dashboard"),
             ("Compatibility", "receiver.compatibility"),
+            ("Reboot Status", "receiver.reboot_status"),
             ("Telemetry", "receiver.telemetry"),
             ("Status", "receiver.status"),
             ("Capabilities", "receiver.capabilities"),
@@ -926,11 +1026,16 @@ class Enigma2UniversalPanel(Screen):
                preview.get("candidate_version", "unknown"), preview.get("requires_gui_restart", "unknown"))
         )
         self.session.openWithCallback(
-            lambda confirmed: self._start_update(confirmed, plugin_id, bool(preview.get("requires_gui_restart") is True)),
+            lambda confirmed: self._start_update(
+                confirmed,
+                plugin_id,
+                bool(preview.get("requires_gui_restart") is True),
+                bool(preview.get("requires_reboot") is True),
+            ),
             MessageBox, summary, MessageBox.TYPE_YESNO,
         )
 
-    def _start_update(self, confirmed, plugin_id, requires_gui_restart):
+    def _start_update(self, confirmed, plugin_id, requires_gui_restart, requires_reboot):
         if not confirmed:
             return
         try:
@@ -938,7 +1043,7 @@ class Enigma2UniversalPanel(Screen):
         except Exception as exc:
             self.session.open(MessageBox, "Action rejected: %s" % exc, MessageBox.TYPE_ERROR)
             return
-        self.session.open(PackageInstallProgress, plugin_id, command, "Updating", requires_gui_restart)
+        self.session.open(PackageInstallProgress, plugin_id, command, "Updating", requires_gui_restart, requires_reboot)
 
     def _prepare_remove(self, value):
         if value is None or value.strip() == "":
@@ -995,14 +1100,17 @@ class Enigma2UniversalPanel(Screen):
         )
         self.session.openWithCallback(
             lambda confirmed: self._start_remove(
-                confirmed, plugin_id, bool(preview.get("requires_gui_restart") is True)
+                confirmed,
+                plugin_id,
+                bool(preview.get("requires_gui_restart") is True),
+                bool(preview.get("requires_reboot") is True),
             ),
             MessageBox,
             summary,
             MessageBox.TYPE_YESNO,
         )
 
-    def _start_remove(self, confirmed, plugin_id, requires_gui_restart):
+    def _start_remove(self, confirmed, plugin_id, requires_gui_restart, requires_reboot):
         if not confirmed:
             return
         try:
@@ -1010,7 +1118,7 @@ class Enigma2UniversalPanel(Screen):
         except Exception as exc:
             self.session.open(MessageBox, "Action rejected: %s" % exc, MessageBox.TYPE_ERROR)
             return
-        self.session.open(PackageInstallProgress, plugin_id, command, "Removing", requires_gui_restart)
+        self.session.open(PackageInstallProgress, plugin_id, command, "Removing", requires_gui_restart, requires_reboot)
 
     def _plugin_install_input(self):
         self.session.openWithCallback(self._prepare_install, InputBox, title="Install plugin ID", text="")
@@ -1058,13 +1166,18 @@ class Enigma2UniversalPanel(Screen):
             )
         )
         self.session.openWithCallback(
-            lambda confirmed: self._start_install(confirmed, plugin_id),
+            lambda confirmed: self._start_install(
+                confirmed,
+                plugin_id,
+                bool(preview.get("requires_gui_restart") is True),
+                bool(preview.get("requires_reboot") is True),
+            ),
             MessageBox,
             summary,
             MessageBox.TYPE_YESNO,
         )
 
-    def _start_install(self, confirmed, plugin_id):
+    def _start_install(self, confirmed, plugin_id, requires_gui_restart, requires_reboot):
         if not confirmed:
             return
         try:
@@ -1072,7 +1185,14 @@ class Enigma2UniversalPanel(Screen):
         except Exception as exc:
             self.session.open(MessageBox, "Action rejected: %s" % exc, MessageBox.TYPE_ERROR)
             return
-        self.session.open(PackageInstallProgress, plugin_id, command)
+        self.session.open(
+            PackageInstallProgress,
+            plugin_id,
+            command,
+            "Installing",
+            requires_gui_restart,
+            requires_reboot,
+        )
 
     def _run_plugin_action(self, action_id, value):
         if value is None or value == "":
@@ -1112,6 +1232,12 @@ class Enigma2UniversalPanel(Screen):
             return
         if action_id == "receiver.audit_history":
             self.session.open(AuditHistory)
+            return
+        if action_id == "receiver.reboot_status":
+            code, output = run_action(action_id)
+            if code != 0:
+                output = "Command failed with exit code %s.\n\n%s" % (code, output)
+            self.session.open(ActionResult, "Reboot Verification", output)
             return
         if action_id == "receiver.telemetry":
             self.session.open(ReceiverTelemetry)

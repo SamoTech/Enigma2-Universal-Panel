@@ -78,6 +78,11 @@ cat >"$BIN/ip" <<'EOF'
 #!/bin/sh
 printf '%s\n' 'default via 192.0.2.1 dev eth0'
 EOF
+cat >"$BIN/reboot" <<'EOF'
+#!/bin/sh
+printf '%s\n' "mock reboot requested" >>"$MOCK_REBOOT_LOG"
+exit 0
+EOF
 
 (
   export PATH="$BIN:$PATH"
@@ -85,8 +90,10 @@ EOF
   export PANEL_ROOT="$ROOT"
   export PANEL_ETC="$TMP/etc"
   export PANEL_LOG="$TMP/panel.log"
+  export MOCK_REBOOT_LOG="$TMP/reboot.log"
   export E2_IMAGE=openatv E2_ARCH=x86_64 E2_PKG=opkg E2_NETWORK=online
-  printf 'python3 - 3.12\n' >"$STATE/installed"
+  export E2_TEST_BOOT_ID=boot-1
+  printf 'python3 - 3.12\nofgwrite 1.0\n' >"$STATE/installed"
 
   . "$ROOT/scripts/lib/common.sh"
   . "$ROOT/scripts/lib/detect.sh"
@@ -96,8 +103,10 @@ EOF
   . "$ROOT/scripts/lib/library.sh"
   . "$ROOT/scripts/lib/compat.sh"
   . "$ROOT/scripts/lib/compatibility.sh"
+  . "$ROOT/scripts/lib/reboot.sh"
 
   require_root() { return 0; }
+  reboot() { printf '%s\n' "mock reboot requested" >>"$MOCK_REBOOT_LOG"; return 0; }
 
   detect_all() {
     E2_ARCH=x86_64
@@ -275,6 +284,28 @@ PY
   grep -q 'plugin-remove-id id=openwebif package=enigma2-plugin-extensions-openwebif verified=true installed_before=2.0 installed_after=removed' "$PANEL_LOG" ||
     fail "remove audit record missing"
   pass "mock receiver remove and postcondition/audit"
+
+  if action_reboot_for_plugin openwebif >/dev/null 2>&1; then
+    fail "reboot accepted for plugin without reboot metadata"
+  fi
+  pass "reboot blocked when plugin metadata does not require it"
+
+  action_reboot_for_plugin ofgwrite >"$TMP/reboot-request.log"
+  [ -r "$PANEL_ETC/pending-reboot" ] || fail "reboot verification intent missing"
+  grep -q "^mock reboot requested$" "$MOCK_REBOOT_LOG" || fail "mock reboot was not requested"
+
+  pending_status="$(reboot_status)"
+  printf "%s\n" "$pending_status" | grep -q '"status":"pending"' || fail "reboot remains pending before boot change"
+  printf "%s\n" "$pending_status" | grep -q '"boot_changed":false' || fail "unexpected boot change before reboot"
+
+  export E2_TEST_BOOT_ID=boot-2
+  verified_status="$(reboot_status)"
+  printf "%s\n" "$verified_status" | grep -q '"status":"verified"' || fail "reboot verification did not complete"
+  printf "%s\n" "$verified_status" | grep -q '"boot_changed":true' || fail "boot change was not detected"
+  printf "%s\n" "$verified_status" | grep -q '"package_verified":true' || fail "post-reboot package verification failed"
+  [ ! -r "$PANEL_ETC/pending-reboot" ] || fail "verified reboot intent was not cleared"
+  grep -q 'reboot-verify plugin=ofgwrite package=ofgwrite expected=1.0 verified=true' "$PANEL_LOG" || fail "reboot verification audit missing"
+  pass "persistent reboot request and post-boot verification"
 
   if plugin_resolve_install openairplay >/dev/null 2>&1; then exit 1; fi
   pass "unknown package mapping blocked"

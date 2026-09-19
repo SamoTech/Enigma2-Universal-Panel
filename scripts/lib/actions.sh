@@ -24,6 +24,7 @@ action_restart_gui() { action_restart_enigma2; }
 action_reboot() {
   require_root || return 1
   warn "Reboot requested by controlled action"
+  audit "reboot-requested mode=manual"
   sync
   reboot
 }

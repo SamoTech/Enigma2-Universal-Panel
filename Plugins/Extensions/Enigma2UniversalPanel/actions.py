@@ -13,6 +13,8 @@ ACTIONS = {
     "receiver.telemetry": {"command": ("/usr/local/bin/e2panel", "telemetry"), "risk": "low", "confirmation": False},
     "receiver.audit_history": {"command": ("/usr/local/bin/e2panel", "audit-history"), "risk": "low", "confirmation": False},
     "receiver.restart_gui": {"command": ("/usr/local/bin/e2panel", "restart-gui"), "risk": "critical", "confirmation": True},
+    "receiver.reboot_status": {"command": ("/usr/local/bin/e2panel", "reboot-status"), "risk": "low", "confirmation": False},
+    "receiver.reboot_for_plugin": {"command": ("/usr/local/bin/e2panel", "reboot-for-plugin"), "risk": "critical", "confirmation": True},
     "community.catalog": {"command": ("/usr/local/bin/e2panel", "community-catalog"), "risk": "low", "confirmation": False},
     "plugin.library": {"command": ("/usr/local/bin/e2panel", "plugin-library"), "risk": "low", "confirmation": False},
     "plugin.resolve": {"command": ("/usr/local/bin/e2panel", "plugin-resolve"), "risk": "low", "confirmation": False},
@@ -53,6 +55,7 @@ def build_action_command(action_id, params=None):
         "plugin.update",
         "plugin.remove_preview",
         "plugin.remove",
+        "receiver.reboot_for_plugin",
     ):
         if set(params) != {"plugin_id"}:
             raise ValueError("plugin_id is required")
