@@ -1,87 +1,99 @@
 # Enigma2 Universal Panel
 
-A Universal Management Layer for Enigma2 receivers.
+A Universal Management Layer for Enigma2 receivers, implemented first as a **native Enigma2 GUI plugin**.
 
-The project is designed as a control plane, not as a collection of unrelated shell scripts. It detects the receiver and image, normalizes capabilities, selects the correct adapter, and exposes safe operations for plugins, bouquets, settings, maintenance, backups, diagnostics, and remote management.
+The panel runs directly on the receiver, appears in the normal Enigma2 Plugins/Extensions menu, and is controlled with the receiver remote control. A browser, web server, phone, PC, SSH session or external control plane is not required for normal operation.
 
 ## Architecture
 
-```
-Web / CLI Control Plane
+Enigma2 Universal Panel — native GUI
         |
         v
-Action + Policy Layer
+GUI Controller Layer
         |
         v
-Capability / Compatibility Engine
-        |
-        +--> OpenATV adapter
-        +--> OpenVIX adapter
-        +--> OpenPLi adapter
-        +--> DreamOS adapter
-        +--> Generic Enigma2 adapter
+Registered Actions
         |
         v
-Receiver Agent / SSH Transport
+Policy + Validation
         |
         v
-Enigma2 receiver
-```
+Capability / Compatibility
+        |
+        v
+Receiver Adapters
+        |
+        +--> package manager
+        +--> Enigma2 services/config
+        +--> channels/bouquets
+        +--> settings
+        +--> backup/restore
+        +--> diagnostics
 
-The web control plane must never expose arbitrary shell execution. Operations are declared actions with capability requirements, previews, validation, audit records, and rollback metadata where practical.
+The existing shell/CLI runtime remains a receiver-side foundation and diagnostic/recovery interface. Optional remote and web control planes are future extensions and must use the same registered-action security boundary.
 
 ## Current reconstruction
 
 - POSIX/BusyBox-safe receiver bootstrap
 - Structured receiver fingerprint
 - Image and package-manager detection
-- Capability model
+- Capability and compatibility model
 - Adapter registry
-- Safe operation dispatcher
-- Plugin catalog schema
-- Receiver profile schema
-- Backup/restore foundations
-- Maintenance and diagnostics commands
-- Audit log foundation
-- Remote-management architecture documented for the next layer
+- Registered action/policy dispatcher
+- Plugin catalog and source metadata
+- Source-driven receiver package/plugin management
+- Normalized runtime package state
+- Postcondition verification and audit foundations
+- Mock receiver harness and policy tests
+- Master native-GUI roadmap
 
-## Supported target families
+## Native GUI target
 
-DreamOS, OpenATV, OpenVIX, OpenPLi and other Enigma2-based Linux images. Compatibility is capability-driven; an unknown image falls back to the generic adapter rather than being incorrectly classified.
+The installed plugin will provide:
 
-## Install
+- Dashboard
+- Receiver information and capabilities
+- Plugins
+- Packages
+- Sources/feeds
+- Channels and bouquets
+- EPG
+- Settings
+- Maintenance
+- Diagnostics
+- Backup/recovery
+- System operations
 
-Run as root on the receiver:
+Navigation uses native Enigma2 screens and standard remote-control keys.
 
-```sh
-wget -O - https://raw.githubusercontent.com/SamoTech/Enigma2-Universal-Panel/main/install.sh | sh
-```
+The GUI must never execute arbitrary shell commands. GUI operations are registered actions with parameter validation, compatibility checks, confirmation gates where required, postcondition verification and audit logging.
 
-After installation:
+## Installation
 
-```sh
-/usr/local/bin/e2panel status
-/usr/local/bin/e2panel capabilities
-/usr/local/bin/e2panel diagnose
-/usr/local/bin/e2panel menu
-```
+Run the bootstrap installer as root on the receiver:
+
+    wget -O - https://raw.githubusercontent.com/SamoTech/Enigma2-Universal-Panel/main/install.sh | sh
+
+The current bootstrap installs the receiver-side runtime. Native GUI packaging/registration is the next implementation milestone.
 
 ## Design principles
 
-1. Detect before acting.
-2. Declare capabilities before exposing operations.
-3. Prefer adapters over image-specific conditionals scattered across scripts.
-4. Never expose unrestricted browser-to-shell execution.
-5. Make destructive operations explicit and auditable.
-6. Keep receiver-side code POSIX/BusyBox compatible where possible.
-7. Separate the receiver agent from the web control plane.
-8. Fail closed when compatibility is unknown.
+1. Native receiver GUI first.
+2. Detect before acting.
+3. Declare capabilities before exposing operations.
+4. Prefer adapters over image-specific conditionals.
+5. Never expose unrestricted shell execution.
+6. Make destructive operations explicit and auditable.
+7. Keep receiver-side code compatible with constrained Enigma2 environments.
+8. Keep remote/web control optional.
+9. Fail closed when compatibility is unknown.
+10. Never host or mirror plugin/package binaries.
+11. Never guess package/plugin compatibility.
 
 ## Roadmap
 
-Phase 1: receiver core and compatibility layer.
-Phase 2: plugin/channel/settings modules.
-Phase 3: receiver-side API/agent.
-Phase 4: SSH multi-receiver control plane.
-Phase 5: web dashboard, jobs, audit and fleet management.
-Phase 6: signed module repository and controlled update channel.
+The authoritative roadmap is ROADMAP.md.
+
+The immediate milestone is the native Enigma2 GUI plugin: registration, screens, remote-control navigation, dashboard, and integration with the existing action/policy/resolver layers.
+
+Remote management and web/fleet management are later phases, not prerequisites for the receiver application.
