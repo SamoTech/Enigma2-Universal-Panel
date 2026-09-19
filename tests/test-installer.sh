@@ -15,7 +15,7 @@ grep -q '^# wget -qO- https://raw.githubusercontent.com/SamoTech/Enigma2-Univers
 grep -q '^# curl -fsSL https://raw.githubusercontent.com/SamoTech/Enigma2-Universal-Panel/main/install.sh | sh$' "$INSTALL" ||
   fail "curl install command missing"
 
-grep -q 'installer v1.9.0' "$INSTALL" || fail "installer version missing"
+grep -q 'installer v1.10.0' "$INSTALL" || fail "installer version missing"
 grep -q 'REPO="https://raw.githubusercontent.com/SamoTech/Enigma2-Universal-Panel/main"' "$INSTALL" ||
   fail "bootstrap source is not fixed"
 if grep -q 'E2PANEL_REPO' "$INSTALL"; then
