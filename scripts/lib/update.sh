@@ -3,6 +3,25 @@ PANEL_UPDATE_INSTALLER_URL="https://raw.githubusercontent.com/SamoTech/Enigma2-U
 PANEL_UPDATE_TIMEOUT="${E2PANEL_FETCH_TIMEOUT:-30}"
 PANEL_UPDATE_RETRIES="${E2PANEL_FETCH_RETRIES:-3}"
 
+# Compare dotted numeric versions without relying on sort -V (BusyBox compatible).
+# Returns 0 when first version is newer, 1 when equal, 2 when older.
+_panel_version_compare() {
+  old_ifs="$IFS"
+  IFS=.
+  set -- $1
+  a1="${1:-0}"; a2="${2:-0}"; a3="${3:-0}"; a4="${4:-0}"
+  IFS=.
+  set -- $2
+  b1="${1:-0}"; b2="${2:-0}"; b3="${3:-0}"; b4="${4:-0}"
+  IFS="$old_ifs"
+  for pair in "$a1:$b1" "$a2:$b2" "$a3:$b3" "$a4:$b4"; do
+    a="${pair%%:*}"; b="${pair#*:}"
+    [ "$a" -gt "$b" ] 2>/dev/null && return 0
+    [ "$a" -lt "$b" ] 2>/dev/null && return 2
+  done
+  return 1
+}
+
 _update_fetch() {
   url="$1"
   out="$2"
@@ -85,10 +104,21 @@ panel_update() {
       ;;
   esac
 
-  same_version=0
-  if [ "$version" = "$PANEL_VERSION" ]; then
-    same_version=1
+  if _panel_version_compare "$version" "$PANEL_VERSION"; then
+    :
+  else
+    compare_rc=$?
+    rm -f "$tmp"
+    if [ "$compare_rc" -eq 1 ]; then
+      printf 'status=current\ncurrent_version=%s\nlatest_version=%s\nupdate_available=0\n' "$PANEL_VERSION" "$version"
+    else
+      printf 'status=blocked\ncurrent_version=%s\ntarget_version=%s\nreason=remote_release_is_not_newer\n' "$PANEL_VERSION" "$version"
+    fi
+    return 1
   fi
+
+  same_version=0
+  [ "$version" = "$PANEL_VERSION" ] && same_version=1
 
   if ! sh "$tmp" --no-restart; then
     rm -f "$tmp"
