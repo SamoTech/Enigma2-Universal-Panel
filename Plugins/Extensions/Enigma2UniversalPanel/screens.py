@@ -135,15 +135,17 @@ class PackageInstallProgress(Screen):
     </screen>
     """
 
-    def __init__(self, session, plugin_id, command):
+    def __init__(self, session, plugin_id, command, operation="Installing", requires_gui_restart=False):
         Screen.__init__(self, session)
         self.plugin_id = plugin_id
         self.command = tuple(command)
+        self.operation = operation
+        self.requires_gui_restart = requires_gui_restart
         self.output = ""
         self.finished = False
-        self["title"] = Label("Installing plugin: %s" % plugin_id)
+        self["title"] = Label("%s plugin: %s" % (operation, plugin_id))
         self["state"] = Label("Starting native package operation...")
-        self["hint"] = Label("Please wait — installation running")
+        self["hint"] = Label("Please wait — %s running" % operation.lower())
         self["actions"] = ActionMap(
             ["OkCancelActions"],
             {"ok": self._close_when_finished, "cancel": self._close_when_finished},
@@ -164,22 +166,25 @@ class PackageInstallProgress(Screen):
             data = data.decode("utf-8", "replace")
         self.output += data or ""
         tail = self.output[-2600:].strip()
-        self["state"].setText("Installing from receiver-configured sources...\n\n" + (tail or "Package manager running..."))
+        self["state"].setText("%s from receiver-configured sources..." % self.operation\n\n" + (tail or "Package manager running..."))
 
     def _finished(self, retval):
         self.finished = True
         if retval == 0:
             text = (
-                "Installation completed.\n\n"
+                "%s completed.\n\n" % self.operation
                 "Postcondition verification: PASS\n"
                 "Audit record: written by receiver action\n\n"
                 "Plugin: %s" % self.plugin_id
             )
             self["state"].setText(text)
-            self["hint"].setText("OK / EXIT: Close")
+            if self.requires_gui_restart:
+                self["hint"].setText("OK / EXIT: Close — GUI restart may be required")
+            else:
+                self["hint"].setText("OK / EXIT: Close")
         else:
             text = (
-                "Installation failed or was blocked.\n\n"
+                "%s failed or was blocked.\n\n" % self.operation
                 "Exit code: %s\n"
                 "Postcondition: NOT VERIFIED\n\n%s"
                 % (retval, self.output[-2200:].strip())
@@ -265,6 +270,7 @@ class Enigma2UniversalPanel(Screen):
         ("Preview Plugin", "plugin.preview"),
         ("Plugin Metadata", "plugin.info"),
         ("Install Plugin", "plugin.install"),
+        ("Update Plugin", "plugin.update"),
         ("Receiver Status", "receiver.status"),
         ("Capabilities", "receiver.capabilities"),
         ("Diagnostics", "receiver.diagnose"),
@@ -289,6 +295,47 @@ class Enigma2UniversalPanel(Screen):
         if value is None or value.strip() == "":
             return
         self.session.open(PluginMetadata, value.strip())
+
+    def _prepare_update(self, value):
+        if value is None or value.strip() == "":
+            return
+        plugin_id = value.strip()
+        try:
+            code, output = run_action("plugin.preview", {"plugin_id": plugin_id})
+        except Exception as exc:
+            self.session.open(MessageBox, "Action rejected: %s" % exc, MessageBox.TYPE_ERROR)
+            return
+        try:
+            preview = json.loads(output)
+        except (TypeError, ValueError):
+            self.session.open(MessageBox, "Invalid compatibility evidence returned by receiver.", MessageBox.TYPE_ERROR)
+            return
+        if code != 0 or preview.get("status") != "supported" or preview.get("action") != "update_or_reinstall":
+            self.session.open(MessageBox, "Update blocked.\n\nCompatibility: %s\nAction: %s" % (preview.get("status", "unknown"), preview.get("action", "blocked")), MessageBox.TYPE_ERROR)
+            return
+        summary = (
+            "Update plugin: %s\n\nPackage: %s\n"
+            "Installed: %s\nCandidate: %s\n"
+            "GUI restart required: %s\n\n"
+            "This operation uses only receiver-configured package sources.\n"
+            "Do you want to continue?"
+            % (plugin_id, preview.get("package", "unknown"), preview.get("installed_version", "unknown"),
+               preview.get("candidate_version", "unknown"), preview.get("requires_gui_restart", "unknown"))
+        )
+        self.session.openWithCallback(
+            lambda confirmed: self._start_update(confirmed, plugin_id, bool(preview.get("requires_gui_restart") is True)),
+            MessageBox, summary, MessageBox.TYPE_YESNO,
+        )
+
+    def _start_update(self, confirmed, plugin_id, requires_gui_restart):
+        if not confirmed:
+            return
+        try:
+            command = build_action_command("plugin.update", {"plugin_id": plugin_id})
+        except Exception as exc:
+            self.session.open(MessageBox, "Action rejected: %s" % exc, MessageBox.TYPE_ERROR)
+            return
+        self.session.open(PackageInstallProgress, plugin_id, command, "Updating", requires_gui_restart)
 
     def _plugin_install_input(self):
         self.session.openWithCallback(self._prepare_install, InputBox, title="Install plugin ID", text="")
@@ -384,6 +431,9 @@ class Enigma2UniversalPanel(Screen):
             return
         if action_id == "plugin.install":
             self._plugin_install_input()
+            return
+        if action_id == "plugin.update":
+            self.session.openWithCallback(self._prepare_update, InputBox, title="Update plugin ID", text="")
             return
         try:
             code, output = run_action(action_id)
