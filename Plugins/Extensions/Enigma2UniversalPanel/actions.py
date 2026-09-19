@@ -3,6 +3,11 @@
 import re
 import subprocess
 
+try:
+    from .debug import log
+except ImportError:
+    from debug import log
+
 
 ACTIONS = {
     "receiver.status": {"command": ("/usr/local/bin/e2panel", "status"), "risk": "low", "confirmation": False},
@@ -12,6 +17,7 @@ ACTIONS = {
     "receiver.package_state": {"command": ("/usr/local/bin/e2panel", "package-state"), "risk": "low", "confirmation": False},
     "receiver.telemetry": {"command": ("/usr/local/bin/e2panel", "telemetry"), "risk": "low", "confirmation": False},
     "receiver.audit_history": {"command": ("/usr/local/bin/e2panel", "audit-history"), "risk": "low", "confirmation": False},
+    "receiver.panel_update": {"command": ("/usr/local/bin/e2panel", "update"), "risk": "critical", "confirmation": True},
     "receiver.restart_gui": {"command": ("/usr/local/bin/e2panel", "restart-gui"), "risk": "critical", "confirmation": True},
     "receiver.reboot_status": {"command": ("/usr/local/bin/e2panel", "reboot-status"), "risk": "low", "confirmation": False},
     "receiver.reboot_for_plugin": {"command": ("/usr/local/bin/e2panel", "reboot-for-plugin"), "risk": "critical", "confirmation": True},
@@ -66,6 +72,7 @@ def build_action_command(action_id, params=None):
 
 
 def _run(command):
+    log("action.start", command=command)
     process = subprocess.Popen(
         command,
         shell=False,
@@ -74,7 +81,9 @@ def _run(command):
         universal_newlines=True,
     )
     stdout, _ = process.communicate()
-    return process.returncode, (stdout or "").strip()
+    output = (stdout or "").strip()
+    log("action.result", command=command, returncode=process.returncode, output=output)
+    return process.returncode, output
 
 
 def run_action(action_id, params=None):

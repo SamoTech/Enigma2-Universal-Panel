@@ -169,6 +169,7 @@ scripts/lib/telemetry.sh
 scripts/lib/diagnose.sh
 scripts/lib/library.sh
 scripts/lib/validation.sh
+scripts/lib/update.sh
 config/capabilities.json
 config/actions.json
 config/settings.json
@@ -197,6 +198,7 @@ Plugins/Extensions/Enigma2UniversalPanel/__init__.py
 Plugins/Extensions/Enigma2UniversalPanel/plugin.py
 Plugins/Extensions/Enigma2UniversalPanel/actions.py
 Plugins/Extensions/Enigma2UniversalPanel/audit_history.py
+Plugins/Extensions/Enigma2UniversalPanel/debug.py
 Plugins/Extensions/Enigma2UniversalPanel/screens.py
 "
 

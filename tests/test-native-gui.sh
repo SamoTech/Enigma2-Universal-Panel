@@ -49,6 +49,7 @@ grep -Fq 'receiver.audit_history' Plugins/Extensions/Enigma2UniversalPanel/audit
 python3 - <<'PY'
 from pathlib import Path
 import importlib.util
+import sys
 
 p = Path("Plugins/Extensions/Enigma2UniversalPanel/actions.py").read_text()
 screens = Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
@@ -134,7 +135,9 @@ assert '("Management", (' in screens
 assert '("Advanced", (' in screens
 assert 'Audit History' in Path("Plugins/Extensions/Enigma2UniversalPanel/plugin.py").read_text()
 
-spec = importlib.util.spec_from_file_location("e2_actions", "Plugins/Extensions/Enigma2UniversalPanel/actions.py")
+plugin_dir = Path("Plugins/Extensions/Enigma2UniversalPanel").resolve()
+sys.path.insert(0, str(plugin_dir))
+spec = importlib.util.spec_from_file_location("e2_actions", str(plugin_dir / "actions.py"))
 mod = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mod)
 

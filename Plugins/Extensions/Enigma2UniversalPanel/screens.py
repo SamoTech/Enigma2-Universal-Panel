@@ -9,6 +9,7 @@ from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 
 from .actions import build_action_command, run_action
+from .debug import DebugActionMap, DebugMenuList, log
 from .audit_history import AuditHistory
 
 
@@ -28,7 +29,7 @@ class ActionResult(Screen):
         self["subtitle"] = Label("Receiver-local result")
         self["text"] = Label(text or "No output.")
         self["hint"] = Label("OK / EXIT: Back")
-        self["actions"] = ActionMap(["OkCancelActions"], {"ok": self.close, "cancel": self.close}, -2)
+        self["actions"] = DebugActionMap(["OkCancelActions"], {"ok": self.close, "cancel": self.close}, -2)
 
 
 class Dashboard(Screen):
@@ -194,7 +195,7 @@ class PluginLibrary(Screen):
         Screen.__init__(self, session)
         self["title"] = Label("Plugin Library")
         self["summary"] = Label("Loading library...")
-        self["menu"] = MenuList([])
+        self["menu"] = DebugMenuList([])
         self["details"] = Label("Loading plugin library...")
         self["key_red"] = Label("RED: Category")
         self["key_green"] = Label("GREEN: Install")
@@ -1006,6 +1007,8 @@ class Enigma2UniversalPanel(Screen):
             ("Diagnostics", "receiver.diagnose"),
             ("Package State", "receiver.package_state"),
             ("Audit History", "receiver.audit_history"),
+            ("Update Panel", "receiver.panel_update"),
+            ("Restart GUI", "receiver.restart_gui"),
         )),
         ("Advanced", (
             ("Resolve Plugin", "plugin.resolve"),
@@ -1249,6 +1252,29 @@ class Enigma2UniversalPanel(Screen):
         title, entries = self.SECTIONS[index]
         self.session.open(PanelSectionMenu, title, entries, self)
 
+    def _prepare_panel_update(self):
+        try:
+            code, output = run_action("receiver.panel_update")
+        except Exception as exc:
+            self.session.open(MessageBox, "Panel update failed.\n\n%s" % exc, MessageBox.TYPE_ERROR)
+            return
+        if code != 0:
+            self.session.open(MessageBox, "Panel update failed.\n\n%s" % (output or "unknown error"), MessageBox.TYPE_ERROR)
+            return
+        result = {}
+        for line in (output or "").splitlines():
+            if "=" in line:
+                key, value = line.split("=", 1)
+                result[key] = value
+        status = result.get("status", "unknown")
+        if status == "current":
+            message = "The panel is already up to date.\n\nInstalled: %s\nLatest: %s" % (result.get("current_version", "unknown"), result.get("latest_version", "unknown"))
+        elif status == "updated":
+            message = "Panel update completed.\n\nTarget version: %s\n\nUse Receiver → Restart GUI to activate the updated Python modules." % result.get("target_version", "unknown")
+        else:
+            message = "Unexpected panel update result.\n\n%s" % (output or "unknown")
+        self.session.open(MessageBox, message, MessageBox.TYPE_INFO)
+
     def _dispatch_action(self, action_id):
         if action_id == "dashboard":
             self.session.open(Dashboard)
@@ -1267,6 +1293,16 @@ class Enigma2UniversalPanel(Screen):
             return
         if action_id == "receiver.audit_history":
             self.session.open(AuditHistory)
+            return
+        if action_id == "receiver.panel_update":
+            summary = ("Update Enigma2 Universal Panel\n\n"
+                       "Download and validate the official SamoTech installer, then "
+                       "perform the transactional panel update.\n\n"
+                       "No arbitrary URL or command is accepted.\n\nContinue?")
+            self.session.openWithCallback(
+                lambda confirmed: self._prepare_panel_update() if confirmed else None,
+                MessageBox, summary, MessageBox.TYPE_YESNO,
+            )
             return
         if action_id == "receiver.reboot_status":
             code, output = run_action(action_id)

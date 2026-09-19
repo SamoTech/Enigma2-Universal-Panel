@@ -13,6 +13,7 @@ BASE="/usr/lib/enigma2-universal-panel"
 . "$BASE/scripts/lib/telemetry.sh"
 . "$BASE/scripts/lib/diagnose.sh"
 . "$BASE/scripts/lib/validation.sh"
+. "$BASE/scripts/lib/update.sh"
 
 usage() {
   cat <<EOF
@@ -38,6 +39,7 @@ Usage:
   e2panel compatibility
   e2panel community-catalog
   e2panel plugin-library
+  e2panel update
   e2panel restart-enigma2 | restart-gui
   e2panel reboot-for-plugin <plugin-id>
   e2panel reboot --confirm
@@ -46,7 +48,7 @@ EOF
 menu() {
   while :; do
     printf '\nEnigma2 Universal Panel\n'
-    printf '1) Status\n2) Capabilities\n3) Diagnostics\n4) Package/source state\n5) Plugin source status\n6) Refresh sources\n7) Discover packages\n8) Resolve plugin ID\n9) Preview plugin install\n10) Install package\n11) Update package\n12) Remove package\n13) Restart Enigma2\n14) Restart GUI\n15) Reboot\n16) Audit history\n17) Validation snapshot\n18) Exit\nSelect: '
+    printf '1) Status\n2) Capabilities\n3) Diagnostics\n4) Package/source state\n5) Plugin source status\n6) Refresh sources\n7) Discover packages\n8) Resolve plugin ID\n9) Preview plugin install\n10) Install package\n11) Update package\n12) Remove package\n13) Update Panel\n14) Restart Enigma2\n15) Restart GUI\n16) Reboot\n17) Audit history\n18) Validation snapshot\n19) Exit\nSelect: '
     read choice
     case "$choice" in
       1) print_status;; 2) print_capabilities;; 3) diagnose;; 4) plugin_package_state;;
@@ -57,9 +59,10 @@ menu() {
       10) printf 'Package: '; read pkg; action_plugin_install "$pkg";;
       11) printf 'Package: '; read pkg; action_plugin_update "$pkg";;
       12) printf 'Package: '; read pkg; printf 'Type REMOVE: '; read confirm; [ "$confirm" = REMOVE ] && action_plugin_remove "$pkg";;
-      13) action_restart_enigma2;; 14) action_restart_gui;;
-      15) printf 'Type REBOOT: '; read confirm; [ "$confirm" = REBOOT ] && action_reboot;;
-      16) audit_history;; 17) print_validation_snapshot;; 18) return 0;; *) printf 'Invalid selection\n';;
+      13) panel_update;;
+      14) action_restart_enigma2;; 15) action_restart_gui;;
+      16) printf 'Type REBOOT: '; read confirm; [ "$confirm" = REBOOT ] && action_reboot;;
+      17) audit_history;; 18) print_validation_snapshot;; 19) return 0;; *) printf 'Invalid selection\n';;
     esac
   done
 }
@@ -85,6 +88,7 @@ case "$cmd" in
   reboot-for-plugin) action_reboot_for_plugin "$1";;
   plugin-remove) [ "$2" = "--confirm" ] && action_plugin_remove "$1" || { error 'plugin-remove requires package and --confirm'; exit 2; };;
   plugin-install-id) plugin_resolve_install "$1";;
+  update) panel_update;;
   restart-enigma2) action_restart_enigma2;; restart-gui) action_restart_gui;;
   reboot) [ "$1" = "--confirm" ] && action_reboot || { error 'reboot requires --confirm'; exit 2; };;
   menu|"") menu;; *) usage; exit 2;;
