@@ -1310,8 +1310,8 @@ class Enigma2UniversalPanel(Screen):
 
     def __init__(self, session):
         Screen.__init__(self, session)
-        self["title"] = Label("Enigma2 Universal Panel")
-        self["subtitle"] = Label("Enigma2 Universal Panel v1.8.0 | Native receiver UI | No web dependency")
+        self["title"] = Label("Enigma2 Universal Panel v1.8.0")
+        self["subtitle"] = Label("Native receiver UI | Store-first workflow | No web dependency")
         self["hint"] = Label("UP/DOWN: Select    OK: Open    EXIT: Back")
         self["menu"] = MenuList([title for title, _entries in self.SECTIONS])
         self["actions"] = ActionMap(["OkCancelActions"], {"ok": self.activate, "cancel": self.close}, -2)
