@@ -32,6 +32,8 @@ assert '"plugin.preview"' in p
 assert '"plugin.install"' in p
 assert '"plugin.info"' in p
 assert '"plugin.update"' in p
+assert '"plugin.remove_preview"' in p
+assert '"plugin.remove"' in p
 assert '"confirmation": True' in p
 assert 'build_action_command' in p
 assert 'shell=False' in p
@@ -39,13 +41,19 @@ assert 'eConsoleAppContainer' in Path("Plugins/Extensions/Enigma2UniversalPanel/
 assert 'PackageInstallProgress' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'PluginMetadata' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'Update Plugin' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'Remove Plugin' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert '_prepare_remove' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert '_prepare_update' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 resolver = Path("scripts/lib/plugin-resolver.sh").read_text()
 panel = Path("panel.sh").read_text()
 assert "plugin_update_id()" in resolver
+assert "plugin_remove_preview()" in resolver
+assert "plugin_remove_id()" in resolver
 assert "plugin_info_id()" in resolver
 assert "plugin_update_id()" in resolver
 assert "plugin-info-id" in panel
+assert "plugin-remove-preview" in panel
+assert "plugin-remove-id" in panel
 assert 'MessageBox.TYPE_YESNO' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert '"ok": self._close_when_finished' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert '"cancel": self._close_when_finished' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
@@ -61,11 +69,13 @@ for value in ("openwebif", "auto.bouquets-maker", "epg_import_2"):
 
 assert mod.build_action_command("plugin.info", {"plugin_id": "openwebif"}) == ("/usr/local/bin/e2panel", "plugin-info-id", "openwebif")
 assert mod.build_action_command("plugin.update", {"plugin_id": "openwebif"}) == ("/usr/local/bin/e2panel", "plugin-update-id", "openwebif")
+assert mod.build_action_command("plugin.remove_preview", {"plugin_id": "openwebif"}) == ("/usr/local/bin/e2panel", "plugin-remove-preview", "openwebif")
+assert mod.build_action_command("plugin.remove", {"plugin_id": "openwebif"}) == ("/usr/local/bin/e2panel", "plugin-remove-id", "openwebif")
 assert mod.build_action_command("plugin.update", {"plugin_id": "openwebif"}) == ("/usr/local/bin/e2panel", "plugin-update-id", "openwebif")
 assert mod.build_action_command("plugin.install", {"plugin_id": "openwebif"}) == (
     "/usr/local/bin/e2panel", "plugin-install-id", "openwebif"
 )
-for action_id in ("plugin.resolve", "plugin.preview", "plugin.info", "plugin.install", "plugin.update"):
+for action_id in ("plugin.resolve", "plugin.preview", "plugin.info", "plugin.install", "plugin.update", "plugin.remove_preview", "plugin.remove"):
     for value in ("", "OpenWebif", "openwebif;rm", "../../etc/passwd", "openwebif --confirm"):
         try:
             mod.build_action_command(action_id, {"plugin_id": value})
