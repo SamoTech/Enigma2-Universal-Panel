@@ -120,6 +120,7 @@ Expose evidence-backed runtime state:
 - network status
 - storage
 - uptime/health
+- CPU/RAM/filesystem telemetry
 - available capabilities
 
 Unknown values must be displayed as unknown, not inferred.
