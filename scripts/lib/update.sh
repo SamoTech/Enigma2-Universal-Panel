@@ -24,6 +24,11 @@ _panel_version_compare() {
   return 1
 }
 
+_panel_extract_installer_version() {
+  file="$1"
+  sed -n 's/^[[:space:]]*VERSION[[:space:]]*=[[:space:]]*"\([0-9][0-9.]*\)"[[:space:]]*$/\1/p' "$file" | head -n 1
+}
+
 _update_fetch() {
   url="$1"
   out="$2"
@@ -65,7 +70,7 @@ panel_update_check() {
     return 1
   fi
 
-  latest_version="$(sed -n 's/^VERSION="\\([^"]*\\)"$/\\1/p' "$tmp" | head -n 1)"
+  latest_version="$(_panel_extract_installer_version "$tmp")"
   rm -f "$tmp"
   case "$latest_version" in
     ''|*[!0-9.]*) printf 'status=failed\nreason=invalid_official_installer_version\n'; return 1 ;;
