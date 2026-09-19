@@ -18,7 +18,7 @@
       "developer": "ciefp",
       "category": "utilities",
       "repository": "https://github.com/ciefp/CiefpPlugins",
-      "source_ref": "main",
+      "source_ref": "27133260ab23a4e23caaae732d4390600bc0d9d1",
       "installer_path": "installer.sh",
       "installer_blob_sha": "87f56e08a039d8cce3f6c25ac9937b99b60ff21c",
       "source_status": "admitted",
