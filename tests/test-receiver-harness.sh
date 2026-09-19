@@ -100,6 +100,12 @@ EOF
     E2_NETWORK=online
   }
 
+  [ "$(plugin_native_arch_compatibility all x86_64)" = true ] || fail "architecture all compatibility"
+  [ "$(plugin_native_arch_compatibility x86_64 x86_64)" = true ] || fail "exact architecture compatibility"
+  [ "$(plugin_native_arch_compatibility armhf x86_64)" = false ] || fail "mismatched architecture rejection"
+  [ "$(plugin_native_arch_compatibility unknown x86_64)" = unknown ] || fail "unknown architecture fail-closed state"
+  pass "native package architecture policy"
+
   plugin_package_state >"$TMP/state.json"
   python3 - "$TMP/state.json" <<'PY'
 import json,sys
@@ -125,6 +131,7 @@ assert d["status"] == "supported"
 assert d["candidate_version"] == "2.0"
 assert d["compatibility"]["image"] is True
 assert d["compatibility"]["architecture"] is True
+assert d["compatibility"]["package_architecture"] is True
 PY
   pass "mock receiver plugin preflight"
 
