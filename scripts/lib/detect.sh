@@ -47,7 +47,7 @@ detect_python() {
   E2_PYTHON_MAJOR=unknown
   E2_PYTHON_VERSION=unknown
 
-  if has python3; then
+  if [ "${E2_TEST_DISABLE_PYTHON3:-0}" != 1 ] && has python3; then
     E2_PYTHON_BIN="$(command -v python3)"
   elif has python; then
     E2_PYTHON_BIN="$(command -v python)"
