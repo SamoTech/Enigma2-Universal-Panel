@@ -740,6 +740,32 @@ class PluginMetadata(Screen):
         self["state"].setText("\n".join(lines))
 
 
+class PanelSectionMenu(Screen):
+    skin = """
+    <screen name="PanelSectionMenu" position="center,center" size="900,600" title="Enigma2 Universal Panel">
+        <widget name="menu" position="35,70" size="830,420" itemHeight="50" font="Regular;26" />
+        <widget name="title" position="35,20" size="830,40" font="Regular;30" />
+        <widget name="hint" position="35,520" size="830,35" font="Regular;20" />
+    </screen>
+    """
+
+    def __init__(self, session, title, entries, controller):
+        Screen.__init__(self, session)
+        self["title"] = Label(title)
+        self["hint"] = Label("UP/DOWN: Select    OK: Open    EXIT: Back")
+        self.entries = entries
+        self.controller = controller
+        self["menu"] = MenuList([entry[0] for entry in entries])
+        self["actions"] = ActionMap(["OkCancelActions"], {"ok": self.activate, "cancel": self.close}, -2)
+
+    def activate(self):
+        index = self["menu"].getSelectionIndex()
+        if index is None or index < 0 or index >= len(self.entries):
+            return
+        _title, action_id = self.entries[index]
+        self.controller._dispatch_action(action_id)
+
+
 class Enigma2UniversalPanel(Screen):
     skin = """
     <screen name="Enigma2UniversalPanel" position="center,center" size="900,600" title="Enigma2 Universal Panel">
@@ -749,30 +775,38 @@ class Enigma2UniversalPanel(Screen):
     </screen>
     """
 
-    ENTRIES = (
-        ("STORE — Plugin Library", "plugin.library"),
-        ("RECEIVER — Dashboard", "dashboard"),
-        ("RECEIVER — Compatibility", "receiver.compatibility"),
-        ("MANAGE — Package Browser", "package-browser"),
-        ("STORE — Community Sources", "community.catalog"),
-        ("RECEIVER — Telemetry", "receiver.telemetry"),
-        ("ADVANCED — Resolve Plugin", "plugin.resolve"),
-        ("ADVANCED — Preview Plugin", "plugin.preview"),
-        ("ADVANCED — Plugin Metadata", "plugin.info"),
-        ("STORE — Install Plugin", "plugin.install"),
-        ("STORE — Update Plugin", "plugin.update"),
-        ("STORE — Remove Plugin", "plugin.remove"),
-        ("RECEIVER — Status", "receiver.status"),
-        ("RECEIVER — Capabilities", "receiver.capabilities"),
-        ("MANAGE — Diagnostics", "receiver.diagnose"),
-        ("MANAGE — Package State", "receiver.package_state"),
+    SECTIONS = (
+        ("STORE", (
+            ("Plugin Library", "plugin.library"),
+            ("Community Sources", "community.catalog"),
+            ("Install Plugin", "plugin.install"),
+            ("Update Plugin", "plugin.update"),
+            ("Remove Plugin", "plugin.remove"),
+        )),
+        ("RECEIVER", (
+            ("Dashboard", "dashboard"),
+            ("Compatibility", "receiver.compatibility"),
+            ("Telemetry", "receiver.telemetry"),
+            ("Status", "receiver.status"),
+            ("Capabilities", "receiver.capabilities"),
+        )),
+        ("MANAGEMENT", (
+            ("Package Browser", "package-browser"),
+            ("Diagnostics", "receiver.diagnose"),
+            ("Package State", "receiver.package_state"),
+        )),
+        ("ADVANCED", (
+            ("Resolve Plugin", "plugin.resolve"),
+            ("Preview Plugin", "plugin.preview"),
+            ("Plugin Metadata", "plugin.info"),
+        )),
     )
 
     def __init__(self, session):
         Screen.__init__(self, session)
         self["title"] = Label("Enigma2 Universal Panel")
         self["hint"] = Label("UP/DOWN: Select    OK: Open    EXIT: Close")
-        self["menu"] = MenuList([entry[0] for entry in self.ENTRIES])
+        self["menu"] = MenuList([title for title, _entries in self.SECTIONS])
         self["actions"] = ActionMap(["OkCancelActions"], {"ok": self.activate, "cancel": self.close}, -2)
 
     def _plugin_input(self, action_id):
