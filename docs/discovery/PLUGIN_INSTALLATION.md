@@ -1,8 +1,12 @@
 # Source-Driven Plugin Management
 
-The Universal Panel is a native Enigma2 management application and control plane, not a plugin mirror.
+The Universal Panel is a native Enigma2 **Plugin Library / Store** with receiver-management capabilities. It is not a plugin mirror.
 
 The repository contains plugin metadata, compatibility rules and source references only. It MUST NOT vendor, mirror or redistribute Enigma2 plugin binaries.
+
+## Plugin Library / Store flow
+
+The primary user journey is browse → inspect → compatibility preview → confirm → install → verify. The store combines receiver-feed plugin metadata with a separate community-source registry while keeping execution policy distinct.
 
 ## Native GUI installation flow
 
