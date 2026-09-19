@@ -53,6 +53,7 @@ The existing shell/CLI runtime remains a receiver-side foundation and diagnostic
 - Evidence-backed receiver telemetry
 - Community Plugin Library with fail-closed installation admission and source-health metadata (49 community entries)
 - Postcondition verification and audit foundations
+- Read-only native audit-history display backed by the receiver audit log
 - Confirmed asynchronous install, update and removal flows
 - Mock receiver harness and policy tests
 - Master native-GUI roadmap
@@ -76,6 +77,7 @@ The Store remains the primary user journey. The installed plugin will provide a 
 - Install from receiver-configured feeds
 - Installed / update state
 - Community source discovery with explicit blocked/admitted state
+- Read-only audit history for completed mutating actions
 
 Receiver information, diagnostics, packages, channels, settings, maintenance, and recovery remain supporting management areas.
 
@@ -94,6 +96,7 @@ The installed plugin will also provide:
 - Diagnostics
 - Backup/recovery
 - System operations
+- Audit history
 
 Navigation uses native Enigma2 screens and standard remote-control keys.
 
