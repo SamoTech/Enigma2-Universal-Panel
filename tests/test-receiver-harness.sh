@@ -147,7 +147,19 @@ assert d["schema_version"] == 1
 assert d["policy"]["repository_hosts_binaries"] is False
 assert d["policy"]["arbitrary_urls"] is False
 assert d["policy"]["arbitrary_shell"] is False
-assert len(d["entries"]) >= 8
+assert len(d["entries"]) == 21
+expected_new = {
+    "dreamsatpanel","linuxsat-panel","jedi-maker-xtream","jedi-epg-xtream",
+    "epg-grabber","ipaudio","ipaudio-pro","subssupport","raedquicksignal",
+    "keyadder","levi45-multicam-manager","arabicsavior","neoboot"
+}
+ids = [x["id"] for x in d["entries"]]
+assert len(ids) == len(set(ids))
+assert expected_new.issubset(ids)
+for x in d["entries"]:
+    assert x.get("execution_status", "").startswith("blocked")
+for repeated in {"ajpanel","aio-panel","e2iplayer","multi-stalker","xstreamity","footonsat","iptosat","chocholousek-picons"}:
+    assert ids.count(repeated) == 1
 assert any(x["id"] == "ajpanel" and x["source_status"] == "verified" for x in d["entries"])
 assert any(x["id"] == "aio-panel" and x["execution_status"] == "blocked_unverified_source" for x in d["entries"])
 PY
