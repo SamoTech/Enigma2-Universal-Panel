@@ -142,7 +142,7 @@ Unknown values must be displayed as unknown, not inferred.
 
 ### 1.4 Plugin Library / Store
 
-Status: IN PROGRESS — categorized unified store, search, details, controlled feed installation, community library and audit-history display implemented
+Status: IN PROGRESS — categorized unified store, search, details, controlled feed installation, community library, audit-history, GUI restart and verified reboot handling implemented
 
 Current slice:
 
@@ -159,6 +159,8 @@ Current slice:
 - strict GUI action parameter validation
 - evidence-backed receiver telemetry
 - native read-only audit-history display backed by the receiver audit log
+- verified metadata-driven GUI restart handling
+- verified metadata-driven reboot handling with persistent post-boot verification
 
 Acceptance for current slice:
 - GUI package inventory is backed by the existing normalized package schema.
@@ -177,7 +179,7 @@ Acceptance for current slice:
 - GUI restart handling is offered only when verified plugin metadata declares `requires_gui_restart=true`.
 - Restart execution uses the registered `receiver.restart_gui` action and an explicit remote-control confirmation.
 - Restart requests are audited by the native receiver action layer.
-- Verified reboots persist a receiver-side intent, require a boot identity source, and verify package state after the next boot before clearing the intent.
+- Verified reboots persist a receiver-side intent, require a boot identity source, and verify package state after the next receiver boot before clearing the intent.
 
 Remaining Phase 1.4 work:
 
@@ -189,7 +191,8 @@ Remaining Phase 1.4 work:
 - community source-health metadata and native health display — implemented
 - richer audit-history display — implemented
 - GUI restart handling when required by verified metadata — implemented
-- verified reboot handling when required by plugin metadata — next target
+- verified reboot handling when required by plugin metadata — implemented
+- physical validation on representative real receiver/image combinations — **pending hardware execution**
 
 ## Universal compatibility workstream
 
@@ -212,7 +215,7 @@ Current implementation:
 - exposes a native Receiver Compatibility screen;
 - runs a mock platform matrix covering Dreambox + OpenATV, Dreambox + DreamOS, Zgemma + OpenPLi, unknown Enigma2 fallback, legacy Python 2 and device/image separation.
 
-The compatibility layer does **not** claim that every receiver model/image/version has been physically tested. Real-receiver certification remains a separate acceptance gate.
+The compatibility layer does **not** claim that every receiver model/image/version has been physically tested. Real-receiver certification remains a separate acceptance gate. The current physical-test target is documented in `docs/validation/REAL_RECEIVER_VALIDATION.md` and remains pending until executed on the actual receiver.
 
 ## Phase 2 — Core receiver management
 
@@ -330,27 +333,26 @@ Repository binary-hosting policy remains unchanged.
 
 ## Current execution order
 
-1. Native Enigma2 plugin package and registration.
-2. Native screen/navigation framework.
-3. Plugin Library / Store shell and navigation.
-4. Unified catalog/search/category browsing.
-5. Universal receiver compatibility model and native compatibility screen.
-6. Dashboard backed by existing detection/capability functions.
-7. Read-only plugin details and resolver screens.
-8. Controlled store installation with compatibility preview.
-9. Native plugin metadata browsing.
-10. Native GUI test/harness coverage.
-11. Native asynchronous package mutation with confirmation/postcondition/audit.
-12. Native receiver-side real-device validation across representative device/image matrix.
-13. Richer audit-history display.
-14. GUI restart handling when required by verified metadata.
-15. Verified reboot handling when required by plugin metadata.
-16. Core management screens.
-17. Channels/bouquets/EPG.
-18. Settings and backup/recovery.
-19. Local automation.
-20. Optional remote control plane.
-21. Optional web/fleet layer.
+1. Native Enigma2 plugin package and registration — complete.
+2. Native screen/navigation framework — complete.
+3. Plugin Library / Store shell and navigation — complete.
+4. Unified catalog/search/category browsing — complete.
+5. Universal receiver compatibility model and native compatibility screen — implemented; physical certification pending.
+6. Dashboard backed by existing detection/capability functions — complete.
+7. Read-only plugin details and resolver screens — complete.
+8. Controlled store installation with compatibility preview — complete.
+9. Native plugin metadata browsing — complete.
+10. Native GUI test/harness coverage — complete.
+11. Native asynchronous package mutation with confirmation/postcondition/audit — complete.
+12. Native receiver-side real-device validation across representative device/image matrix — **current target; pending physical execution**.
+13. Core management screens.
+14. Channels/bouquets/EPG.
+15. Settings and backup/recovery.
+16. Local automation.
+17. Optional remote control plane.
+18. Optional web/fleet layer.
+
+The real-device validation target is deliberately placed before Phase 2 so hardware evidence is obtained before expanding receiver-management scope.
 
 ## Definition of done for the native GUI milestone
 
