@@ -78,5 +78,5 @@ sh -n scripts/lib/plugins.sh
 sh -n scripts/lib/plugin-resolver.sh
 grep -q "verify_deployed_file" install.sh || fail "installer payload verification missing"
 grep -q "Package installation postcondition failed" scripts/lib/plugins.sh || fail "Store install postcondition missing"
-grep -q "Always refresh configured receiver feeds" scripts/lib/plugin-resolver.sh || fail "Store preview refresh guard missing"
+grep -q 'plugin_refresh_sources >/dev/null 2>&1' scripts/lib/plugin-resolver.sh || fail "Store preview refresh guard missing"
 pass "self-updater, installer payload verification and Store installation guards pass syntax/policy checks"
