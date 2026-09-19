@@ -44,7 +44,9 @@ grep -q '"health_audit"' "$ROOT/plugins/community.json" || fail "community healt
 grep -q '"pipe_to_shell": false' "$ROOT/plugins/community.json" || fail "community shell-pipe policy changed"
 grep -q '"default_execution": "blocked_until_explicitly_admitted"' "$ROOT/plugins/community.json" || fail "community admission policy changed"
 grep -q '"arbitrary_shell": false' "$ROOT/plugins/community-admitted.json" || fail "community arbitrary shell policy changed"
+grep -q '"allow_admitted_insecure_transport": true' "$ROOT/plugins/community-admitted.json" || fail "admitted insecure transport policy missing"
 grep -q '"installer_blob_sha_required": true' "$ROOT/plugins/community-admitted.json" || fail "community source pin policy missing"
+grep -q '"tls_certificate_verification_required": true' "$ROOT/plugins/community-admitted.json" || fail "community source TLS policy missing"
 grep -q '"community_confirmed"' "$ROOT/plugins/community-admitted.json" || fail "no confirmed community installer admitted"
 pass "source/install policy gates"
 
