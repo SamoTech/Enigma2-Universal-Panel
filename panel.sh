@@ -19,6 +19,7 @@ Usage:
   e2panel plugin-info <package>
   e2panel plugin-resolve <plugin-id>
   e2panel plugin-preview <plugin-id>
+  e2panel plugin-info-id <plugin-id>
   e2panel plugin-install <package>
   e2panel plugin-update <package>
   e2panel plugin-remove <package> --confirm
@@ -55,6 +56,7 @@ case "$cmd" in
   plugin-list) plugin_list "$1";; plugin-info) plugin_info "$1";;
   plugin-resolve) plugin_resolve "$1";;
   plugin-preview) plugin_preview "$1";;
+  plugin-info-id) plugin_info_id "$1";;
   plugin-install) action_plugin_install "$1";;
   plugin-update) action_plugin_update "$1";;
   plugin-remove) [ "$2" = "--confirm" ] && action_plugin_remove "$1" || { error 'plugin-remove requires package and --confirm'; exit 2; };;

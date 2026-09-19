@@ -126,7 +126,7 @@ Unknown values must be displayed as unknown, not inferred.
 
 ### 1.4 Plugin/package GUI
 
-Status: IN PROGRESS — async mutation slice implemented
+Status: IN PROGRESS — metadata browsing and async mutation implemented
 
 Current slice:
 
@@ -152,7 +152,7 @@ Acceptance for current slice:
 
 Remaining Phase 1.4 work:
 
-- plugin metadata browsing
+- plugin metadata browsing — implemented
 - asynchronous update flow with confirmation
 - asynchronous remove flow with confirmation
 - richer audit-history display

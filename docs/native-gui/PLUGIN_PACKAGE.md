@@ -7,6 +7,7 @@ Phase 1.4 is being delivered incrementally. The current slice adds a confirmed, 
 - Package Browser: reads `package-state` from the receiver and displays configured sources plus installed/available package inventory.
 - Resolve Plugin: prompts for a normalized plugin ID and calls the registered resolver action.
 - Preview Plugin: prompts for a normalized plugin ID and calls the registered, read-only compatibility/dependency preflight.
+- Plugin Metadata: prompts for a normalized plugin ID and displays evidence-backed catalog metadata plus installed/candidate package versions when the receiver can resolve them.
 - Install Plugin: performs the same preflight, requires explicit confirmation, then executes the registered high-risk install action asynchronously through Enigma2's native console container.
 
 The GUI does not accept shell commands, feed URLs, package-manager arguments, or arbitrary command parameters. Plugin IDs are validated before they are appended to the fixed `e2panel` command argv.
@@ -23,6 +24,7 @@ The GUI does not accept shell commands, feed URLs, package-manager arguments, or
 - The receiver-side install action performs post-install verification and writes an audit record.
 - A successful asynchronous action is therefore only reported as complete when the receiver action returns success.
 - Update/remove flows remain separate and are not exposed by this slice.
+- Metadata lookup is read-only and does not accept package names, URLs, shell commands, or arbitrary feed input.
 
 ## Acceptance criteria for this slice
 

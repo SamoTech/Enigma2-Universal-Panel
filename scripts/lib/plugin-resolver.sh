@@ -219,6 +219,85 @@ EOF
   [ "$status" = supported ]
 }
 
+
+plugin_catalog_bool() {
+  id="$1"; field="$2"
+  value="$(plugin_catalog_field "$id" "$field")"
+  [ "$value" = true ] && printf 'true' || printf 'false'
+}
+
+plugin_info_id() {
+  id="$1"
+  plugin_validate_package "$id" || return 2
+  [ -r "$PANEL_ROOT/plugins/catalog.json" ] || { error "plugin catalog unavailable"; return 1; }
+
+  block="$(plugin_catalog_block "$id")"
+  [ -n "$block" ] || { error "unknown plugin ID: $id"; return 3; }
+
+  pkg="$(plugin_catalog_field "$id" package_name)"
+  installed=""
+  candidate=""
+  if [ -n "$pkg" ] && [ "$pkg" != unknown ] && [ "$pkg" != "image/feed dependent" ]; then
+    plugin_package_manager || return 1
+    installed="$(plugin_native_installed_version "$pkg")"
+    candidate="$(plugin_native_candidate "$pkg")"
+  fi
+
+  images="$(plugin_catalog_list "$id" images | paste -sd ',' -)"
+  architectures="$(plugin_catalog_list "$id" architectures | paste -sd ',' -)"
+  dependencies="$(plugin_catalog_list "$id" dependencies | paste -sd ',' -)"
+  conflicts="$(plugin_catalog_list "$id" conflicts | paste -sd ',' -)"
+
+  printf '{
+'
+  printf '  "plugin_id":"%s",
+' "$(plugin_json_escape "$id")"
+  printf '  "name":"%s",
+' "$(plugin_json_escape "$(plugin_catalog_field "$id" name)")"
+  printf '  "display_name":"%s",
+' "$(plugin_json_escape "$(plugin_catalog_field "$id" display_name)")"
+  printf '  "category":"%s",
+' "$(plugin_json_escape "$(plugin_catalog_field "$id" category)")"
+  printf '  "subcategory":"%s",
+' "$(plugin_json_escape "$(plugin_catalog_field "$id" subcategory)")"
+  printf '  "author":"%s",
+' "$(plugin_json_escape "$(plugin_catalog_field "$id" author)")"
+  printf '  "source_type":"%s",
+' "$(plugin_json_escape "$(plugin_catalog_field "$id" source_type)")"
+  printf '  "repository":"%s",
+' "$(plugin_json_escape "$(plugin_catalog_field "$id" repository)")"
+  printf '  "package":"%s",
+' "$(plugin_json_escape "$pkg")"
+  printf '  "images":"%s",
+' "$(plugin_json_escape "$images")"
+  printf '  "architectures":"%s",
+' "$(plugin_json_escape "$architectures")"
+  printf '  "dependencies":"%s",
+' "$(plugin_json_escape "$dependencies")"
+  printf '  "conflicts":"%s",
+' "$(plugin_json_escape "$conflicts")"
+  printf '  "installable":%s,
+' "$(plugin_catalog_bool "$id" installable)"
+  printf '  "updatable":%s,
+' "$(plugin_catalog_bool "$id" updatable)"
+  printf '  "removable":%s,
+' "$(plugin_catalog_bool "$id" removable)"
+  printf '  "requires_gui_restart":%s,
+' "$(plugin_catalog_bool "$id" requires_gui_restart)"
+  printf '  "requires_reboot":%s,
+' "$(plugin_catalog_bool "$id" requires_reboot)"
+  printf '  "compatibility_confidence":"%s",
+' "$(plugin_json_escape "$(plugin_catalog_field "$id" compatibility_confidence)")"
+  printf '  "status":"%s",
+' "$(plugin_json_escape "$(plugin_catalog_field "$id" status)")"
+  printf '  "installed_version":"%s",
+' "$(plugin_json_escape "$installed")"
+  printf '  "candidate_version":"%s"
+' "$(plugin_json_escape "$candidate")"
+  printf '}
+'
+}
+
 plugin_resolve_install() {
   id="$1"
   preview_file="/tmp/e2panel-plugin-preview.$$"
