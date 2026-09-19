@@ -44,6 +44,131 @@
       "requires_gui_restart": true,
       "requires_reboot": false,
       "notes": "Pinned installer source. The installer is executed locally on the receiver with SKIP_REBOOT=1 so Enigma2 restart remains under the panel's controlled restart flow."
+    },
+    {
+      "id": "ciefptmdbsearch",
+      "name": "Ciefp TMDB Search",
+      "developer": "ciefp",
+      "category": "media",
+      "repository": "https://github.com/ciefp/CiefpTMDBSearch",
+      "source_ref": "ab1ed61b2664c378794fff95faebbfaeca752e93",
+      "installer_path": "installer.sh",
+      "installer_blob_sha": "578a5d3fbdfed665300023a364dbbac687a72196",
+      "source_status": "admitted",
+      "execution_status": "community_confirmed",
+      "delivery": "remote_installer",
+      "install_command": "wget -q --no-check-certificate https://raw.githubusercontent.com/ciefp/CiefpTMDBSearch/main/installer.sh -O - | /bin/sh",
+      "supported_images": [
+        "openatv",
+        "openvix",
+        "openpli",
+        "openhdf",
+        "generic-enigma2"
+      ],
+      "supported_architectures": [
+        "armv7l",
+        "arm",
+        "arm64",
+        "mips",
+        "mipsel",
+        "x86",
+        "x86_64"
+      ],
+      "requires_gui_restart": true,
+      "requires_reboot": false,
+      "notes": "Pinned immutable installer. The panel executes the plugin's upstream installer command locally after admission and confirmation; no plugin binary is stored in this repository."
+    },
+    {
+      "id": "ciefpe2converter",
+      "name": "Ciefp E2 Converter",
+      "developer": "ciefp",
+      "category": "channels",
+      "repository": "https://github.com/ciefp/CiefpE2Converter",
+      "source_ref": "424ae9f33e45e32878d781cd82a517c141254e30",
+      "installer_path": "installer.sh",
+      "installer_blob_sha": "cc6180b49c88bc50acec51c81bf5c508efc178d1",
+      "source_status": "admitted",
+      "execution_status": "community_confirmed",
+      "delivery": "remote_installer",
+      "install_command": "wget -q --no-check-certificate https://raw.githubusercontent.com/ciefp/CiefpE2Converter/main/installer.sh -O - | /bin/sh",
+      "supported_images": [
+        "openatv",
+        "openvix",
+        "openpli",
+        "openhdf",
+        "generic-enigma2"
+      ],
+      "supported_architectures": [
+        "armv7l",
+        "arm",
+        "arm64",
+        "mips",
+        "mipsel",
+        "x86",
+        "x86_64"
+      ],
+      "requires_gui_restart": true,
+      "requires_reboot": false,
+      "notes": "Pinned immutable installer. The panel executes the plugin's upstream installer command locally after admission and confirmation; no plugin binary is stored in this repository."
+    },
+    {
+      "id": "youtube-opensource-dreamos",
+      "name": "YouTube OpenSource DreamOS",
+      "developer": "fairbird",
+      "category": "media",
+      "repository": "https://github.com/fairbird/Youtube-Opensource-DreamOS",
+      "source_ref": "87440b5731884b25865e424358d2ba70f38a763a",
+      "installer_path": "installer.sh",
+      "installer_blob_sha": "eb343e5d090434a856974e92136406db424e62e9",
+      "source_status": "admitted",
+      "execution_status": "community_confirmed",
+      "delivery": "remote_installer",
+      "install_command": "wget https://raw.githubusercontent.com/fairbird/Youtube-Opensource-DreamOS/master/installer.sh -O - | /bin/sh",
+      "supported_images": [
+        "dreamos"
+      ],
+      "supported_architectures": [
+        "arm64",
+        "armv7l",
+        "arm"
+      ],
+      "requires_gui_restart": true,
+      "requires_reboot": false,
+      "notes": "Pinned immutable installer. The panel executes the plugin's upstream installer command locally after admission and confirmation; no plugin binary is stored in this repository."
+    },
+    {
+      "id": "ajpanel-direct",
+      "name": "AJPanel",
+      "developer": "biko-73 / AMAJamry",
+      "category": "system",
+      "repository": "https://github.com/biko-73/AjPanel",
+      "source_ref": "858f6ed111625fe4ed44e5b90eb1afabae975edc",
+      "installer_path": "installer.sh",
+      "installer_blob_sha": "be64633c67ffcefb45ca20f1647143657d941110",
+      "source_status": "admitted",
+      "execution_status": "community_confirmed",
+      "delivery": "remote_installer",
+      "install_command": "wget -q https://raw.githubusercontent.com/biko-73/AjPanel/main/installer.sh -O - | /bin/sh",
+      "supported_images": [
+        "openatv",
+        "openvix",
+        "openpli",
+        "openhdf",
+        "dreamos",
+        "generic-enigma2"
+      ],
+      "supported_architectures": [
+        "armv7l",
+        "arm",
+        "arm64",
+        "mips",
+        "mipsel",
+        "x86",
+        "x86_64"
+      ],
+      "requires_gui_restart": true,
+      "requires_reboot": false,
+      "notes": "Pinned immutable installer. The panel executes the plugin's upstream installer command locally after admission and confirmation; no plugin binary is stored in this repository."
     }
   ]
 }
