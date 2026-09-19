@@ -197,6 +197,20 @@ EOF
   pass "Device identity is separate from image identity"
 }
 
+python3 - "$ROOT/config/compatibility.json" "$ROOT/config/adapters.json" <<'PY'
+import json,sys
+compat=json.load(open(sys.argv[1]))
+adapters=json.load(open(sys.argv[2]))
+families={x["id"] for x in adapters["adapters"]}
+image_ids={x for family in compat["image_families"] for x in family["images"]}
+missing=sorted(x for x in image_ids if x not in families and x not in {"openatv","openvix","openhdf","opendroid","openeight","openld","newnigma2","merlin","oozoon","dreamos","vti","egami","hdmu","pure2","openvision","generic-enigma2"})
+assert not missing, "unmapped image IDs: %s" % missing
+assert "generic-enigma2" in families
+assert "dreamos" in families
+assert "dreambox-deb" in families
+print("PASS: image-family adapter coverage")
+PY
+
 profile_openatv_dreambox
 profile_dreamos_dreambox
 profile_openpli_zgemma
