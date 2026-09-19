@@ -53,7 +53,7 @@ export E2_TEST_ROOT="$MOCK"
 . "$ROOT/scripts/lib/compatibility.sh"
 
 reset_root() {
-  rm -f "$MOCK/etc/image-version" "$MOCK/etc/os-release" "$MOCK/etc/issue"
+  rm -f "$MOCK/etc/image-version" "$MOCK/etc/os-release" "$MOCK/etc/issue" "$MOCK/etc/hostname"
   rm -f "$MOCK/proc/stb/info/model" "$MOCK/proc/stb/info/boxtype" "$MOCK/proc/stb/info/machine" "$MOCK/proc/stb/info/chipset"
   rm -f "$BIN/opkg" "$BIN/apt-get"
   cat >"$BIN/dpkg" <<'EOF'
@@ -86,6 +86,48 @@ EOF
   [ "$ADAPTER" = openatv ] || fail "OpenATV adapter"
   [ "$E2_ARCH_FAMILY" = arm64 ] || fail "ARM64 detection"
   pass "Dreambox + OpenATV profile"
+}
+
+profile_vuplus_openatv_uno4kse() {
+  reset_root
+  printf '%s\n' 'vuuno4kse' >"$MOCK/proc/stb/info/model"
+  printf '%s\n' 'vuuno4kse' >"$MOCK/proc/stb/info/boxtype"
+  printf '%s\n' 'OpenATV 8.0' >"$MOCK/etc/issue"
+  printf '%s\n' 'vuuno4kse' >"$MOCK/etc/hostname"
+  cat >"$BIN/opkg" <<'EOF'
+#!/bin/sh
+exit 0
+EOF
+  chmod +x "$BIN/opkg"
+  detect_all
+  select_adapter
+  [ "$E2_DEVICE_FAMILY" = vuplus ] || fail "VU+ device detection"
+  [ "$E2_VENDOR" = "VU+" ] || fail "VU+ vendor detection"
+  [ "$E2_MODEL" = vuuno4kse ] || fail "VU+ Uno 4K SE model detection"
+  [ "$E2_MACHINE" = vuuno4kse ] || fail "VU+ Uno 4K SE machine detection"
+  [ "$E2_IMAGE" = openatv ] || fail "OpenATV image detection on VU+"
+  [ "$E2_IMAGE_FAMILY" = oe-alliance ] || fail "OpenATV image family on VU+"
+  [ "$E2_PACKAGE_FAMILY" = opkg ] || fail "OpenATV opkg backend on VU+"
+  [ "$ADAPTER" = openatv ] || fail "OpenATV adapter on VU+"
+  [ "$E2_ARCH_FAMILY" = arm64 ] || fail "ARM64 detection on VU+"
+  pass "VU+ Uno 4K SE + OpenATV profile"
+}
+
+profile_generic_hostname_does_not_imply_vuplus() {
+  reset_root
+  printf '%s\n' 'Generic Enigma2 Receiver' >"$MOCK/proc/stb/info/model"
+  printf '%s\n' 'genericbox' >"$MOCK/proc/stb/info/boxtype"
+  printf '%s\n' 'my-uno-bedroom-box' >"$MOCK/etc/hostname"
+  printf '%s\n' 'OpenATV 8.0' >"$MOCK/etc/issue"
+  cat >"$BIN/opkg" <<'EOF'
+#!/bin/sh
+exit 0
+EOF
+  chmod +x "$BIN/opkg"
+  detect_all
+  [ "$E2_DEVICE_FAMILY" = generic-enigma2 ] || fail "generic device must not be inferred as VU+ from hostname"
+  [ "$E2_VENDOR" = unknown ] || fail "generic vendor must remain unknown"
+  pass "VU+ detection rejects generic hostname false positives"
 }
 
 profile_dreamos_dreambox() {
@@ -212,6 +254,8 @@ print("PASS: image-family adapter coverage")
 PY
 
 profile_openatv_dreambox
+profile_vuplus_openatv_uno4kse
+profile_generic_hostname_does_not_imply_vuplus
 profile_dreamos_dreambox
 profile_openpli_zgemma
 profile_unknown_enigma2
