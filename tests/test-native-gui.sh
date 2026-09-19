@@ -62,6 +62,12 @@ p = Path("Plugins/Extensions/Enigma2UniversalPanel/actions.py").read_text()
 screens = Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert "ACTIONS =" in p
 assert '"receiver.status"' in p
+assert '"receiver.package_state"' in p
+assert '"receiver.package_info"' in p
+assert '"package.install"' in p
+assert '"package.update"' in p
+assert '"package.remove"' in p
+
 assert '"receiver.telemetry"' in p
 assert '"receiver.compatibility"' in p
 assert '"receiver.audit_history"' in p
@@ -100,6 +106,8 @@ assert 'class ReceiverCompatibility' in Path("Plugins/Extensions/Enigma2Universa
 assert 'receiver.compatibility' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'Community Sources' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'class CommunityInstallerCatalog' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'class PackageBrowser' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
+assert 'class PackageBrowser' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'class PluginLibrary' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'class PluginCategorySelector' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
 assert 'Plugin Categories' in Path("Plugins/Extensions/Enigma2UniversalPanel/screens.py").read_text()
@@ -155,6 +163,19 @@ spec.loader.exec_module(mod)
 
 for value in ("openwebif", "auto.bouquets-maker", "epg_import_2"):
     assert mod._validate_plugin_id(value) == value
+
+assert mod.build_action_command("receiver.package_info", {"package": "enigma2-plugin-systemplugins-networkmanager"}) == (
+    "/usr/local/bin/e2panel", "plugin-info", "enigma2-plugin-systemplugins-networkmanager"
+)
+assert mod.build_action_command("package.install", {"package": "enigma2-plugin-extensions-openwebif"}) == (
+    "/usr/local/bin/e2panel", "package-install", "enigma2-plugin-extensions-openwebif"
+)
+assert mod.build_action_command("package.update", {"package": "enigma2-plugin-extensions-openwebif"}) == (
+    "/usr/local/bin/e2panel", "package-update", "enigma2-plugin-extensions-openwebif"
+)
+assert mod.build_action_command("package.remove", {"package": "enigma2-plugin-extensions-openwebif"}) == (
+    "/usr/local/bin/e2panel", "package-remove", "enigma2-plugin-extensions-openwebif", "--confirm"
+)
 
 assert mod.build_action_command("plugin.info", {"plugin_id": "openwebif"}) == ("/usr/local/bin/e2panel", "plugin-info-id", "openwebif")
 assert mod.build_action_command("plugin.update", {"plugin_id": "openwebif"}) == ("/usr/local/bin/e2panel", "plugin-update-id", "openwebif")

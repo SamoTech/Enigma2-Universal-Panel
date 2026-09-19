@@ -29,9 +29,9 @@ Usage:
   e2panel plugin-resolve <plugin-id>
   e2panel plugin-preview <plugin-id>
   e2panel plugin-info-id <plugin-id>
-  e2panel plugin-install <package>
-  e2panel plugin-update <package>
-  e2panel plugin-remove <package> --confirm
+  e2panel package-install <package>
+  e2panel package-update <package>
+  e2panel package-remove <package> --confirm
   e2panel plugin-install-id <plugin-id>
   e2panel plugin-remove-preview <plugin-id>
   e2panel plugin-remove-id <plugin-id>
@@ -82,12 +82,12 @@ case "$cmd" in
   plugin-resolve) plugin_resolve "$1";;
   plugin-preview) plugin_preview "$1";;
   plugin-info-id) plugin_info_id "$1";;
-  plugin-install) action_plugin_install "$1";;
-  plugin-update) action_plugin_update "$1";;
+  package-install) action_package_install "$1";;
+  package-update) action_package_update "$1";;
   plugin-remove-preview) plugin_remove_preview "$1";;
   plugin-remove-id) plugin_remove_id "$1";;
   reboot-for-plugin) action_reboot_for_plugin "$1";;
-  plugin-remove) [ "$2" = "--confirm" ] && action_plugin_remove "$1" || { error 'plugin-remove requires package and --confirm'; exit 2; };;
+  package-remove) [ "$2" = "--confirm" ] && action_package_remove "$1" || { error 'package-remove requires package and --confirm'; exit 2; };;
   plugin-install-id) plugin_resolve_install "$1";;
   update) panel_update;;
   restart-enigma2) action_restart_enigma2;; restart-gui) action_restart_gui;;
