@@ -11,6 +11,7 @@ ACTIONS = {
     "receiver.package_state": {"command": ("/usr/local/bin/e2panel", "package-state"), "risk": "low", "confirmation": False},
     "plugin.resolve": {"command": ("/usr/local/bin/e2panel", "plugin-resolve"), "risk": "low", "confirmation": False},
     "plugin.preview": {"command": ("/usr/local/bin/e2panel", "plugin-preview"), "risk": "low", "confirmation": False},
+    "plugin.info": {"command": ("/usr/local/bin/e2panel", "plugin-info-id"), "risk": "low", "confirmation": False},
     "plugin.install": {"command": ("/usr/local/bin/e2panel", "plugin-install-id"), "risk": "high", "confirmation": True},
 }
 
@@ -32,7 +33,7 @@ def build_action_command(action_id, params=None):
         raise ValueError("action parameters must be an object")
 
     command = list(action["command"])
-    if action_id in ("plugin.resolve", "plugin.preview", "plugin.install"):
+    if action_id in ("plugin.resolve", "plugin.preview", "plugin.info", "plugin.install"):
         if set(params) != {"plugin_id"}:
             raise ValueError("plugin_id is required")
         command.append(_validate_plugin_id(params["plugin_id"]))
