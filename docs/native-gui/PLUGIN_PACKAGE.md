@@ -1,30 +1,29 @@
-# Native Enigma2 Plugin Package
+# Native Enigma2 package/plugin GUI
 
-The first GUI milestone is implemented as a native Enigma2 Python plugin under:
+Phase 1.4 is being delivered incrementally. The first slice is read-only: the receiver plugin can inspect normalized package state and invoke the existing resolver for plugin IDs without introducing a second execution path.
 
-    Plugins/Extensions/Enigma2UniversalPanel/
+## Current GUI surface
 
-The entry point uses Enigma2's PluginDescriptor with WHERE_PLUGINMENU, so the panel is registered in the normal Plugins/Extensions menu. This registration pattern is consistent with current Enigma2 plugin implementations.
+- Package Browser: reads `package-state` from the receiver and displays configured sources plus installed/available package inventory.
+- Resolve Plugin: prompts for a normalized plugin ID and calls the registered resolver action.
+- Preview Plugin: prompts for a normalized plugin ID and calls the registered, read-only compatibility/dependency preflight.
 
-## Current scope
+The GUI does not accept shell commands, feed URLs, package-manager arguments, or arbitrary command parameters. Plugin IDs are validated before they are appended to the fixed `e2panel` command argv.
 
-This slice provides:
+## Policy boundaries
 
-- native plugin registration;
-- a native Screen-based main panel;
-- MenuList navigation;
-- OK/EXIT remote-control interaction;
-- fixed registered read-only receiver actions;
-- result/error screens;
-- no web server;
-- no arbitrary shell input.
+- Package/plugin binaries are never hosted by this repository.
+- Package installation remains receiver-feed driven.
+- Arbitrary external feed registration remains disabled.
+- Unknown mappings remain blocked by the resolver.
+- This slice performs no package mutation and therefore does not bypass confirmation or postcondition policy.
+- Installation/update/remove/progress/verification screens remain the next Phase 1.4 slice.
 
-The next GUI slice will connect the dashboard to normalized receiver/package state and then add plugin/package preview screens.
+## Acceptance criteria for this slice
 
-## Installation path
-
-The installer targets the standard Enigma2 plugin tree:
-
-    /usr/lib/enigma2/python/Plugins/Extensions/Enigma2UniversalPanel
-
-The installer must fail rather than silently placing the plugin in an unknown runtime path.
+1. Native remote-control navigation reaches Package Browser, Resolve Plugin, and Preview Plugin.
+2. Package Browser consumes the existing normalized `package-state` schema.
+3. Resolve/Preview use registered actions and strict plugin-ID validation.
+4. Invalid IDs and unexpected action parameters are rejected before subprocess execution.
+5. No GUI path uses `shell=True`, `os.system`, or arbitrary executable/argument input.
+6. Mock/CI validation does not claim real-receiver support.
