@@ -17,7 +17,7 @@ umask 022
 REPO="https://raw.githubusercontent.com/SamoTech/Enigma2-Universal-Panel/main"
 DEST="/usr/lib/enigma2-universal-panel"
 BIN="/usr/local/bin/e2panel"
-VERSION="1.7.0"
+VERSION="1.8.0"
 FETCH_TIMEOUT="${E2PANEL_FETCH_TIMEOUT:-30}"
 FETCH_RETRIES="${E2PANEL_FETCH_RETRIES:-3}"
 MIN_FREE_KB="${E2PANEL_MIN_FREE_KB:-4096}"
