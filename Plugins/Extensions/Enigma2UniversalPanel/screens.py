@@ -425,15 +425,49 @@ class PluginLibrary(Screen):
         entry = self._selected_entry()
         if not entry:
             return
-        if entry.get("source") != "receiver_feed" or not entry.get("installable"):
-            self.session.open(
-                MessageBox,
-                "This entry is not currently installable through the receiver feed.\n\n"
-                "Community installers remain blocked until explicit source admission.",
-                MessageBox.TYPE_ERROR,
+        plugin_id = entry.get("id", "")
+        if entry.get("source") == "community":
+            if not entry.get("community_admitted") or not entry.get("installable"):
+                self.session.open(
+                    MessageBox,
+                    "This community installer is not admitted for execution.\n\n"
+                    "Only pinned, explicitly confirmed community sources can run.",
+                    MessageBox.TYPE_ERROR,
+                )
+                return
+            try:
+                code, output = run_action("community.preview", {"plugin_id": plugin_id})
+                preview = json.loads(output)
+            except Exception as exc:
+                self.session.open(MessageBox, "Community installer preview rejected: %s" % exc, MessageBox.TYPE_ERROR)
+                return
+            if code != 0 or preview.get("status") != "supported":
+                self.session.open(MessageBox, "Community installation blocked.\n\n%s" % (output or "Compatibility not verified."), MessageBox.TYPE_ERROR)
+                return
+            summary = (
+                "Install community plugin: %s\\n\\n"
+                "Source: pinned community installer\\n"
+                "Revision: %s\\n"
+                "Installer hash: %s\\n"
+                "Receiver: %s / %s\\n\\n"
+                "The installer runs locally with its restart disabled; the panel controls GUI restart.\\n\\n"
+                "Continue?"
+                % (entry.get("name", plugin_id), preview.get("source_ref", "unknown"),
+                   preview.get("installer_blob_sha", "unknown"), preview.get("receiver_image", "unknown"),
+                   preview.get("receiver_architecture", "unknown"))
+            )
+            self.session.openWithCallback(
+                lambda confirmed: self._start_community_install(
+                    confirmed, plugin_id,
+                    bool(preview.get("requires_gui_restart") is True),
+                    bool(preview.get("requires_reboot") is True),
+                ),
+                MessageBox, summary, MessageBox.TYPE_YESNO,
             )
             return
-        plugin_id = entry.get("id", "")
+        if not entry.get("installable"):
+            self.session.open(MessageBox, "This entry is not currently installable.", MessageBox.TYPE_ERROR)
+            return
         try:
             code, output = run_action("plugin.preview", {"plugin_id": plugin_id})
         except Exception as exc:
@@ -479,6 +513,23 @@ class PluginLibrary(Screen):
             MessageBox.TYPE_YESNO,
         )
 
+    def _start_community_install(self, confirmed, plugin_id, requires_gui_restart, requires_reboot):
+        if not confirmed:
+            return
+        try:
+            command = build_action_command("community.install", {"plugin_id": plugin_id})
+        except Exception as exc:
+            self.session.open(MessageBox, "Community installation action rejected: %s" % exc, MessageBox.TYPE_ERROR)
+            return
+        self.session.open(
+            PackageInstallProgress,
+            plugin_id,
+            command,
+            "Installing Community Plugin",
+            requires_gui_restart,
+            requires_reboot,
+        )
+
     def _start_library_install(self, confirmed, plugin_id, requires_gui_restart, requires_reboot):
         if not confirmed:
             return
@@ -521,8 +572,12 @@ class PluginLibrary(Screen):
             lines.extend([
                 "Network: %s" % entry.get("network_reachability", "unknown"),
                 "Maintenance: %s" % entry.get("maintenance_status", "unknown"),
+                "Execution: %s" % entry.get("execution_status", "blocked"),
+                "Admitted: %s" % entry.get("community_admitted", False),
+                "Installer source: %s" % entry.get("source_reference", entry.get("repository", "unknown")),
+                "Pinned revision: %s" % entry.get("source_ref", "unknown"),
                 "",
-                "Community execution is currently blocked until source admission is complete.",
+                "GREEN: Install confirmed community plugin" if entry.get("community_admitted") else "Installation blocked until source admission.",
             ])
             self.session.open(ActionResult, "Plugin Library — Community Entry", "\n".join(lines))
             return
