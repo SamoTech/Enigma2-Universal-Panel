@@ -103,9 +103,20 @@ EOF
     E2_ARCH=x86_64
     E2_ARCH_FAMILY=x86_64
     E2_PKG=opkg
+    E2_PACKAGE_FAMILY=opkg
     E2_IMAGE=openatv
+    E2_IMAGE_FAMILY=oe-alliance
     E2_BIN=/usr/bin/enigma2
     E2_VERSION=mock
+    E2_PYTHON_BIN=python3
+    E2_PYTHON_MAJOR=3
+    E2_PYTHON_VERSION=3.12
+    E2_DEVICE_FAMILY=generic-enigma2
+    E2_VENDOR=unknown
+    E2_MODEL=mock
+    E2_MACHINE=mock
+    E2_CHIPSET=unknown
+    E2_ARCH_FAMILY=x86_64
     E2_STORAGE_AVAILABLE=99000
     E2_NETWORK=online
   }
@@ -125,7 +136,10 @@ assert d["type"] == "receiver_compatibility"
 assert d["architecture"]["family"] == "x86_64"
 assert d["package"]["manager"] == "opkg"
 assert d["package"]["family"] == "opkg"
-assert d["runtime"]["native_gui"] == "unknown" or d["runtime"]["native_gui"] in {"supported","blocked"}
+assert d["runtime"]["native_gui"] == "supported"
+assert d["image"]["family"] == "oe-alliance"
+assert d["device"]["family"] == "generic-enigma2"
+assert d["overall"] == "image-and-device-detected"
 assert d["real_receiver_validation"] is False
 PY
   pass "mock receiver compatibility report"
