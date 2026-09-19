@@ -73,4 +73,10 @@ grep -Fq "reason=remote_release_is_not_newer" /tmp/e2panel-updater-blocked.out |
 rm -f /tmp/e2panel-updater-blocked.out
 
 sh -n scripts/lib/update.sh
-pass "self-updater version detection, same-version refresh, upgrade and downgrade protection"
+sh -n install.sh
+sh -n scripts/lib/plugins.sh
+sh -n scripts/lib/plugin-resolver.sh
+grep -q "verify_deployed_file" install.sh || fail "installer payload verification missing"
+grep -q "Package installation postcondition failed" scripts/lib/plugins.sh || fail "Store install postcondition missing"
+grep -q "Always refresh configured receiver feeds" scripts/lib/plugin-resolver.sh || fail "Store preview refresh guard missing"
+pass "self-updater, installer payload verification and Store installation guards pass syntax/policy checks"
