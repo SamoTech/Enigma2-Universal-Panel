@@ -166,7 +166,7 @@ class PackageInstallProgress(Screen):
             data = data.decode("utf-8", "replace")
         self.output += data or ""
         tail = self.output[-2600:].strip()
-        self["state"].setText("%s from receiver-configured sources...\n\n%s" % (self.operation, (tail or "Package manager running..."))
+        self["state"].setText("%s from receiver-configured sources...\n\n%s" % (self.operation, (tail or "Package manager running...")))
 
     def _finished(self, retval):
         self.finished = True
