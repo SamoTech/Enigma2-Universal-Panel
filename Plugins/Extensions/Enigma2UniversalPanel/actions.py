@@ -13,6 +13,7 @@ ACTIONS = {
     "plugin.preview": {"command": ("/usr/local/bin/e2panel", "plugin-preview"), "risk": "low", "confirmation": False},
     "plugin.info": {"command": ("/usr/local/bin/e2panel", "plugin-info-id"), "risk": "low", "confirmation": False},
     "plugin.install": {"command": ("/usr/local/bin/e2panel", "plugin-install-id"), "risk": "high", "confirmation": True},
+    "plugin.update": {"command": ("/usr/local/bin/e2panel", "plugin-update-id"), "risk": "high", "confirmation": True},
 }
 
 _PLUGIN_ID = re.compile(r"^[a-z0-9][a-z0-9._-]{0,63}$")
@@ -33,7 +34,7 @@ def build_action_command(action_id, params=None):
         raise ValueError("action parameters must be an object")
 
     command = list(action["command"])
-    if action_id in ("plugin.resolve", "plugin.preview", "plugin.info", "plugin.install"):
+    if action_id in ("plugin.resolve", "plugin.preview", "plugin.info", "plugin.install", "plugin.update"):
         if set(params) != {"plugin_id"}:
             raise ValueError("plugin_id is required")
         command.append(_validate_plugin_id(params["plugin_id"]))
