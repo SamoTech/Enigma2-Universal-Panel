@@ -158,6 +158,98 @@ class ReceiverTelemetry(Screen):
         self["state"].setText("\n".join(lines))
 
 
+class CommunityInstallerCatalog(Screen):
+    skin = """
+    <screen name="CommunityInstallerCatalog" position="center,center" size="1000,650" title="Enigma2 Universal Panel">
+        <widget name="title" position="35,20" size="930,45" font="Regular;30" />
+        <widget name="menu" position="35,80" size="930,390" itemHeight="48" font="Regular;22" />
+        <widget name="details" position="35,485" size="930,70" font="Regular;18" valign="top" />
+        <widget name="hint" position="35,575" size="930,35" font="Regular;20" />
+    </screen>
+    """
+
+    def __init__(self, session):
+        Screen.__init__(self, session)
+        self["title"] = Label("Community Installer Registry")
+        self["menu"] = MenuList([])
+        self["details"] = Label("Loading registry...")
+        self["hint"] = Label("OK: Details    GREEN: Refresh    EXIT: Close")
+        self["actions"] = ActionMap(
+            ["OkCancelActions", "ColorActions"],
+            {"ok": self.show_details, "cancel": self.close, "green": self.refresh},
+            -2,
+        )
+        self.entries = []
+        self.onLayoutFinish.append(self.refresh)
+        self["menu"].onSelectionChanged.append(self._selection_changed)
+
+    def refresh(self):
+        try:
+            code, output = run_action("community.catalog")
+        except Exception as exc:
+            self["menu"].setList([])
+            self["details"].setText("Registry request rejected.\n%s" % exc)
+            return
+        if code != 0:
+            self["menu"].setList([])
+            self["details"].setText("Registry unavailable.\n%s" % (output or "unknown"))
+            return
+        try:
+            data = json.loads(output)
+            self.entries = data.get("entries") or []
+        except (TypeError, ValueError, AttributeError):
+            self["menu"].setList([])
+            self["details"].setText("Invalid community registry.")
+            return
+        choices = []
+        for entry in self.entries:
+            status = entry.get("execution_status", "unknown")
+            choices.append("%s  [%s]" % (entry.get("name", "unknown"), status))
+        self["menu"].setList(choices)
+        self._selection_changed()
+
+    def _selected_entry(self):
+        index = self["menu"].getSelectionIndex()
+        if index is None or index < 0 or index >= len(self.entries):
+            return None
+        return self.entries[index]
+
+    def _selection_changed(self):
+        entry = self._selected_entry()
+        if not entry:
+            self["details"].setText("No registry entry selected.")
+            return
+        self["details"].setText(
+            "%s | %s | source=%s\n%s"
+            % (
+                entry.get("developer", "unknown"),
+                entry.get("delivery", "unknown"),
+                entry.get("source_status", "unknown"),
+                entry.get("notes", ""),
+            )
+        )
+
+    def show_details(self):
+        entry = self._selected_entry()
+        if not entry:
+            return
+        lines = [
+            "Name: %s" % entry.get("name", "unknown"),
+            "Developer: %s" % entry.get("developer", "unknown"),
+            "Category: %s" % entry.get("category", "unknown"),
+            "Repository: %s" % entry.get("repository", "unknown"),
+            "Pinned source ref: %s" % entry.get("source_ref", "unknown"),
+            "Installer path: %s" % entry.get("installer_path", "none"),
+            "Delivery: %s" % entry.get("delivery", "unknown"),
+            "Source status: %s" % entry.get("source_status", "unknown"),
+            "Execution status: %s" % entry.get("execution_status", "unknown"),
+            "Version: %s" % entry.get("installer_version", entry.get("release_version", "unknown")),
+            "",
+            entry.get("notes", ""),
+        ]
+        self.session.open(ActionResult, "Community Installer Metadata", "\n".join(lines))
+
+
 class PackageBrowser(Screen):
     skin = """
     <screen name="PackageBrowser" position="center,center" size="1000,650" title="Enigma2 Universal Panel">
@@ -345,6 +437,7 @@ class Enigma2UniversalPanel(Screen):
     ENTRIES = (
         ("Dashboard", "dashboard"),
         ("Package Browser", "package-browser"),
+        ("Community Installers", "community.catalog"),
         ("Receiver Telemetry", "receiver.telemetry"),
         ("Resolve Plugin", "plugin.resolve"),
         ("Preview Plugin", "plugin.preview"),
@@ -575,6 +668,9 @@ class Enigma2UniversalPanel(Screen):
             return
         if action_id == "package-browser":
             self.session.open(PackageBrowser)
+            return
+        if action_id == "community.catalog":
+            self.session.open(CommunityInstallerCatalog)
             return
         if action_id == "receiver.telemetry":
             self.session.open(ReceiverTelemetry)
