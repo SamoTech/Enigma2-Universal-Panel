@@ -256,7 +256,8 @@ assert d["counts"]["community_blocked"] >= 2
 ids = [x["id"] for x in d["entries"]]
 assert "openwebif" in ids
 assert "ajpanel" in ids
-assert any(x["id"] == "ncam-emu" and x["category"] == "emu" and x["availability"] == "community_blocked" for x in d["entries"])\nassert any(x["id"] == "oscam-emu" and x["category"] == "emu" and x["availability"] == "community_blocked" for x in d["entries"])
+assert any(x["id"] == "ncam-emu" and x["category"] == "emu" and x["availability"] == "community_blocked" for x in d["entries"])
+assert any(x["id"] == "oscam-emu" and x["category"] == "emu" and x["availability"] == "community_blocked" for x in d["entries"])
 assert all(x.get("source_status") != "reported_current_unverified" for x in d["entries"] if x["source"] == "community")
 for item in d["entries"]:
     assert item["source"] in {"receiver_feed", "community"}
