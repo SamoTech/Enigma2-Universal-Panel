@@ -114,6 +114,15 @@ PY
 
   plugin_resolve_install openwebif >"$TMP/install.log"
   grep -q '^enigma2-plugin-extensions-openwebif 2.0
+
+  if plugin_resolve_install openairplay >/dev/null 2>&1; then exit 1; fi
+  pass "unknown package mapping blocked"
+
+  if plugin_source_add_external https://attacker.invalid/feed >/dev/null 2>&1; then exit 1; fi
+  pass "arbitrary feed blocked"
+)
+
+printf 'Mock receiver harness completed. No real receiver was contacted.\n'
  "$STATE/installed"
   pass "mock receiver install and postcondition"
 
