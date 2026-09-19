@@ -8,5 +8,6 @@ log() { printf '%s [%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S' 2>/dev/null)" "$1" "$
 info() { log INFO "$1"; }
 warn() { log WARN "$1"; }
 error() { log ERROR "$1"; }
+audit() { log AUDIT "$1"; }
 has() { command -v "$1" >/dev/null 2>&1; }
 require_root() { [ "$(id -u 2>/dev/null)" = "0" ] || { error "root privileges required"; return 1; }; }
