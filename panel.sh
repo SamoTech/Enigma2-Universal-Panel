@@ -7,6 +7,7 @@ BASE="/usr/lib/enigma2-universal-panel"
 . "$BASE/scripts/lib/plugins.sh"
 . "$BASE/scripts/lib/library.sh"
 . "$BASE/scripts/lib/plugin-resolver.sh"
+. "$BASE/scripts/lib/reboot.sh"
 . "$BASE/scripts/lib/actions.sh"
 . "$BASE/scripts/lib/status.sh"
 . "$BASE/scripts/lib/telemetry.sh"
@@ -18,6 +19,7 @@ Enigma2 Universal Panel $PANEL_VERSION
 Usage:
   e2panel status | capabilities | compatibility | diagnose
   e2panel package-state
+  e2panel reboot-status
   e2panel audit-history
   e2panel plugin-source-status | plugin-refresh | plugin-list [pattern]
   e2panel plugin-info <package>
@@ -35,6 +37,7 @@ Usage:
   e2panel community-catalog
   e2panel plugin-library
   e2panel restart-enigma2 | restart-gui
+  e2panel reboot-for-plugin <plugin-id>
   e2panel reboot --confirm
 EOF
 }
@@ -76,6 +79,7 @@ case "$cmd" in
   plugin-update) action_plugin_update "$1";;
   plugin-remove-preview) plugin_remove_preview "$1";;
   plugin-remove-id) plugin_remove_id "$1";;
+  reboot-for-plugin) action_reboot_for_plugin "$1";;
   plugin-remove) [ "$2" = "--confirm" ] && action_plugin_remove "$1" || { error 'plugin-remove requires package and --confirm'; exit 2; };;
   plugin-install-id) plugin_resolve_install "$1";;
   restart-enigma2) action_restart_enigma2;; restart-gui) action_restart_gui;;
