@@ -64,8 +64,10 @@ reboot_status() {
     return 0
   fi
 
-  # shellcheck disable=SC1090
-  . "$state_file"
+  plugin_id="$(sed -n 's/^plugin_id=//p' "$state_file" | head -1)"
+  package="$(sed -n 's/^package=//p' "$state_file" | head -1)"
+  expected_version="$(sed -n 's/^expected_version=//p' "$state_file" | head -1)"
+  previous_boot_id="$(sed -n 's/^previous_boot_id=//p' "$state_file" | head -1)"
 
   current_boot_id="$(_reboot_boot_id 2>/dev/null || true)"
   verified=false
@@ -129,7 +131,7 @@ action_reboot_for_plugin() {
 
   plugin_package_manager || return 1
   expected="$(plugin_native_installed_version "$pkg" 2>/dev/null || true)"
-  [ -n "$expected" ] || {
+  [ -n "$expected" ] && [ "$expected" != "(none)" ] || {
     error "Required reboot package state is not installed/verified: $pkg"
     return 4
   }
@@ -138,6 +140,11 @@ action_reboot_for_plugin() {
   [ -n "$before_boot_id" ] || {
     error "No reboot identity source available; reboot verification is unavailable"
     return 5
+  }
+
+  [ ! -r "$(_reboot_state_file)" ] || {
+    error "A previous reboot verification is still pending"
+    return 6
   }
 
   _reboot_write_pending "$id" "$pkg" "$expected" "$before_boot_id" || {
